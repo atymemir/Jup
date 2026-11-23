@@ -159,7 +159,7 @@ test("auth works with blocked storage and consumes only the pending continuation
   }
 });
 
-test("teacher signup resumes the selected teacher panel and default callbacks retain existing URL shape", () => {
+test("teacher signup resumes its panel and legacy callbacks use Jup while local callbacks stay local", () => {
   assert.equal(
     new URL(
       authDestination("teacher", "tab/teacher/schedule"),
@@ -170,10 +170,14 @@ test("teacher signup resumes the selected teacher panel and default callbacks re
   assert.equal(authDestination("teacher", null), "/findbuddy/teacher");
   assert.equal(
     authEmailRedirect("https://tryalga.app", "confirm", "student", null),
-    "https://tryalga.app/findbuddy/login?flow=confirm&role=student",
+    "https://jup-atymemirs-projects.vercel.app/findbuddy/login?flow=confirm&role=student",
   );
   assert.equal(
     authEmailRedirect("https://tryalga.app", "recovery", "student", null),
-    "https://tryalga.app/findbuddy/login?flow=recovery",
+    "https://jup-atymemirs-projects.vercel.app/findbuddy/login?flow=recovery",
   );
+  for (const origin of ["http://localhost:3100", "http://127.0.0.1:3100", "https://jup-atymemirs-projects.vercel.app"]) {
+    assert.equal(new URL(authEmailRedirect(origin, "confirm", "business", null)).origin, origin);
+  }
+  assert.equal(new URL(authEmailRedirect("https://www.tryalga.app", "confirm", "teacher", null)).origin, "https://jup-atymemirs-projects.vercel.app");
 });

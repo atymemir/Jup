@@ -111,7 +111,11 @@ export function authEmailRedirect(
   intent: string | null | undefined,
   search = "",
 ) {
-  const url = new URL("/findbuddy/login", origin);
+  // Old algₐ links now use the same dedicated Jup Auth callback.
+  const callbackOrigin = ["https://tryalga.app", "https://www.tryalga.app"].includes(origin)
+    ? "https://jup-atymemirs-projects.vercel.app"
+    : origin;
+  const url = new URL("/findbuddy/login", callbackOrigin);
   url.searchParams.set("flow", flow);
   if (flow === "confirm")
     url.searchParams.set(
