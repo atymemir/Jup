@@ -4,7 +4,7 @@
   padding-bottom: 24px;
   --line: rgb(var(--border));
   --dim: rgb(var(--muted));
-  --green: #163f32;
+  --brand-primary: #263de1;
 }
 .page h1,
 .page h2,
@@ -81,7 +81,7 @@
   border-radius: 30px;
   padding: 8px 15px;
   background: white;
-  color: var(--green);
+  color: var(--brand-primary);
 }
 .tabs {
   gap: 3px;
@@ -99,7 +99,7 @@
 .tabs button[aria-current] {
   font-weight: 650;
   background: rgb(var(--surface-subtle));
-  color: var(--green);
+  color: var(--brand-primary);
 }
 .tabs button:hover,
 .viewSwitch button:hover,
@@ -132,7 +132,7 @@
 }
 .hero em,
 .groupHero em {
-  color: var(--green);
+  color: var(--brand-primary);
   font-family: Georgia, serif;
   font-weight: 450;
 }
@@ -156,12 +156,12 @@
 }
 .examChoices button[aria-pressed="true"] {
   color: white;
-  background: var(--green);
-  border-color: var(--green);
+  background: var(--brand-primary);
+  border-color: var(--brand-primary);
 }
 .feature {
-  background: var(--green);
-  color: #f7faf3;
+  background: var(--brand-primary);
+  color: #f5f8ff;
   padding: 24px;
   border-radius: 21px;
   align-self: stretch;
@@ -177,7 +177,7 @@
 }
 .featureTop {
   font-size: 0.85rem;
-  color: #dbe8d9;
+  color: #e2e9ff;
   margin-bottom: 20px;
 }
 .featureTop span:first-child,
@@ -187,7 +187,7 @@
   gap: 8px;
 }
 .featureTop span:nth-child(2) {
-  border: 1px solid #79988c;
+  border: 1px solid #7d8bb6;
   border-radius: 20px;
   padding: 2px 10px;
 }
@@ -199,12 +199,12 @@
 }
 .feature p {
   font-size: 0.9rem;
-  color: #dfebe2;
+  color: #e7edff;
   margin-top: 9px;
 }
 .featureBottom {
   margin-top: 22px;
-  border-top: 1px solid #547567;
+  border-top: 1px solid #53658d;
   padding-top: 15px;
 }
 .featureBottom div {
@@ -215,12 +215,12 @@
   letter-spacing: -0.04em;
 }
 .featureBottom small {
-  color: #dbe8d9;
+  color: #e2e9ff;
   font-size: 0.8rem;
 }
 .featureBottom button {
-  background: #f7faf3;
-  color: var(--green);
+  background: #f5f8ff;
+  color: var(--brand-primary);
   padding: 9px 14px;
   border-radius: 9px;
   font-weight: 600;
@@ -276,7 +276,7 @@
   border: 1px solid var(--line);
   border-radius: 9px;
   background: white;
-  color: var(--green);
+  color: var(--brand-primary);
   padding: 8px 12px;
   font-size: 0.89rem;
 }
@@ -284,7 +284,7 @@
   gap: 7px;
 }
 .filterToggle b {
-  background: var(--green);
+  background: var(--brand-primary);
   color: white;
   border-radius: 20px;
   min-width: 20px;
@@ -340,7 +340,7 @@
 .checkbox input {
   width: 18px;
   height: 18px;
-  accent-color: var(--green);
+  accent-color: var(--brand-primary);
 }
 .resultsHeader {
   justify-content: space-between;
@@ -378,10 +378,10 @@
   color: var(--dim);
 }
 .viewSwitch button[aria-pressed="true"] {
-  color: var(--green);
+  color: var(--brand-primary);
   font-weight: 620;
   background: white;
-  box-shadow: 0 1px 4px #152e1c19;
+  box-shadow: 0 1px 4px #183eb512;
 }
 .tutorGrid {
   display: grid;
@@ -413,7 +413,7 @@
   gap: 12px;
 }
 .subjectTag {
-  color: var(--green);
+  color: var(--brand-primary);
   font-size: 0.82rem;
   font-weight: 650;
   letter-spacing: 0.015em;
@@ -427,8 +427,8 @@
   border-radius: 50%;
 }
 .saveTutor[aria-pressed="true"] svg {
-  fill: var(--green);
-  color: var(--green);
+  fill: var(--brand-primary);
+  color: var(--brand-primary);
 }
 .identity {
   gap: 11px;
@@ -451,8 +451,8 @@
   height: 48px;
   display: grid;
   place-items: center;
-  background: #e4eddf;
-  color: #365b43;
+  background: #e8edff;
+  color: #394d89;
   font:
     1.55rem Georgia,
     serif;
@@ -555,7 +555,7 @@
   border-radius: 13px;
   width: 64px;
   min-height: 72px;
-  color: var(--green);
+  color: var(--brand-primary);
 }
 .dateTile strong {
   font-size: 1.65rem;
@@ -714,7 +714,7 @@
   align-self: flex-start;
 }
 .myMessage {
-  background: #e2eddf;
+  background: #e8edff;
   align-self: flex-end;
 }
 .message span,
@@ -747,7 +747,7 @@
   box-shadow: var(--shadow-lg);
 }
 .dialog::backdrop {
-  background: #142d2673;
+  background: #14244d73;
   backdrop-filter: blur(3px);
 }
 .dialog > .spread {
@@ -1131,7 +1131,7 @@
 }
 .accountLinks .registerLink {
   color: white;
-  background: #163f32;
+  background: #263de1;
 }
 .profileName {
   font: inherit;
@@ -1233,7 +1233,7 @@
   min-width: 16px;
   height: 16px;
   border-radius: 20px;
-  background: #163f32;
+  background: #263de1;
   color: white;
   font-size: 0.66rem;
   vertical-align: middle;
@@ -1261,7 +1261,7 @@
   margin: 24px 0;
 }
 .heroActions a {
-  color: var(--green);
+  color: var(--brand-primary);
   font-size: 0.875rem;
   text-underline-offset: 4px;
 }
@@ -1285,7 +1285,7 @@
 .featureBottom small {
   font-size: 0.875rem;
   line-height: 1.5;
-  color: #dbe8d9;
+  color: #e2e9ff;
 }
 .quickFilters {
   display: grid;
@@ -1310,7 +1310,7 @@
   font-size: 0.875rem;
 }
 .previewBanner strong {
-  color: var(--green);
+  color: var(--brand-primary);
 }
 .loading {
   padding: 12px 0;
@@ -1498,3 +1498,13 @@
 .dialog > .spread > button:hover { background: rgb(var(--surface-subtle)); }
 .dialog .form[data-purpose="join"] > :global(.primary) { width: 100%; min-height: 52px; border-radius: 12px; }
 @media(max-width: 480px) { .dialog { padding: 22px 20px; } .dialog h2 { font-size: 1.35rem; } }
+
+/* Keep asynchronous content from moving the catalog header. */
+.previewBanner { min-height: 58px; align-items: center; }
+.tutorGrid { min-height: 390px; }
+.skeleton { position: relative; overflow: hidden; }
+.skeleton::after { content: ""; position: absolute; inset: 0; background: linear-gradient(110deg, transparent 25%, #e9efff66 50%, transparent 75%); animation: catalogGlow 1.8s ease-in-out infinite alternate; pointer-events: none; }
+@keyframes catalogGlow { from { opacity: .15; } to { opacity: .85; } }
+.hero em, .groupHero em { font-family: inherit; font-weight: 600; background: var(--brand-text-gradient); background-clip: text; -webkit-background-clip: text; color: transparent; }
+@media (max-width: 640px) { .previewBanner { min-height: 88px; } }
+@media (prefers-reduced-motion: reduce) { .skeleton::after { animation: none; opacity: .3; } }

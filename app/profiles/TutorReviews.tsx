@@ -167,7 +167,7 @@ export function TutorReviews({
       {feedback?.length === 0 && <p className={st.muted}>Отзывов пока нет.</p>}
       {feedback?.map((r, i) => (
         <article className={st.review} key={r.updated_at + i}>
-          <strong>Ученик findbuddy</strong>
+          <strong>Ученик Jup edu</strong>
           <span>
             {r.score} из 5 ·{" "}
             {new Date(r.updated_at).toLocaleDateString("ru-KZ", {

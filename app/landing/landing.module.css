@@ -1,4 +1,4 @@
-.landing { --deep: #163f32; overflow-x: clip; }
+.landing { --deep: #263de1; overflow-x: clip; }
 .landing h1, .landing h2, .landing h3 { text-wrap: balance; }
 .skipLink { position: fixed; left: 20px; top: -80px; z-index: 100; padding: 12px 18px; background: white; border: 1px solid rgb(var(--accent)); border-radius: 10px; }
 .skipLink:focus { top: 14px; }
@@ -245,3 +245,7 @@
   .previewPanel { padding-inline: 18px; }
   .partnerTabs button { font-size: .8125rem; }
 }
+
+.hero h1 em { font-family: inherit; font-weight: 600; font-style: normal; background: var(--brand-text-gradient); background-clip: text; -webkit-background-clip: text; color: transparent; }
+.finalCta { background: linear-gradient(115deg, #263de1, #2710c8); }
+.finder { box-shadow: 0 18px 64px rgb(var(--accent) / .065); }

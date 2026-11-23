@@ -1,4 +1,5 @@
 "use client";
+import { LoadingState } from "../ui/LoadingState";
 import { Fragment, useEffect, useRef, useState, useSyncExternalStore, type FormEvent } from "react";
 import { lessonDate, type Booking, type Tutor } from "../lib/findbuddy";
 import { TutorPhoto } from "../profiles/TutorProfile";
@@ -316,9 +317,7 @@ function ThreadPanel({
           </div>
         )}
         {thread && !page && !error && (
-          <p className={st.loading} role="status">
-            Загружаем переписку…
-          </p>
+          <div className={st.loading}><LoadingState compact label="Загружаем переписку…" /></div>
         )}
         {messageList.map((m, index) => {
           const day = messageDates.format(new Date(m.created_at));

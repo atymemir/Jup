@@ -59,7 +59,7 @@ export function calendarFile(
     "BEGIN:VCALENDAR",
     "VERSION:2.0",
     "CALSCALE:GREGORIAN",
-    "X-WR-CALNAME:findbuddy",
+    "X-WR-CALNAME:Jup edu",
     "PRODID:-//findbuddy//Lessons//RU",
     ...(Array.isArray(input) ? input : [input]).flatMap((booking) => {
       const start = Date.parse(booking.starts_at);
@@ -88,7 +88,7 @@ export function calendarFile(
               "BEGIN:VALARM",
               "TRIGGER:-PT15M",
               "ACTION:DISPLAY",
-              "DESCRIPTION:Занятие в findbuddy через 15 минут",
+              "DESCRIPTION:Занятие в Jup edu через 15 минут",
               "END:VALARM",
             ]),
         "END:VEVENT",

@@ -2,7 +2,7 @@
   margin-top: 27px;
   --line: rgb(var(--border));
   --muted: rgb(var(--muted));
-  --green: #163f32;
+  --brand-primary: #263de1;
 }
 .title,
 .threadHead,
@@ -74,9 +74,9 @@
   font-size: 0.84rem;
 }
 .filters button[aria-pressed="true"] {
-  background: var(--green);
+  background: var(--brand-primary);
   color: white;
-  border-color: var(--green);
+  border-color: var(--brand-primary);
 }
 .threadList {
   overflow: auto;
@@ -105,7 +105,7 @@
   place-items: center;
   background: rgb(var(--surface-subtle));
   border-radius: 50%;
-  color: var(--green);
+  color: var(--brand-primary);
 }
 .threadWords {
   min-width: 0;
@@ -120,7 +120,7 @@
   white-space: nowrap;
 }
 .badge {
-  background: var(--green);
+  background: var(--brand-primary);
   color: white;
   min-width: 20px;
   height: 20px;
@@ -191,7 +191,7 @@
 }
 .bubble[data-mine="true"] {
   align-self: flex-end;
-  background: #dfebdf;
+  background: #e5edff;
   border-radius: 12px 12px 3px 12px;
 }
 .bubble p {
@@ -223,7 +223,7 @@
   align-self: center;
   margin: auto;
   padding: 13px;
-  color: var(--green);
+  color: var(--brand-primary);
 }
 .blank h2,
 .blank h3 {
@@ -236,7 +236,7 @@
   justify-content: center;
 }
 .prompts button {
-  color: var(--green);
+  color: var(--brand-primary);
 }
 .prompts button:hover {
   background: rgb(var(--surface-subtle));
@@ -245,7 +245,7 @@
 .error {
   padding: 9px 12px;
   background: rgb(var(--surface-subtle));
-  color: var(--green);
+  color: var(--brand-primary);
 }
 .error {
   background: rgb(var(--danger-bg));
@@ -331,7 +331,7 @@
   }
 }
 .emptyAction {
-  color: var(--green);
+  color: var(--brand-primary);
   padding: 6px 13px;
   text-decoration: underline;
 }
@@ -348,12 +348,12 @@
 .timeline { overscroll-behavior: contain; padding: 22px 20px; gap: 12px; }
 .bubble { padding: 11px 15px; border-radius: 15px 15px 15px 4px; }
 .bubble p { line-height: 1.6; }
-.bubble[data-mine="true"] { background: var(--green); color: white; border-radius: 15px 15px 4px 15px; }
+.bubble[data-mine="true"] { background: var(--brand-primary); color: white; border-radius: 15px 15px 4px 15px; }
 .bubble time { font-size: .75rem; margin-top: 5px; }
 .bubble[data-mine="true"] time { color: rgb(var(--surface-subtle)); }
 .dayDivider { display: flex; align-items: center; justify-content: center; gap: 14px; margin: 6px 0; color: var(--muted); font-size: .75rem; }
 .dayDivider::before, .dayDivider::after { content: ""; height: 1px; background: var(--line); flex: 1; }
-.newMessages { align-self: center; background: white; color: var(--green); border: 1px solid var(--line); border-radius: 12px; min-height: 40px; padding: 8px 16px; margin: 0 0 10px; font-size: .875rem; box-shadow: 0 3px 12px rgb(var(--ink) / .06); }
+.newMessages { align-self: center; background: white; color: var(--brand-primary); border: 1px solid var(--line); border-radius: 12px; min-height: 40px; padding: 8px 16px; margin: 0 0 10px; font-size: .875rem; box-shadow: 0 3px 12px rgb(var(--ink) / .06); }
 .composer { align-items: flex-start; gap: 10px; padding: 14px; background: white; }
 .composerField { display: grid; gap: 7px; flex: 1; min-width: 0; }
 .composer textarea { width: 100%; font-size: 1rem !important; min-height: 56px; max-height: 150px; border-radius: 12px !important; padding: 11px 13px !important; line-height: 1.5; }

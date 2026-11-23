@@ -1,4 +1,7 @@
 "use client";
+import { LoadingState } from "../ui/LoadingState";
+import { Brand } from "../ui/Brand";
+
 import Link from "next/link";
 import {
   useCallback,
@@ -148,7 +151,7 @@ export default function AppEntry({ area = "public" }: { area?: Area }) {
   if (loading)
     return (
       <main className={st.public}>
-        <p role="status">Открываем ваш кабинет…</p>
+        <LoadingState label="Открываем ваш кабинет…" />
       </main>
     );
   if (!account || !expected)
@@ -156,7 +159,7 @@ export default function AppEntry({ area = "public" }: { area?: Area }) {
       <main className={st.public}>
         <header className={st.publicHeader}>
           <Link className={st.brand} href="/">
-            findbuddy<span>.</span>
+            <Brand />
           </Link>
         </header>
         <section className={st.hero}>
@@ -167,7 +170,7 @@ export default function AppEntry({ area = "public" }: { area?: Area }) {
                 : area === "business"
                   ? "Для учебных центров"
                   : area === "admin"
-                    ? "Команда FindBuddy"
+                    ? "Команда Jup edu"
                     : "Кабинет ученика"}
             </p>
             <h1>
@@ -237,7 +240,7 @@ export default function AppEntry({ area = "public" }: { area?: Area }) {
   if (area === "student" && panel === "account" && !studentReady(data.student_profile))
     return (
       <main className="onboardingPage">
-        <header><Link className={st.brand} href="/">findbuddy<span>.</span></Link><Link href="/#tutors">К поиску</Link></header>
+        <header><Link className={st.brand} href="/"><Brand /></Link><Link href="/#tutors">К поиску</Link></header>
         <StudentProfile key={account.id} profile={data.student_profile} refresh={refresh} onComplete={(search) => { location.assign("/findbuddy?" + search + "#tutors"); }} />
       </main>
     );
@@ -284,7 +287,7 @@ export default function AppEntry({ area = "public" }: { area?: Area }) {
       <aside className={st.sidebar}>
         <div>
           <Link className={st.brand} href="/">
-            findbuddy<span>.</span>
+            <Brand />
           </Link>
           <p className={st.roleLabel}>{roleLabels[account.role]}</p>
         </div>

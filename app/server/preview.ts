@@ -397,7 +397,7 @@ export async function previewData(
         ])
       ).rows[0].v;
     if (action?.startsWith("telegram"))
-      throw Error("Для Telegram нужен подключённый аккаунт findbuddy и бот.");
+      throw Error("Для Telegram нужен подключённый аккаунт Jup edu и бот.");
     if (action === "edit_terms") {
       await tx.query("select fb_update_terms($1::jsonb)", [
         JSON.stringify(data),

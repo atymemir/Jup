@@ -109,11 +109,11 @@
 }
 .days button[aria-pressed="true"],
 .panes button[aria-pressed="true"] {
-  background: #163f32;
+  background: #263de1;
   color: white;
 }
 .days button[aria-pressed="true"] span {
-  color: #ebf4ed;
+  color: #edf3ff;
 }
 .event {
   width: 100%;
@@ -181,7 +181,7 @@
 }
 .messages > div[data-mine="true"] {
   align-self: flex-end;
-  background: #dfebdf;
+  background: #e5edff;
 }
 .error,
 .status {
@@ -201,7 +201,7 @@
   display: grid;
   gap: 12px;
   padding: 14px;
-  background: #15382e;
+  background: #2135b8;
   color: white;
   border-radius: 14px;
 }
@@ -216,7 +216,7 @@
 }
 .call .actions button[aria-pressed="true"],
 .call .actions button[data-lk-enabled="true"] {
-  background: #ceebdc;
+  background: #dce8ff;
 }
 @media (max-width: 520px) {
   .calendar .row {

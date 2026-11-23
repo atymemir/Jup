@@ -134,7 +134,7 @@ export async function notifyDirect(threadId: string, senderId: string) {
   if (chat)
     await sendTelegram(
       chat,
-      "Новое личное сообщение в findbuddy.",
+      "Новое личное сообщение в Jup edu.",
       [
         [
           {

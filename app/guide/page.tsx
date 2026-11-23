@@ -1,5 +1,5 @@
 import { InfoPage } from "../ui/InfoPage";
-export const metadata = { title: "Как пользоваться — findbuddy" };
+export const metadata = { title: "Как пользоваться — Jup edu" };
 export default function Guide() {
   return <InfoPage title="От цели до первого урока" intro="Короткая инструкция. Всё остальное — по ходу дела.">
     <section><h2>1. Выберите преподавателя</h2><p>Задайте предмет, язык и бюджет. Откройте анкету: там цена за 60 минут, опыт, подход и свободное время. Сохраните понравившиеся анкеты, чтобы сравнить их позже.</p></section>
