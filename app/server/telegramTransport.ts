@@ -6,7 +6,7 @@ export type BotButton =
   | { text: string; callback_data: string };
 export function findbuddyUrl(suffix = "") {
   const configured =
-    process.env.FINDBUDDY_PUBLIC_URL || "https://tryalga.app/findbuddy";
+    process.env.FINDBUDDY_PUBLIC_URL || "https://jup-atymemirs-projects.vercel.app/findbuddy";
   return configured.replace(/\/$/, "") + suffix;
 }
 export function validTelegramSecret(

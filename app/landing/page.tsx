@@ -6,14 +6,15 @@ import { HeroFinder, LandingMenu, LessonPreview, PartnerPanel } from "./LandingE
 import st from "./landing.module.css";
 
 const description = "Найдите преподавателя под вашу цель, язык и бюджет. Запись, переписка, материалы и домашняя работа — в одном findbuddy.";
+const canonical = (process.env.FINDBUDDY_PUBLIC_URL || "https://jup-atymemirs-projects.vercel.app/findbuddy").replace(/\/$/, "") + "/landing";
 export const metadata: Metadata = {
   title: "findbuddy — свой человек для учёбы",
   description,
-  alternates: { canonical: "https://tryalga.app/findbuddy/landing" },
+  alternates: { canonical },
   openGraph: {
     title: "findbuddy — свой человек для учёбы",
     description,
-    url: "https://tryalga.app/findbuddy/landing",
+    url: canonical,
     siteName: "findbuddy",
     type: "website",
     locale: "ru_RU",

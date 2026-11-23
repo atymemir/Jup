@@ -14,6 +14,8 @@ test("platform roles, multi-direction lessons, organizations, invitations, moder
     await db.exec(
       "create role migration_operator; grant usage on schema auth to migration_operator; grant usage,create on schema public to migration_operator; grant select,references,trigger on auth.users to migration_operator; set role migration_operator;",
     );
+    // Model hosted Supabase defaults, which grant new public objects to API roles.
+    await db.exec("alter default privileges in schema public grant all on tables to anon,authenticated,service_role; alter default privileges in schema public grant execute on functions to anon,authenticated,service_role;");
     for (const f of (
       await readdir(new URL("../supabase/sql/", import.meta.url))
     )
@@ -26,6 +28,17 @@ test("platform roles, multi-direction lessons, organizations, invitations, moder
         ),
       );
     await db.exec("reset role");
+    for (const role of ["anon", "authenticated"]) {
+      for (const privilege of ["INSERT", "UPDATE", "DELETE", "TRUNCATE", "REFERENCES", "TRIGGER"]) {
+        assert.equal((await db.query("select has_table_privilege($1,'public.fb_account_details',$2) allowed", [role, privilege])).rows[0].allowed, false);
+      }
+      assert.equal((await db.query("select has_table_privilege($1,'public.fb_account_details','SELECT') allowed", [role])).rows[0].allowed, role === "authenticated");
+      for (const helper of ["fb_schedule_guard()", "fb_booking_details()", "fb_calendar_changed()", "fb_preserve_past_booking()"]) {
+        assert.equal((await db.query("select has_function_privilege($1,$2,'EXECUTE') allowed", [role, "public." + helper])).rows[0].allowed, false);
+      }
+    }
+    assert.equal((await db.query("select has_function_privilege('anon','public.fb_dashboard()','EXECUTE') allowed")).rows[0].allowed, false);
+    assert.equal((await db.query("select has_function_privilege('authenticated','public.fb_dashboard()','EXECUTE') allowed")).rows[0].allowed, true);
     const ids = {
       student: "11111111-1111-4111-8111-111111111111",
       teacher: "22222222-2222-4222-8222-222222222222",

@@ -182,6 +182,7 @@ export function database() {
           await readFile("supabase/sql/111_findbuddy_account_setup.sql", "utf8"),
         );
       }
+      await db.exec(await readFile("supabase/sql/20261123175841_findbuddy_access_grants.sql", "utf8"));
       return db;
     })
     .catch((error) => {

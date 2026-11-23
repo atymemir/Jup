@@ -1,7 +1,7 @@
 const token = process.env.FINDBUDDY_TELEGRAM_BOT_TOKEN;
 const secret = process.env.FINDBUDDY_TELEGRAM_WEBHOOK_SECRET;
 const base = (
-  process.env.FINDBUDDY_PUBLIC_URL || "https://tryalga.app/findbuddy"
+  process.env.FINDBUDDY_PUBLIC_URL || "https://jup-atymemirs-projects.vercel.app/findbuddy"
 ).replace(/\/$/, "");
 const checkOnly = process.argv.includes("--check");
 const missing = [
