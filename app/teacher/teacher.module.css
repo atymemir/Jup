@@ -1,0 +1,187 @@
+.overview {
+  display: grid;
+  gap: 17px;
+}
+.top,
+.next,
+.buttons,
+.student {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.top {
+  margin-bottom: 5px;
+}
+.top h1 {
+  font-size: clamp(2rem, 4vw, 3.4rem);
+  margin-top: 4px;
+}
+.top p,
+.next p {
+  color: rgb(var(--muted));
+}
+.metrics {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 9px;
+}
+.metrics button,
+.student {
+  border: 1px solid rgb(var(--border));
+  background: white;
+  border-radius: 12px;
+  padding: 14px;
+  text-align: left;
+}
+.metrics button:hover,
+.student:hover {
+  background: rgb(var(--surface-subtle));
+}
+.metrics strong,
+.metrics span {
+  display: block;
+}
+.metrics strong {
+  font-size: 1.65rem;
+  color: rgb(var(--accent));
+}
+.next {
+  padding: clamp(15px, 2.5vw, 24px);
+  background: rgb(var(--surface-subtle));
+  border: 1px solid rgb(var(--border));
+  border-radius: 15px;
+}
+.next p:first-child {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+.next h2 {
+  margin: 8px 0 5px;
+}
+.task {
+  width: fit-content;
+  text-decoration: underline;
+  color: rgb(var(--accent));
+  padding: 6px 0;
+}
+.studentList {
+  display: grid;
+  gap: 8px;
+}
+.student strong,
+.student small {
+  display: block;
+}
+.student small {
+  color: rgb(var(--muted));
+}
+.student button {
+  font-size: 0.88rem;
+}
+@media (max-width: 480px) {
+  .metrics button {
+    padding: 9px;
+    font-size: 0.82rem;
+    overflow-wrap: anywhere;
+  }
+  .buttons {
+    width: 100%;
+  }
+  .buttons button {
+    min-height: 43px;
+    font-size: 0.89rem;
+    padding: 8px 12px;
+  }
+}
+.settlements {
+  display: grid;
+  gap: 20px;
+  padding-top: 24px;
+}
+.settlements p {
+  color: rgb(var(--muted));
+  max-width: 65ch;
+}
+.settlementTotals {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 18px;
+  margin: 0;
+  padding: 20px 0;
+  border-block: 1px solid rgb(var(--border));
+}
+.settlementTotals dt {
+  color: rgb(var(--muted));
+  font-size: 0.875rem;
+}
+.settlementTotals dd {
+  margin: 6px 0 0;
+  font-size: 1.6rem;
+  font-weight: 650;
+  letter-spacing: -0.04em;
+}
+.settlementNote {
+  font-size: 0.875rem;
+}
+.settlementTable {
+  max-width: 100%;
+  overflow-x: auto;
+}
+.settlementTable table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+  font-size: 0.875rem;
+}
+.settlementTable caption {
+  text-align: left;
+  color: rgb(var(--muted));
+  padding-bottom: 12px;
+}
+.settlementTable th,
+.settlementTable td {
+  vertical-align: top;
+  padding: 14px 12px;
+  border-bottom: 1px solid rgb(var(--border));
+}
+.settlementTable thead th {
+  font-weight: 500;
+  color: rgb(var(--muted));
+}
+.settlementTable th:first-child {
+  padding-left: 0;
+  min-width: 210px;
+}
+.settlementTable td:nth-last-child(-n + 2) {
+  white-space: nowrap;
+}
+.settlementTable small {
+  display: block;
+  margin-top: 4px;
+  color: rgb(var(--muted));
+  font-weight: 400;
+}
+.settlementTable button,
+.settlementLink {
+  color: rgb(var(--accent));
+  padding: 0;
+  text-align: left;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.settlementLink {
+  justify-self: start;
+}
+@media (max-width: 520px) {
+  .settlementTotals {
+    grid-template-columns: 1fr;
+    gap: 14px;
+  }
+  .settlementTotals dd {
+    font-size: 1.4rem;
+  }
+}

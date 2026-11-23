@@ -1,0 +1,1500 @@
+.page {
+  width: min(1180px, calc(100% - 72px));
+  margin: 0 auto;
+  padding-bottom: 24px;
+  --line: rgb(var(--border));
+  --dim: rgb(var(--muted));
+  --green: #163f32;
+}
+.page h1,
+.page h2,
+.page h3,
+.page h4 {
+  text-wrap: pretty;
+  line-height: 1.17;
+  letter-spacing: -0.04em;
+}
+.page h2 {
+  font-size: clamp(1.6rem, 3vw, 2.15rem);
+  font-weight: 640;
+}
+.page h3 {
+  font-size: 1.18rem;
+  font-weight: 650;
+}
+.topline,
+.accountLinks,
+.tabs,
+.examChoices,
+.resultsHeader,
+.resultTools,
+.viewSwitch,
+.spread,
+.accountHead,
+.quietActions,
+.cardTop,
+.identity,
+.cardMeta,
+.nextSlot,
+.searchRow,
+.filterToggle,
+.featureTop,
+.featureBottom,
+.summaryTotal,
+.scheduleRow,
+.requestAside,
+.footer,
+.focusActions {
+  display: flex;
+  align-items: center;
+}
+.topline {
+  gap: 24px;
+  min-height: 76px;
+  border-bottom: 1px solid var(--line);
+  justify-content: space-between;
+}
+.brand {
+  font-size: 1.93rem;
+  letter-spacing: -0.09em;
+  font-weight: 760;
+  line-height: 1;
+}
+.brand span {
+  color: rgb(var(--accent));
+}
+.brand:hover {
+  text-decoration: none;
+}
+.accountLinks {
+  gap: 12px;
+  flex-shrink: 0;
+}
+.accountLinks small {
+  font-size: 0.78rem;
+  color: var(--dim);
+}
+.accountLinks a,
+.accountLinks button {
+  font-size: 0.89rem;
+  border: 1px solid var(--line);
+  border-radius: 30px;
+  padding: 8px 15px;
+  background: white;
+  color: var(--green);
+}
+.tabs {
+  gap: 3px;
+}
+.tabs button {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  white-space: nowrap;
+  padding: 10px 12px;
+  border-radius: 9px;
+  color: var(--dim);
+  font-size: 0.91rem;
+}
+.tabs button[aria-current] {
+  font-weight: 650;
+  background: rgb(var(--surface-subtle));
+  color: var(--green);
+}
+.tabs button:hover,
+.viewSwitch button:hover,
+.saveTutor:hover,
+.filterToggle:hover {
+  background: rgb(var(--surface-subtle));
+}
+.hero,
+.groupHero {
+  padding: clamp(32px, 4.8vw, 70px) 0 36px;
+}
+.hero {
+  display: grid;
+  grid-template-columns: minmax(0, 1.5fr) minmax(270px, 0.87fr);
+  gap: 8%;
+  align-items: center;
+}
+.eyebrow {
+  font-size: 0.85rem;
+  font-weight: 630;
+  color: rgb(var(--accent));
+  margin: 0 0 0.85rem;
+}
+.hero h1,
+.groupHero h1 {
+  font-size: clamp(2.65rem, 5.4vw, 4.8rem);
+  font-weight: 560;
+  line-height: 1.01;
+  letter-spacing: -0.065em;
+}
+.hero em,
+.groupHero em {
+  color: var(--green);
+  font-family: Georgia, serif;
+  font-weight: 450;
+}
+.intro {
+  color: var(--dim);
+  max-width: 490px;
+  margin: 14px 0 19px;
+  line-height: 1.5;
+}
+.examChoices {
+  gap: 6px;
+  flex-wrap: wrap;
+}
+.examChoices button {
+  border: 1px solid var(--line);
+  border-radius: 24px;
+  padding: 7px 13px;
+  background: white;
+  font-size: 0.89rem;
+  color: var(--dim);
+}
+.examChoices button[aria-pressed="true"] {
+  color: white;
+  background: var(--green);
+  border-color: var(--green);
+}
+.feature {
+  background: var(--green);
+  color: #f7faf3;
+  padding: 24px;
+  border-radius: 21px;
+  align-self: stretch;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  justify-content: center;
+}
+.featureTop,
+.featureBottom {
+  justify-content: space-between;
+  gap: 12px;
+}
+.featureTop {
+  font-size: 0.85rem;
+  color: #dbe8d9;
+  margin-bottom: 20px;
+}
+.featureTop span:first-child,
+.feature p {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.featureTop span:nth-child(2) {
+  border: 1px solid #79988c;
+  border-radius: 20px;
+  padding: 2px 10px;
+}
+.feature h2 {
+  font-family: Georgia, serif;
+  font-size: clamp(1.7rem, 2.4vw, 2.5rem);
+  font-weight: 450;
+  line-height: 1.14;
+}
+.feature p {
+  font-size: 0.9rem;
+  color: #dfebe2;
+  margin-top: 9px;
+}
+.featureBottom {
+  margin-top: 22px;
+  border-top: 1px solid #547567;
+  padding-top: 15px;
+}
+.featureBottom div {
+  display: grid;
+}
+.featureBottom strong {
+  font-size: 1.35rem;
+  letter-spacing: -0.04em;
+}
+.featureBottom small {
+  color: #dbe8d9;
+  font-size: 0.8rem;
+}
+.featureBottom button {
+  background: #f7faf3;
+  color: var(--green);
+  padding: 9px 14px;
+  border-radius: 9px;
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+.searchPanel {
+  border-block: 1px solid var(--line);
+  padding: 12px 0;
+}
+.searchRow {
+  gap: 12px;
+}
+.searchBox {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  flex: 1;
+  min-width: 0;
+  color: var(--dim);
+}
+.searchBox input {
+  border: 0 !important;
+  background: transparent !important;
+  padding: 10px 4px !important;
+  min-height: 42px !important;
+}
+.page input:not([type="checkbox"]),
+.page select,
+.page textarea {
+  border: 1px solid rgb(var(--border-strong));
+  border-radius: 9px;
+  background: white;
+  color: rgb(var(--ink));
+  font: inherit;
+  min-height: 44px;
+  padding: 9px 11px;
+  width: 100%;
+  min-width: 0;
+}
+.page select {
+  appearance: none;
+  padding-right: 32px;
+  background: white
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' width='14' height='14' fill='none' stroke='%23455b50' stroke-width='1.5'%3E%3Cpath d='m4 6 4 4 4-4'/%3E%3C/svg%3E")
+    no-repeat right 10px center;
+}
+.page textarea {
+  resize: vertical;
+}
+.filterToggle,
+.filterSummary button,
+.focusActions button {
+  border: 1px solid var(--line);
+  border-radius: 9px;
+  background: white;
+  color: var(--green);
+  padding: 8px 12px;
+  font-size: 0.89rem;
+}
+.filterToggle {
+  gap: 7px;
+}
+.filterToggle b {
+  background: var(--green);
+  color: white;
+  border-radius: 20px;
+  min-width: 20px;
+}
+.filterSummary {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  flex-wrap: wrap;
+  margin: 8px 0;
+  color: var(--dim);
+  font-size: 0.88rem;
+}
+.filterSummary button {
+  border: 0;
+  text-decoration: underline;
+}
+.more {
+  padding: 16px 0 4px;
+  border-top: 1px solid var(--line);
+  margin-top: 10px;
+}
+.more .formGrid {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+.more .checkbox {
+  margin-top: 12px;
+}
+.field,
+.form {
+  display: grid;
+  gap: 6px;
+  min-width: 0;
+}
+.field > span {
+  font-size: 0.9rem;
+  color: var(--dim);
+}
+.form {
+  gap: 17px;
+}
+.formGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+.checkbox {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  font-size: 0.92rem;
+}
+.checkbox input {
+  width: 18px;
+  height: 18px;
+  accent-color: var(--green);
+}
+.resultsHeader {
+  justify-content: space-between;
+  gap: 16px;
+  margin: 25px 0 17px;
+}
+.resultsHeader small {
+  color: var(--dim);
+  font-size: 1rem;
+  vertical-align: middle;
+  font-weight: 500;
+  letter-spacing: 0;
+}
+.resultTools {
+  gap: 10px;
+}
+.resultTools select {
+  border: 0;
+  width: auto;
+  background-color: transparent;
+  font-size: 0.87rem;
+}
+.viewSwitch {
+  width: fit-content;
+  max-width: 100%;
+  gap: 2px;
+  padding: 3px;
+  border-radius: 10px;
+  background: rgb(var(--surface-subtle));
+}
+.viewSwitch button {
+  border-radius: 7px;
+  padding: 7px 11px;
+  font-size: 0.86rem;
+  color: var(--dim);
+}
+.viewSwitch button[aria-pressed="true"] {
+  color: var(--green);
+  font-weight: 620;
+  background: white;
+  box-shadow: 0 1px 4px #152e1c19;
+}
+.tutorGrid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px;
+}
+.tutor,
+.group,
+.booking,
+.request {
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  background: white;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.tutor {
+  padding: 18px 20px 19px;
+  display: flex;
+  flex-direction: column;
+}
+.cardTop,
+.spread,
+.accountHead,
+.scheduleRow,
+.summaryTotal,
+.focusActions {
+  justify-content: space-between;
+  gap: 12px;
+}
+.subjectTag {
+  color: var(--green);
+  font-size: 0.82rem;
+  font-weight: 650;
+  letter-spacing: 0.015em;
+}
+.saveTutor {
+  display: grid;
+  place-items: center;
+  color: var(--dim);
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+}
+.saveTutor[aria-pressed="true"] svg {
+  fill: var(--green);
+  color: var(--green);
+}
+.identity {
+  gap: 11px;
+  margin: 10px 0 14px;
+}
+.identity h3 {
+  font-size: 1.4rem;
+}
+.identity div > span,
+.cardMeta,
+.bio,
+.meta,
+.nextSlot {
+  color: var(--dim);
+  font-size: 0.9rem;
+}
+.avatar {
+  border-radius: 50%;
+  width: 48px;
+  height: 48px;
+  display: grid;
+  place-items: center;
+  background: #e4eddf;
+  color: #365b43;
+  font:
+    1.55rem Georgia,
+    serif;
+  flex-shrink: 0;
+}
+.headline {
+  font-weight: 550;
+  line-height: 1.4;
+  margin-bottom: 10px;
+}
+.cardMeta,
+.nextSlot {
+  gap: 6px;
+}
+.cardMeta svg,
+.nextSlot svg {
+  flex-shrink: 0;
+}
+.bio {
+  margin: 8px 0 16px;
+}
+.bio summary {
+  width: fit-content;
+  cursor: pointer;
+}
+.bio p {
+  margin-top: 8px;
+}
+.lessonAction {
+  border-top: 1px solid var(--line);
+  padding-top: 13px;
+  margin-top: auto;
+}
+.price {
+  margin-bottom: 4px;
+}
+.price strong,
+.summaryTotal strong,
+.tutorAction strong {
+  font-size: 1.45rem;
+  font-weight: 650;
+  letter-spacing: -0.045em;
+}
+.price span,
+.tutorAction span {
+  color: var(--dim);
+  font-size: 0.88rem;
+}
+.lessonAction > button:first-of-type {
+  width: 100%;
+  margin-top: 10px;
+}
+.lessonAction > .textAction {
+  width: 100%;
+  text-align: center;
+  margin-top: 3px;
+}
+.textAction,
+.quietActions button,
+.setup button,
+.notice a {
+  color: rgb(var(--accent));
+  text-underline-offset: 3px;
+  font-size: 0.91rem;
+  padding: 6px 0;
+}
+.textAction:hover,
+.quietActions button:hover,
+.setup button:hover {
+  text-decoration: underline;
+}
+.focusList {
+  max-width: 540px;
+  margin: auto;
+}
+.focusActions {
+  padding: 12px 0;
+  color: var(--dim);
+  font-size: 0.9rem;
+}
+.groupList {
+  display: grid;
+  gap: 12px;
+}
+.group {
+  padding: 20px;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  gap: 20px;
+  align-items: start;
+}
+.group h3 {
+  margin: 9px 0 5px;
+}
+.dateTile {
+  display: grid;
+  place-content: center;
+  justify-items: center;
+  background: rgb(var(--surface-subtle));
+  border-radius: 13px;
+  width: 64px;
+  min-height: 72px;
+  color: var(--green);
+}
+.dateTile strong {
+  font-size: 1.65rem;
+  line-height: 1;
+}
+.dateTile span {
+  font-size: 0.87rem;
+}
+.group p,
+.sectionHead p,
+.accountHead p,
+.teacher > div > p,
+.booking p,
+.empty p,
+.requestAside p,
+.scheduleRow p {
+  color: var(--dim);
+}
+.group .meta,
+.booking .meta {
+  margin-top: 8px;
+}
+.tutorAction {
+  display: grid;
+  justify-items: end;
+}
+.tutorAction button {
+  margin-top: 12px;
+}
+.requestAside {
+  margin-top: 24px;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 22px;
+  background: rgb(var(--surface-subtle));
+  border-radius: 16px;
+}
+.requestAside p {
+  margin-top: 4px;
+}
+.requestAside button {
+  flex-shrink: 0;
+}
+.empty {
+  grid-column: 1/-1;
+  border: 1px dashed rgb(var(--border-strong));
+  text-align: center;
+  padding: 40px 22px;
+  border-radius: 15px;
+}
+.empty p {
+  margin: 7px auto 0;
+  max-width: 510px;
+}
+.notice,
+.setup,
+.error {
+  padding: 13px 17px;
+  margin: 18px 0;
+  border: 1px solid var(--line);
+  background: rgb(var(--surface-subtle));
+  border-radius: 11px;
+}
+.error {
+  color: rgb(var(--danger-text));
+  border-color: rgb(var(--danger-border));
+  background: rgb(var(--danger-bg));
+}
+.page
+  > section:not(.searchPanel):not(.groupList):not(.tutorGrid):not(.focusList),
+.page > :global(.panel) {
+  margin-top: 28px;
+}
+.sectionHead,
+.accountHead,
+.teacher > div:first-child {
+  margin: 0 0 20px;
+}
+.sectionHead > button {
+  margin: 12px 0;
+}
+.teacher {
+  max-width: 820px;
+  margin-inline: auto;
+  display: grid;
+  gap: 18px;
+}
+.teacher > div:first-child > p,
+.accountHead p {
+  margin-top: 8px;
+}
+.teacher .textAction {
+  display: block;
+}
+.scheduleRow {
+  padding: 13px 0;
+  border-bottom: 1px solid var(--line);
+}
+.scheduleRow p {
+  font-size: 0.9rem;
+}
+.list > .viewSwitch {
+  margin-bottom: 15px;
+}
+.request,
+.booking {
+  padding: 20px;
+  margin: 12px 0;
+}
+.booking .spread {
+  align-items: flex-start;
+  margin-bottom: 12px;
+}
+.booking h3 {
+  margin: 0 0 5px;
+}
+.booking .spread p,
+.booking > button {
+  margin-top: 6px;
+}
+.quietActions {
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-top: 8px;
+}
+.goal {
+  white-space: pre-wrap;
+  margin: 10px 0;
+}
+.offer,
+.chat {
+  border-top: 1px solid var(--line);
+  margin-top: 15px;
+  padding-top: 13px;
+}
+.offer p,
+.message p,
+.myMessage p {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+.messageList {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-height: 340px;
+  overflow-y: auto;
+  margin-bottom: 15px;
+}
+.message,
+.myMessage {
+  padding: 10px 13px;
+  border-radius: 12px;
+  background: rgb(var(--surface-subtle));
+  max-width: 85%;
+  align-self: flex-start;
+}
+.myMessage {
+  background: #e2eddf;
+  align-self: flex-end;
+}
+.message span,
+.myMessage span {
+  font-size: 0.8rem;
+  color: var(--dim);
+}
+.chat form {
+  display: grid;
+  gap: 9px;
+}
+.footer {
+  justify-content: space-between;
+  border-top: 1px solid var(--line);
+  margin-top: 44px;
+  padding-top: 16px;
+  font-size: 0.83rem;
+  color: var(--dim);
+}
+.dialog {
+  margin: auto;
+  width: min(540px, calc(100vw - 32px));
+  max-height: calc(100dvh - 40px);
+  overflow: auto;
+  border: 1px solid var(--line);
+  border-radius: 19px;
+  background: white;
+  color: rgb(var(--ink));
+  padding: 24px;
+  box-shadow: var(--shadow-lg);
+}
+.dialog::backdrop {
+  background: #142d2673;
+  backdrop-filter: blur(3px);
+}
+.dialog > .spread {
+  margin-bottom: 18px;
+  align-items: flex-start;
+}
+.dialog h2 {
+  font-size: 1.55rem;
+}
+.dialog :global(.panel) {
+  padding: 0;
+  border: none;
+}
+.dialog :global(.panel h3) {
+  font-size: 1.1rem;
+}
+.bookingSummary {
+  padding: 17px;
+  margin: 0 0 18px;
+  border-radius: 13px;
+  background: rgb(var(--surface-subtle));
+  display: grid;
+  gap: 8px;
+}
+.bookingSummary .eyebrow {
+  margin: 0;
+}
+.bookingSummary > p:not(.eyebrow),
+.bookingSummary small {
+  color: var(--dim);
+}
+.summaryTotal {
+  border-top: 1px solid var(--line);
+  padding-top: 8px;
+  margin-top: 4px;
+}
+@media (max-width: 1100px) {
+  .topline {
+    gap: 12px;
+  }
+  .tabs button {
+    padding: 9px 8px;
+  }
+  .tabs button svg {
+    display: none;
+  }
+  .accountLinks small {
+    display: none;
+  }
+  .hero {
+    gap: 4%;
+  }
+  .tutorGrid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+@media (max-width: 800px) {
+  .page {
+    width: calc(100% - 32px);
+    padding-bottom: calc(82px + env(safe-area-inset-bottom));
+  }
+  .topline {
+    min-height: 60px;
+  }
+  .brand {
+    font-size: 1.65rem;
+  }
+  .accountLinks small {
+    display: inline;
+  }
+  .tabs {
+    position: fixed;
+    z-index: 5;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    justify-content: center;
+    gap: 0;
+    background: white;
+    border-top: 1px solid var(--line);
+    padding: 4px 4px calc(5px + env(safe-area-inset-bottom));
+  }
+  .tabs button {
+    min-width: 0;
+    flex: 1;
+    max-width: 140px;
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    padding: 7px 1px;
+    font-size: 0.76rem;
+    border-radius: 8px;
+  }
+  .tabs button svg {
+    display: block;
+  }
+  .tabs button[aria-current] {
+    background: transparent;
+  }
+  .tabs button[aria-current] svg {
+    stroke-width: 2.4;
+  }
+  .hero,
+  .groupHero {
+    display: block;
+    padding: 25px 0 18px;
+  }
+  .hero h1,
+  .groupHero h1 {
+    font-size: clamp(2.55rem, 9vw, 3.35rem);
+  }
+  .eyebrow {
+    font-size: 0.8rem;
+    margin-bottom: 8px;
+  }
+  .intro {
+    margin: 10px 0 13px;
+  }
+  .examChoices {
+    gap: 5px;
+  }
+  .examChoices button {
+    padding: 7px 10px;
+    font-size: 0.85rem;
+  }
+  .feature {
+    margin-top: 18px;
+    padding: 14px 16px;
+    border-radius: 13px;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    column-gap: 8px;
+  }
+  .featureTop {
+    margin: 0 0 6px;
+    justify-content: flex-start;
+    gap: 8px;
+    grid-column: 1/-1;
+    font-size: 0.78rem;
+  }
+  .featureTop span:nth-child(2) {
+    border: 0;
+    padding: 0;
+  }
+  .featureTop svg {
+    width: 16px;
+  }
+  .feature h2 {
+    font-size: 1.25rem;
+    grid-column: 1/-1;
+  }
+  .feature p {
+    font-size: 0.82rem;
+    margin: 6px 0 0;
+    grid-column: 1/-1;
+  }
+  .featureBottom {
+    grid-column: 1/-1;
+    margin: 9px 0 0;
+    padding: 8px 0 0;
+  }
+  .featureBottom div {
+    display: flex;
+    align-items: baseline;
+    gap: 5px;
+  }
+  .featureBottom strong {
+    font-size: 1.1rem;
+  }
+  .featureBottom button {
+    font-size: 0.83rem;
+    padding: 6px 10px;
+  }
+  .more .formGrid {
+    grid-template-columns: 1fr 1fr;
+  }
+  .resultsHeader {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 10px;
+    margin: 18px 0 12px;
+  }
+  .resultTools {
+    width: 100%;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 4px;
+  }
+  .resultTools select {
+    order: 2;
+    font-size: 0.8rem;
+    min-height: 36px;
+    max-width: 135px;
+    padding-left: 2px;
+  }
+  .viewSwitch button {
+    padding: 6px 8px;
+    font-size: 0.8rem;
+  }
+  .tutorGrid {
+    grid-template-columns: 1fr;
+  }
+  .tutor {
+    padding: 15px 17px;
+  }
+  .group {
+    grid-template-columns: 46px minmax(0, 1fr);
+    gap: 12px;
+    padding: 15px;
+  }
+  .dateTile {
+    width: 46px;
+    min-height: 57px;
+  }
+  .dateTile strong {
+    font-size: 1.35rem;
+  }
+  .tutorAction {
+    grid-column: 1/-1;
+    grid-template-columns: auto 1fr auto;
+    gap: 5px;
+    align-items: center;
+    justify-items: start;
+    border-top: 1px solid var(--line);
+    padding-top: 10px;
+  }
+  .tutorAction button {
+    margin: 0;
+  }
+  .requestAside,
+  .scheduleRow,
+  .accountHead {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+  .footer,
+  .spread {
+    flex-wrap: wrap;
+  }
+  .formGrid {
+    gap: 9px;
+  }
+  .dialog {
+    padding: 18px;
+    max-height: calc(100dvh - 24px);
+  }
+}
+@media (prefers-reduced-motion: no-preference) {
+  .page button,
+  .page a {
+    transition:
+      background-color 0.15s,
+      color 0.15s,
+      box-shadow 0.15s;
+  }
+}
+.navShort {
+  display: none;
+}
+@media (max-width: 800px) {
+  .navShort {
+    display: inline;
+  }
+  .navFull {
+    display: none;
+  }
+  .catalogSurface {
+    display: flex;
+    flex-direction: column;
+  }
+  .catalogSurface > .hero {
+    display: contents;
+  }
+  .hero > div {
+    padding: 22px 0 17px;
+  }
+  .searchPanel {
+    order: 1;
+  }
+  .resultsHeader {
+    order: 2;
+  }
+  .tutorGrid,
+  .focusList,
+  .groupList {
+    order: 3;
+  }
+  .focusList {
+    width: 100%;
+  }
+  .feature {
+    order: 4;
+  }
+  .requestAside {
+    order: 5;
+  }
+  .resultTools select {
+    max-width: 101px;
+  }
+}
+@media (max-width: 440px) {
+  .accountLinks {
+    gap: 0;
+    flex-direction: column-reverse;
+    align-items: flex-end;
+    padding: 4px 0;
+  }
+  .accountLinks small {
+    display: block;
+    font-size: 0.7rem;
+  }
+}
+.attention {
+  padding: 16px 20px;
+  border-radius: 12px;
+  background: rgb(var(--surface-subtle));
+}
+.attention ul {
+  list-style: none;
+  padding: 0;
+  margin: 8px 0 0;
+  max-height: 220px;
+  overflow: auto;
+}
+.attention button {
+  padding: 7px 0;
+  color: rgb(var(--accent));
+  text-align: left;
+}
+.scheduleRow details {
+  max-width: 100%;
+}
+.scheduleRow summary {
+  cursor: pointer;
+  font-size: 0.9rem;
+}
+.scheduleRow:has(details[open]) {
+  display: grid;
+  grid-template-columns: 1fr;
+}
+
+.accountMenu {
+  position: relative;
+}
+.accountMenu summary {
+  list-style: none;
+  cursor: pointer;
+  padding: 9px 13px;
+  border-radius: 20px;
+  border: 1px solid rgb(var(--border));
+  background: white;
+  max-width: 155px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 0.9rem;
+}
+.accountMenu[open] > div {
+  position: absolute;
+  right: 0;
+  top: calc(100% + 5px);
+  width: 215px;
+  display: grid;
+  padding: 6px;
+  z-index: 10;
+  background: white;
+  border: 1px solid rgb(var(--border));
+  border-radius: 12px;
+  box-shadow: var(--shadow-lg);
+}
+.accountLinks .accountMenu a,
+.accountLinks .accountMenu button {
+  border: 0;
+  border-radius: 6px;
+  text-align: left;
+  background: transparent;
+}
+.accountLinks .accountMenu a:hover,
+.accountLinks .accountMenu button:hover {
+  background: rgb(var(--surface-subtle));
+}
+.accountLinks .registerLink {
+  color: white;
+  background: #163f32;
+}
+.profileName {
+  font: inherit;
+  letter-spacing: inherit;
+  padding: 0;
+  text-align: left;
+}
+.profileName:hover {
+  text-decoration: underline;
+}
+.profileMeta {
+  font-size: 0.88rem;
+  color: rgb(var(--muted));
+  margin: 6px 0 14px;
+}
+.lessonTools {
+  margin-top: 20px;
+  padding-top: 14px;
+  border-top: 1px solid rgb(var(--border));
+}
+.lessonTools > summary {
+  color: rgb(var(--accent));
+  cursor: pointer;
+}
+@media (max-width: 440px) {
+  .accountLinks:has(.registerLink) {
+    flex-direction: row;
+    gap: 5px;
+  }
+  .accountLinks .registerLink,
+  .accountLinks > a {
+    padding: 7px 10px;
+  }
+  .accountMenu summary {
+    max-width: 128px;
+  }
+}
+.tutorGrid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+.deck {
+  touch-action: pan-y;
+  display: grid;
+  gap: 6px;
+}
+.deck > button {
+  justify-self: center;
+}
+.teacher {
+  max-width: 1050px;
+}
+.tabs .teacherLink {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  white-space: nowrap;
+  padding: 10px 12px;
+  border-radius: 9px;
+  color: var(--dim);
+  font-size: 0.91rem;
+}
+.tabs .teacherLink:hover {
+  background: rgb(var(--surface-subtle));
+  text-decoration: none;
+}
+@media (max-width: 1100px) {
+  .tabs .teacherLink {
+    padding: 9px 8px;
+  }
+  .tabs .teacherLink svg {
+    display: none;
+  }
+}
+@media (max-width: 800px) {
+  .tabs .teacherLink {
+    min-width: 0;
+    flex: 1;
+    max-width: 140px;
+    flex-direction: column;
+    gap: 3px;
+    padding: 7px 1px;
+    font-size: 0.76rem;
+  }
+  .tabs .teacherLink svg {
+    display: block;
+  }
+  .tutorGrid {
+    gap: 8px;
+  }
+  .teacher h1 {
+    font-size: clamp(1.7rem, 6vw, 2.4rem);
+  }
+}
+.navBadge {
+  display: inline-grid;
+  place-items: center;
+  margin-left: 4px;
+  padding: 0 4px;
+  min-width: 16px;
+  height: 16px;
+  border-radius: 20px;
+  background: #163f32;
+  color: white;
+  font-size: 0.66rem;
+  vertical-align: middle;
+}
+.compareControl {
+  grid-column: 1/-1;
+  display: grid;
+  gap: 10px;
+}
+.compareControl > button {
+  justify-self: start;
+}
+.groupContact {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-top: 4px;
+}
+
+.heroActions {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px 20px;
+  margin: 24px 0;
+}
+.heroActions a {
+  color: var(--green);
+  font-size: 0.875rem;
+  text-underline-offset: 4px;
+}
+.bookingSteps {
+  display: grid;
+  gap: 20px;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  grid-column: 1/-1;
+}
+.bookingSteps li {
+  display: grid;
+  gap: 4px;
+}
+.bookingSteps strong {
+  font-size: 1.0625rem;
+  font-weight: 620;
+}
+.bookingSteps span,
+.featureBottom small {
+  font-size: 0.875rem;
+  line-height: 1.5;
+  color: #dbe8d9;
+}
+.quickFilters {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+  margin-bottom: 14px;
+}
+.more .formGrid {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+.searchPanel {
+  scroll-margin-top: 18px;
+}
+.previewBanner {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 6px 14px;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--line);
+  color: var(--dim);
+  font-size: 0.875rem;
+}
+.previewBanner strong {
+  color: var(--green);
+}
+.loading {
+  padding: 12px 0;
+  color: var(--dim);
+}
+.skeleton {
+  border: 1px solid var(--line);
+  border-radius: 17px;
+  padding: 28px;
+  min-height: 390px;
+  background: white;
+  display: grid;
+  align-content: start;
+  gap: 22px;
+}
+.skeleton div {
+  background: rgb(var(--surface-subtle));
+  height: 30px;
+  border-radius: 8px;
+}
+.skeleton div:first-child {
+  width: 70%;
+  height: 76px;
+}
+.skeleton div:nth-child(3) {
+  height: 80px;
+}
+@media (max-width: 800px) {
+  .tutorGrid {
+    grid-template-columns: 1fr;
+    gap: 14px;
+  }
+  .heroActions {
+    margin: 20px 0;
+  }
+  .feature {
+    padding: 22px;
+  }
+  .bookingSteps {
+    gap: 16px;
+    margin-top: 12px;
+  }
+  .resultTools select {
+    max-width: none;
+    font-size: 0.875rem;
+  }
+  .viewSwitch button {
+    font-size: 0.875rem;
+    min-height: 40px;
+  }
+}
+@media (max-width: 440px) {
+  .quickFilters {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+  .more .formGrid {
+    grid-template-columns: 1fr;
+  }
+  .heroActions > button {
+    width: 100%;
+  }
+}
+.nextLesson {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  padding: 26px 0;
+  margin-bottom: 24px;
+  border-block: 1px solid var(--line);
+}
+.nextLesson .eyebrow {
+  margin-bottom: 8px;
+}
+.nextLesson h2 {
+  margin-bottom: 8px;
+}
+.nextLesson small {
+  display: block;
+  margin-top: 8px;
+  color: var(--dim);
+  font-size: 0.875rem;
+}
+.nextLesson > button {
+  flex-shrink: 0;
+}
+@media (max-width: 700px) {
+  .nextLesson {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 16px;
+  }
+  .nextLesson > button {
+    width: 100%;
+  }
+}
+
+.embedded {
+  width: 100%;
+  padding-bottom: 0;
+}
+.embedded > .topline,
+.embedded > .footer {
+  display: none;
+}
+.topline > .tabs > a {
+  color: var(--dim);
+  font-size: 0.9375rem;
+  padding: 10px;
+}
+
+/* One focal point leads into the existing working catalog. */
+.hero { padding-top: clamp(42px, 6vw, 84px); padding-bottom: clamp(36px, 5vw, 64px); align-items: center; }
+.hero h1 { max-width: 760px; font-size: clamp(2.65rem, 5.6vw, 5.2rem); line-height: 1.01; letter-spacing: -.065em; }
+.hero h1 em { font-style: normal; }
+.intro { max-width: 520px; line-height: 1.65; }
+.heroActions { margin-top: 26px; }
+.heroActions .primary { min-height: 52px; padding-inline: 24px; border-radius: 12px; }
+.feature { box-shadow: none; background: rgb(var(--surface-subtle)); border-color: rgb(var(--border)); border-radius: 22px; transform: none; }
+@media (max-width: 760px) { .hero { padding-top: 30px; } .hero h1 { font-size: clamp(2.45rem, 9vw, 4rem); } }
+.feature { color: rgb(var(--ink)); }
+.featureTop { color: rgb(var(--accent)); }
+.bookingSteps span, .featureBottom small { color: rgb(var(--muted)); }
+.featureBottom { border-color: rgb(var(--border-strong)); }
+
+/* A compact search workspace, with choices visible at a glance. */
+.hero { padding-top: 52px; padding-bottom: 40px; gap: 7%; }
+.hero h1 { font-size: clamp(2.8rem,5vw,4.6rem); }
+.hero .intro { max-width: 490px; }
+.searchPanel { background: white; border: 1px solid rgb(var(--border)); padding: 24px; border-radius: 20px; scroll-margin-top: 20px; }
+.searchPanelHeader { display: flex; align-items: center; gap: 12px; margin-bottom: 22px; }
+.searchPanelHeader > span { width: 42px; height: 42px; border-radius: 12px; display: grid; place-items: center; flex-shrink: 0; background: rgb(var(--surface-subtle)); color: rgb(var(--accent)); }
+.searchPanelHeader h2 { font-size: 1.15rem; letter-spacing: -.025em; }
+.searchPanelHeader p { margin-top: 4px; color: var(--dim); font-size: .875rem; }
+.searchPanel .quickFilters { padding: 0; margin-bottom: 16px; }
+.searchPanel .quickFilters select { min-height: 50px; border-radius: 11px; }
+.searchPanel .searchRow { padding-top: 16px; border-top: 1px solid var(--line); }
+.searchBox { border: 1px solid var(--line); border-radius: 11px; padding-left: 14px; background: rgb(var(--surface)); }
+.searchBox:focus-within { border-color: rgb(var(--accent)); box-shadow: 0 0 0 3px rgb(var(--accent) / .08); }
+.searchBox input:focus { box-shadow: none !important; }
+.filterToggle { min-height: 46px; border-radius: 11px; }
+.filterToggle[aria-expanded="true"] { background: rgb(var(--surface-subtle)); border-color: rgb(var(--accent-border)); }
+.filterSummary { margin-top: 16px; gap: 8px; }
+.filterSummary .filterChip { display: inline-flex; gap: 7px; align-items: center; min-height: 34px; background: rgb(var(--surface-subtle)); border: 1px solid var(--line); border-radius: 8px; text-decoration: none; font-size: .8125rem; padding: 5px 9px; }
+.more .formGrid { grid-template-columns: repeat(3,minmax(0,1fr)); }
+.resultsHeader { margin-top: 30px; }
+.resultTools { flex-wrap: wrap; }
+.viewSwitch { padding: 4px; }
+.viewSwitch button { min-height: 40px; padding: 8px 13px; font-size: .875rem; display: flex; align-items: center; gap: 6px; }
+.viewSwitch button > span { font-size: .75rem; background: rgb(var(--surface-subtle)); color: rgb(var(--accent)); min-width: 20px; border-radius: 5px; }
+.empty { background: white; border-style: solid; padding: 40px 28px; display: flex; flex-direction: column; align-items: center; gap: 10px; }
+.emptyIcon { width: 52px; height: 52px; border-radius: 16px; display: grid; place-items: center; color: rgb(var(--accent)); background: rgb(var(--surface-subtle)); margin-bottom: 6px; }
+.emptyBody { max-width: 54ch; color: var(--dim); line-height: 1.65; }
+.emptyBody > p { margin: 0 0 20px; }
+.emptyBody :global(.primary) { margin-right: 16px; }
+.emptyBody .textAction { min-height: 44px; font-size: .875rem; }
+.topline .publicNavLink { display: flex; align-items: center; gap: 7px; }
+.topline .publicNavLink[aria-current="page"] { color: rgb(var(--accent)); background: rgb(var(--surface-subtle)); border-radius: 10px; font-weight: 600; }
+@media(min-width: 801px) { .topline .publicNavLink svg { display: none; } }
+@media(max-width: 800px) {
+  .hero { padding-top: 32px; padding-bottom: 28px; }
+  .hero h1 { font-size: clamp(2.6rem,9.5vw,3.7rem); }
+  .searchPanel { padding: 20px; border-radius: 18px; }
+  .searchPanelHeader { margin-bottom: 18px; align-items: flex-start; }
+  .searchPanelHeader h2 { font-size: 1.1rem; }
+  .searchPanelHeader p { font-size: .8125rem; }
+  .searchPanelHeader > span { width: 36px; height: 36px; border-radius: 10px; }
+  .searchPanel .searchRow { gap: 8px; }
+  .filterToggle { padding-inline: 10px; }
+  .more .formGrid { grid-template-columns: 1fr; }
+  .resultTools { gap: 12px; }
+  .resultTools > select { max-width: none; }
+  .viewSwitch { order: -1; width: 100%; }
+  .viewSwitch button { flex: 1; justify-content: center; white-space: nowrap; }
+  .topline .publicNavLink { flex: 1; flex-direction: column; justify-content: center; padding: 8px 4px; gap: 4px; min-height: 54px; font-size: .75rem; }
+  .topline .publicNavLink[aria-current="page"] { background: rgb(var(--surface-subtle)); }
+  .empty { padding: 30px 20px; }
+  .emptyBody :global(.primary) { display: flex; width: 100%; margin: 0 0 10px; }
+}
+@media(max-width: 440px) { .searchPanel .quickFilters { grid-template-columns: 1fr; } .searchBox input { font-size: .875rem; } .searchPanel { padding: 18px 16px; } }
+
+.dialog > .spread { display: grid; grid-template-columns: minmax(0,1fr) 44px; gap: 16px; align-items: start; }
+.dialog > .spread > button { display: grid; place-items: center; padding: 0; width: 44px; min-height: 44px; border: 1px solid rgb(var(--border)); border-radius: 12px; color: rgb(var(--muted)); }
+.dialog > .spread > button:hover { background: rgb(var(--surface-subtle)); }
+.dialog .form[data-purpose="join"] > :global(.primary) { width: 100%; min-height: 52px; border-radius: 12px; }
+@media(max-width: 480px) { .dialog { padding: 22px 20px; } .dialog h2 { font-size: 1.35rem; } }

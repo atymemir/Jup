@@ -1,0 +1,259 @@
+.workspace,
+.calendar,
+.tools,
+.panel {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.workspace {
+  max-width: 900px;
+  margin-inline: auto;
+  display: grid;
+  gap: 18px;
+}
+.workspace > button,
+.form > button,
+.panel > button,
+.panel > a {
+  width: fit-content;
+}
+.workspace .row {
+  align-items: flex-start;
+}
+.workspace h2 {
+  margin: 6px 0;
+}
+.workspace small,
+.calendar small,
+.muted,
+.panel > p,
+.tools p {
+  color: rgb(var(--muted));
+}
+.workspace p,
+.panel p {
+  white-space: pre-wrap;
+}
+.back {
+  font-size: 0.93rem;
+  text-decoration: underline;
+  color: rgb(var(--accent));
+  padding: 6px 0;
+}
+.calendar,
+.panel {
+  background: white;
+  border: 1px solid rgb(var(--border));
+  border-radius: 16px;
+  padding: clamp(15px, 2.5vw, 24px);
+}
+.calendar {
+  margin: 12px 0;
+}
+.row,
+.actions,
+.event,
+.panes {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.row {
+  justify-content: space-between;
+  flex-wrap: wrap;
+}
+.actions,
+.panes {
+  flex-wrap: wrap;
+}
+.actions button:not(:global(.primary)),
+.panes button,
+.call button {
+  background: white;
+  color: rgb(var(--ink));
+  border: 1px solid rgb(var(--border));
+  border-radius: 8px;
+  padding: 8px 12px;
+  min-height: 40px;
+}
+.weekTitle {
+  margin: 12px 0 8px;
+  font-weight: 600;
+}
+.days {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 4px;
+  margin-bottom: 14px;
+}
+.days button {
+  display: grid;
+  justify-items: center;
+  gap: 2px;
+  padding: 7px 0;
+  background: rgb(var(--surface-subtle));
+  border-radius: 9px;
+}
+.days span {
+  color: rgb(var(--muted));
+  font-size: 0.85rem;
+}
+.days i {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: transparent;
+}
+.days i[data-events="true"] {
+  background: currentColor;
+}
+.days button[aria-pressed="true"],
+.panes button[aria-pressed="true"] {
+  background: #163f32;
+  color: white;
+}
+.days button[aria-pressed="true"] span {
+  color: #ebf4ed;
+}
+.event {
+  width: 100%;
+  padding: 12px 0;
+  border-top: 1px solid rgb(var(--border));
+  text-align: left;
+}
+.event small,
+.event strong {
+  display: block;
+}
+.event time {
+  color: rgb(var(--accent));
+  font-weight: 650;
+}
+.calendar > .actions {
+  margin-top: 12px;
+}
+.tools {
+  padding: 14px 0;
+  margin-bottom: 12px;
+  border-block: 1px solid rgb(var(--border));
+}
+.tools summary {
+  width: fit-content;
+  cursor: pointer;
+  color: rgb(var(--accent));
+}
+.panel {
+  display: grid;
+  gap: 10px;
+}
+.field,
+.form {
+  display: grid;
+  gap: 6px;
+  min-width: 0;
+}
+.field {
+  font-size: 0.95rem;
+}
+.form {
+  gap: 12px;
+  margin-top: 10px;
+}
+.answer,
+.messages > div {
+  background: rgb(var(--surface-subtle));
+  padding: 12px 15px;
+  border-radius: 9px;
+}
+.answer p {
+  margin: 6px 0 10px;
+}
+.messages {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-height: 420px;
+  overflow: auto;
+}
+.messages > div {
+  max-width: 90%;
+  align-self: flex-start;
+}
+.messages > div[data-mine="true"] {
+  align-self: flex-end;
+  background: #dfebdf;
+}
+.error,
+.status {
+  padding: 9px 12px;
+  border-radius: 8px;
+  margin-top: 10px;
+}
+.error {
+  color: rgb(var(--danger-text));
+  background: rgb(var(--danger-bg));
+}
+.status {
+  color: rgb(var(--accent));
+  background: rgb(var(--surface-subtle));
+}
+.call {
+  display: grid;
+  gap: 12px;
+  padding: 14px;
+  background: #15382e;
+  color: white;
+  border-radius: 14px;
+}
+.videoGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 210px), 1fr));
+  gap: 8px;
+}
+.videoGrid > div {
+  min-height: 145px;
+  aspect-ratio: 16/10;
+}
+.call .actions button[aria-pressed="true"],
+.call .actions button[data-lk-enabled="true"] {
+  background: #ceebdc;
+}
+@media (max-width: 520px) {
+  .calendar .row {
+    gap: 6px;
+    align-items: flex-start;
+  }
+  .days {
+    gap: 2px;
+  }
+  .panes,
+  .actions {
+    gap: 5px;
+  }
+  .panes button,
+  .actions button:not(:global(.primary)) {
+    padding: 6px 9px;
+  }
+  .workspace {
+    gap: 13px;
+  }
+}
+.outcome {
+  display: grid;
+  gap: 10px;
+  padding: 22px 0;
+  border-block: 1px solid rgb(var(--border));
+}
+.outcome > button {
+  justify-self: start;
+}
+.outcome small {
+  color: rgb(var(--muted));
+  font-size: 0.875rem;
+}
+.outcomeActions {
+  display: flex;
+  align-items: center;
+  gap: 10px 18px;
+  flex-wrap: wrap;
+}
