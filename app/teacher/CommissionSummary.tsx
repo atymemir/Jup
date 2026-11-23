@@ -29,7 +29,7 @@ export function CommissionSummary({
       <div>
         <h1>Расчёты в пилоте</h1>
         <p>
-          FindBuddy в пилоте бесплатен для преподавателей. В итог стоимости
+          Jup edu в пилоте бесплатен для преподавателей. В итог стоимости
           включены только записи, проведение которых подтвердили вы и ученик.
         </p>
       </div>
@@ -43,7 +43,7 @@ export function CommissionSummary({
           <dd>{money(summary.gross)}</dd>
         </div>
         <div>
-          <dt>Комиссия FindBuddy · 0%</dt>
+          <dt>Комиссия Jup edu · 0%</dt>
           <dd>{money(summary.commission)}</dd>
         </div>
       </dl>

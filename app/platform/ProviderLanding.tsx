@@ -1,3 +1,4 @@
+import { Brand } from "../ui/Brand";
 import Link from "next/link";
 import st from "./platform.module.css";
 export function ProviderLanding({ business = false }: { business?: boolean }) {
@@ -5,7 +6,7 @@ export function ProviderLanding({ business = false }: { business?: boolean }) {
     <main className={st.public}>
       <header className={st.publicHeader}>
         <Link href="/" className={st.brand}>
-          findbuddy<span>.</span>
+          <Brand />
         </Link>
         <nav>
           <Link href={business ? "/teach" : "/for-centers"}>
@@ -46,7 +47,7 @@ export function ProviderLanding({ business = false }: { business?: boolean }) {
               Я ищу занятия
             </Link>
           </div>
-          <p>Бесплатный пилот FindBuddy · комиссия платформы 0%</p>
+          <p>Бесплатный пилот Jup edu · комиссия платформы 0%</p>
         </div>
         <div className={st.stack}>
           {(business

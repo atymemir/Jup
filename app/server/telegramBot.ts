@@ -92,7 +92,7 @@ export async function handleTelegram(update: Update, bot: BotServices) {
     await bot.send(
       chatId,
       message ??
-        "Откройте findbuddy, войдите в аккаунт и нажмите «Подключить Telegram» в «Моих занятиях». Затем вернитесь сюда по личной ссылке и нажмите Start.",
+        "Откройте Jup edu, войдите в аккаунт и нажмите «Подключить Telegram» в «Моих занятиях». Затем вернитесь сюда по личной ссылке и нажмите Start.",
       [
         [linkTo("Открыть мои занятия", "#account")],
         [linkTo("Найти преподавателя")],
@@ -113,7 +113,7 @@ export async function handleTelegram(update: Update, bot: BotServices) {
     } else if ((await bot.context(id, "status")).linked) {
       await bot.send(
         id,
-        "Этот Telegram уже связан с аккаунтом findbuddy.",
+        "Этот Telegram уже связан с аккаунтом Jup edu.",
         menu,
       );
     } else
@@ -135,7 +135,7 @@ export async function handleTelegram(update: Update, bot: BotServices) {
   const ctx = await bot.context(id, action);
   if (command === "unlink_confirm" && !ctx.linked) {
     await welcome(
-      "Telegram отключён от findbuddy. Чтобы подключить снова, откройте «Мои занятия».",
+      "Telegram отключён от Jup edu. Чтобы подключить снова, откройте «Мои занятия».",
     );
     return;
   }
@@ -161,7 +161,7 @@ export async function handleTelegram(update: Update, bot: BotServices) {
           linkTo("Открыть занятие " + (i + 1), "#account/lesson/" + l.id),
         ]),
         [
-          linkTo("Календарь в findbuddy", "#account/calendar"),
+          linkTo("Календарь в Jup edu", "#account/calendar"),
           commandButton("Меню", "/menu"),
         ],
       ],
@@ -183,7 +183,7 @@ export async function handleTelegram(update: Update, bot: BotServices) {
     await bot.send(
       id,
       buttons.length
-        ? "Выберите диалог. Переписка откроется в findbuddy."
+        ? "Выберите диалог. Переписка откроется в Jup edu."
         : "Диалогов пока нет. Можно написать преподавателю из его анкеты.",
       [
         ...buttons,
@@ -214,7 +214,7 @@ export async function handleTelegram(update: Update, bot: BotServices) {
       ],
     );
   } else if (command === "/unlink") {
-    await bot.send(id, "Отключить Telegram от аккаунта findbuddy?", [
+    await bot.send(id, "Отключить Telegram от аккаунта Jup edu?", [
       [
         commandButton("Да, отключить", "unlink_confirm"),
         commandButton("Отмена", "/settings"),
@@ -248,7 +248,7 @@ export async function handleTelegram(update: Update, bot: BotServices) {
       id,
       command === "/help"
         ? "Используйте кнопки или команды /lessons, /chats и /settings."
-        : "findbuddy · выберите действие",
+        : "Jup edu · выберите действие",
       menu,
     );
   }

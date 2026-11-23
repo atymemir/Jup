@@ -1,5 +1,5 @@
 import { InfoPage } from "../ui/InfoPage";
-export const metadata = { title: "Правила сервиса — findbuddy" };
+export const metadata = { title: "Правила сервиса — Jup edu" };
 export default function Terms() {
   return <InfoPage title="Правила сервиса" intro="Простые условия для учеников, преподавателей и учебных центров.">
     <section><h2>Ваш аккаунт</h2><p>Указывайте достоверные сведения и используйте свою почту. Не передавайте доступ другим людям. Роль ученика, преподавателя или центра выбирается при создании аккаунта. Служебный доступ нельзя получить выбором роли.</p></section>

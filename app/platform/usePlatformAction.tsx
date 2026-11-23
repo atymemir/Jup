@@ -1,5 +1,6 @@
 "use client";
 import { useRef, useState } from "react";
+import { LoadingState } from "../ui/LoadingState";
 import { api } from "../lib/api";
 export function usePlatformAction(refresh: () => Promise<void>) {
   const lock = useRef(false);
@@ -39,7 +40,8 @@ export function usePlatformAction(refresh: () => Promise<void>) {
     error,
     notice,
     status: (
-      <>
+      <div className="platformFeedback">
+        {busy && <LoadingState compact label="Сохраняем изменения…" />}
         {error && (
           <p className="platformError" role="alert">
             {error}
@@ -50,7 +52,7 @@ export function usePlatformAction(refresh: () => Promise<void>) {
             {notice}
           </p>
         )}
-      </>
+      </div>
     ),
   };
 }

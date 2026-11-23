@@ -1,4 +1,7 @@
 "use client";
+import { LoadingState } from "../ui/LoadingState";
+import { Brand } from "../ui/Brand";
+
 import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
 import { api } from "../lib/api";
@@ -54,7 +57,7 @@ export function Centers({ id }: { id?: string }) {
     <main className={st.public}>
       <header className={st.publicHeader}>
         <Link className={st.brand} href="/">
-          findbuddy<span>.</span>
+          <Brand />
         </Link>
         <nav>
           <Link href="/">Преподаватели и занятия</Link>
@@ -65,7 +68,7 @@ export function Centers({ id }: { id?: string }) {
         </nav>
       </header>
       {loading ? (
-        <p role="status">Загружаем центры…</p>
+        <LoadingState label="Загружаем учебные центры…" />
       ) : error ? (
         <p className={st.error} role="alert">
           {error}

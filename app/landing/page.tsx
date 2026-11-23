@@ -1,3 +1,4 @@
+import { Brand } from "../ui/Brand";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { Icon, type IconName } from "../ui/Icon";
@@ -5,17 +6,17 @@ import { SiteFooter } from "../ui/SiteFooter";
 import { HeroFinder, LandingMenu, LessonPreview, PartnerPanel } from "./LandingExperience";
 import st from "./landing.module.css";
 
-const description = "Найдите преподавателя под вашу цель, язык и бюджет. Запись, переписка, материалы и домашняя работа — в одном findbuddy.";
+const description = "Найдите преподавателя под вашу цель, язык и бюджет. Запись, переписка, материалы и домашняя работа — в одном Jup edu.";
 const canonical = (process.env.FINDBUDDY_PUBLIC_URL || "https://jup-atymemirs-projects.vercel.app/findbuddy").replace(/\/$/, "") + "/landing";
 export const metadata: Metadata = {
-  title: "findbuddy — свой человек для учёбы",
+  title: "Jup edu — свой человек для учёбы",
   description,
   alternates: { canonical },
   openGraph: {
-    title: "findbuddy — свой человек для учёбы",
+    title: "Jup edu — свой человек для учёбы",
     description,
     url: canonical,
-    siteName: "findbuddy",
+    siteName: "Jup edu",
     type: "website",
     locale: "ru_RU",
   },
@@ -28,10 +29,10 @@ const benefits: [IconName, string, string][] = [
 ];
 const questions = [
   ["С чего начать, если не знаю, кого выбрать?", "Начните с цели, формата и бюджета. В каталоге можно изучить анкеты без регистрации. Если подходящего варианта пока нет, создайте аккаунт ученика и оставьте заявку с вашей задачей."],
-  ["За что нужно платить?", "В бесплатном пилоте findbuddy не берёт комиссию платформы. Стоимость урока задаёт преподаватель. Онлайн-платежи не подключены: порядок оплаты согласуйте с преподавателем. При бронировании деньги не списываются."],
+  ["За что нужно платить?", "В бесплатном пилоте Jup edu не берёт комиссию платформы. Стоимость урока задаёт преподаватель. Онлайн-платежи не подключены: порядок оплаты согласуйте с преподавателем. При бронировании деньги не списываются."],
   ["Можно сначала задать вопрос?", "Да. После входа в аккаунт ученика можно открыть диалог из анкеты преподавателя: уточнить подход, уровень и удобное время до записи на урок."],
   ["Как проверяются преподаватели?", "Анкеты публикуются после ручной проверки предоставленных сведений. В профиле можно изучить образование, опыт и подход. Выбирайте преподавателя под свою задачу; при проблеме доступно обращение в модерацию."],
-  ["Где проходит занятие?", "Онлайн или очно — это указано в анкете. Ссылку на встречу или адрес преподаватель согласует с вами. Материалы и переписка остаются в findbuddy."],
+  ["Где проходит занятие?", "Онлайн или очно — это указано в анкете. Ссылку на встречу или адрес преподаватель согласует с вами. Материалы и переписка остаются в Jup edu."],
   ["Кто увидит мою учебную анкету?", "Она не публикуется в каталоге. Имя, цель и уровень доступны преподавателю после личной заявки или записи, а учебному центру — после записи на его занятие. Дата рождения остаётся личной."],
 ];
 
@@ -39,8 +40,8 @@ export default function LandingPage() {
   return <div className={st.landing}>
     <a className={st.skipLink} href="#landing-main">К содержимому</a>
     <header className={st.header}>
-      <Link href="/landing" className={st.brand} aria-label="findbuddy — о сервисе">findbuddy<span>.</span></Link>
-      <nav className={st.desktopNav} aria-label="О findbuddy"><a href="#how-it-works">Как это работает</a><a href="#partners">Преподавателям и центрам</a><a href="#questions">Вопросы</a></nav>
+      <Link href="/landing" className={st.brand} aria-label="Jup edu — о сервисе"><Brand /></Link>
+      <nav className={st.desktopNav} aria-label="О Jup edu"><a href="#how-it-works">Как это работает</a><a href="#partners">Преподавателям и центрам</a><a href="#questions">Вопросы</a></nav>
       <div className={st.headerActions}><Link href="/login">Войти</Link><Link href="/" className={st.headerCta}>Открыть каталог</Link><LandingMenu /></div>
     </header>
     <main id="landing-main">
@@ -51,7 +52,7 @@ export default function LandingPage() {
         <div className={st.benefitGrid}>{benefits.map(([icon, title, text]) => <article key={title}><span className={st.featureIcon}><Icon name={icon} size={25} /></span><h3>{title}</h3><p>{text}</p></article>)}</div>
       </section>
       <section className={st.journey} id="how-it-works" aria-labelledby="journey-title">
-        <div className={st.journeyCopy}><p className={st.eyebrow}>От «не понимаю» до «получилось»</p><h2 id="journey-title">Первый шаг — найти.<br />Дальше — <span>учиться.</span></h2><p>Вам не нужно собирать учёбу из разных переписок. У каждого занятия есть своё место в findbuddy.</p>
+        <div className={st.journeyCopy}><p className={st.eyebrow}>От «не понимаю» до «получилось»</p><h2 id="journey-title">Первый шаг — найти.<br />Дальше — <span>учиться.</span></h2><p>Вам не нужно собирать учёбу из разных переписок. У каждого занятия есть своё место в Jup edu.</p>
           <ol className={st.journeySteps}><li><span>1</span><div><h3>Выберите своего</h3><p>Изучите подход и условия. Напишите, если остались вопросы.</p></div></li><li><span>2</span><div><h3>Договоритесь о первом уроке</h3><p>Выберите свободное время или отправьте свою заявку.</p></div></li><li><span>3</span><div><h3>Продолжайте с того же места</h3><p>Возвращайтесь к материалам, заданиям и переписке внутри занятия.</p></div></li></ol>
           <Link href="/guide" className={st.quietLink}>Посмотреть подробную инструкцию</Link>
         </div>

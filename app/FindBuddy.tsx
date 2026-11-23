@@ -1,4 +1,6 @@
 "use client";
+import { LoadingState } from "./ui/LoadingState";
+import { Brand } from "./ui/Brand";
 
 import { CalendarSubscription } from "./lessons/CalendarSubscription";
 import { Calendar } from "./lessons/Calendar";
@@ -999,7 +1001,7 @@ export default function FindBuddy({
         </div>
         {booking.tutor_id === userId && (
           <p className={styles.meta}>
-            Комиссия FindBuddy в пилоте: {money(booking.commission)} · После
+            Комиссия Jup edu в пилоте: {money(booking.commission)} · После
             комиссии платформы: {money(booking.tutor_net)}.
           </p>
         )}
@@ -1034,7 +1036,7 @@ export default function FindBuddy({
               <p className={styles.meta}>
                 {booking.price === 0
                   ? "Бесплатное занятие. Оплата не требуется."
-                  : "FindBuddy не принимает оплату уроков в пилоте. Условия расчёта согласуются с преподавателем."}
+                  : "Jup edu не принимает оплату уроков в пилоте. Условия расчёта согласуются с преподавателем."}
               </p>
             )}
             <div className={styles.quietActions}>
@@ -1089,11 +1091,11 @@ export default function FindBuddy({
         <Link
           href="/"
           className={styles.brand}
-          aria-label="findbuddy — главная"
+          aria-label="Jup edu — главная"
         >
-          findbuddy<span>.</span>
+          <Brand />
         </Link>
-        <nav className={styles.tabs} aria-label="Разделы findbuddy">
+        <nav className={styles.tabs} aria-label="Разделы Jup edu">
           {teacherMode ? (
             teacherPanels.map(([panel, label, icon]) => (
               <button
@@ -1232,24 +1234,12 @@ export default function FindBuddy({
           </button>
         </div>
       )}
-      {loading && (
-        <p role="status" className={styles.loading}>
-          Загружаем занятия…
-        </p>
-      )}
-      {preview && !demo && (
-        <div className={styles.previewBanner} role="note">
-          <strong>Демо-режим</strong>
-          <span>Тестовые анкеты и брони. Реальные деньги не списываются.</span>
-        </div>
-      )}
-      {!preview && !demo && (
+      {(loading || busy) && <div className="requestProgress" role="status"><span className="srOnly">{busy ? "Сохраняем изменения…" : "Загружаем занятия…"}</span></div>}
+      {loading && (teacherMode || (tab !== "tutors" && tab !== "groups") || subpage === "profile") && <LoadingState label="Открываем ваши занятия…" />}
+      {!demo && (
         <div className={styles.previewBanner} role="note">
           <strong>Бесплатный пилот</strong>
-          <span>
-            Участие в FindBuddy бесплатно, комиссия платформы — 0%. Уроки — по
-            цене преподавателя.
-          </span>
+          <span>Jup edu объединяет учеников и преподавателей. Комиссия платформы — 0%.</span>
         </div>
       )}
 
@@ -1371,7 +1361,7 @@ export default function FindBuddy({
                         document
                           .getElementById("fb-search-panel")
                           ?.scrollIntoView({
-                            behavior: "instant",
+                            behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "instant" : "smooth",
                             block: "start",
                           });
                       }}
@@ -1385,7 +1375,7 @@ export default function FindBuddy({
                         document
                           .getElementById("how-it-works")
                           ?.scrollIntoView({
-                            behavior: "instant",
+                            behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "instant" : "smooth",
                             block: "center",
                           });
                       }}
@@ -1652,9 +1642,9 @@ export default function FindBuddy({
                 aria-label="Преподаватели"
                 aria-busy={loading}
               >
+                {loading && <span className="srOnly" role="status">Подбираем преподавателей…</span>}
                 {loading &&
-                  tutors.length === 0 &&
-                  [0, 1].map((id) => (
+                  (view === "focus" ? [0] : [0, 1]).map((id) => (
                     <div
                       className={styles.skeleton}
                       key={id}
@@ -1686,7 +1676,7 @@ export default function FindBuddy({
                     )}
                   </div>
                 )}
-                {view !== "focus"
+                {!loading && (view !== "focus"
                   ? tutors.map(tutorRow)
                   : focusTutor && (
                       <div
@@ -1753,7 +1743,7 @@ export default function FindBuddy({
                           </button>
                         )}
                       </div>
-                    )}
+                    ))}
                 {!loading && !loadError && tutors.length === 0 && (
                   <Empty
                     title={
@@ -1827,8 +1817,9 @@ export default function FindBuddy({
               </section>
             )}
             {tab === "groups" && (
-              <section className={styles.groupList} aria-label="Учебные группы">
-                {groups.map((g) => (
+              <section className={styles.groupList} aria-label="Учебные группы" aria-busy={loading}>
+                {loading && <LoadingState label="Подбираем занятия в группе…" />}
+                {!loading && groups.map((g) => (
                   <article key={g.id} className={styles.group}>
                     <time className={styles.dateTile} dateTime={g.starts_at}>
                       <strong>
@@ -2735,7 +2726,7 @@ export default function FindBuddy({
           <p className={styles.eyebrow}>Без лишних вопросов</p>
           <h2 id="fb-faq-title">Сначала понятно. Потом — первый урок.</h2>
           <details><summary>С чего начать, если не знаю, кого выбрать?</summary><p>Выберите предмет и бюджет. В анкете преподавателя посмотрите подход и опыт. Можно написать ему до записи и коротко рассказать о своей цели.</p></details>
-          <details><summary>За что нужно платить?</summary><p>В пилоте findbuddy бесплатен. Стоимость занятия указана в анкете. Онлайн-оплата не подключена: способ оплаты обсудите с преподавателем.</p></details>
+          <details><summary>За что нужно платить?</summary><p>В пилоте Jup edu бесплатен. Стоимость занятия указана в анкете. Онлайн-оплата не подключена: способ оплаты обсудите с преподавателем.</p></details>
           <details><summary>Где будут занятия и домашняя работа?</summary><p>После записи откройте «Мои занятия»: там расписание, чат, материалы и домашняя работа. Формат и место урока согласуйте с преподавателем.</p></details>
         </section>
       )}
@@ -3000,7 +2991,7 @@ export default function FindBuddy({
                       />
                     </Field>
                     <p className={styles.meta}>
-                      В пилоте комиссия FindBuddy — 0%. Ученик увидит вашу цену
+                      В пилоте комиссия Jup edu — 0%. Ученик увидит вашу цену
                       и сможет принять предложение.
                     </p>
                   </>

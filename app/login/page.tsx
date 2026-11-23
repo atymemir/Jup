@@ -1,4 +1,6 @@
 "use client";
+import { LoadingState } from "../ui/LoadingState";
+import { Brand } from "../ui/Brand";
 
 import Link from "next/link";
 import {
@@ -26,7 +28,7 @@ function authError(error: unknown) {
     error && typeof error === "object" && "code" in error ? error.code : "";
   const labels: Record<string, string> = {
     invalid_credentials: "Проверьте почту и пароль.",
-    email_not_confirmed: "Откройте письмо от findbuddy и подтвердите адрес.",
+    email_not_confirmed: "Откройте письмо от Jup edu и подтвердите адрес.",
     over_email_send_rate_limit:
       "Подождите немного перед новым запросом письма.",
     weak_password: "Используйте более надёжный пароль.",
@@ -262,7 +264,7 @@ export default function Login() {
 
   return (
     <main className="authPage">
-      <header className="authHeader"><Link className="authBrand" href="/" aria-label="findbuddy — главная">findbuddy<span>.</span></Link><Link href="/">К преподавателям</Link></header>
+      <header className="authHeader"><Link className="authBrand" href="/" aria-label="Jup edu — главная"><Brand /></Link><Link href="/">К преподавателям</Link></header>
       <div className="authLayout">
       <aside className="authCompanion">
         <p className="authEyebrow">Свой человек для учёбы</p>
@@ -279,7 +281,7 @@ export default function Login() {
       )}
       <h1>{sent ? "Проверьте почту" : mode === "signup" ? stepTitle[step] : mode === "forgot" ? "Вернём вам доступ" : mode === "recovery" ? "Новый пароль" : "С возвращением"}</h1>
       <p className="authSubtitle">
-        {sent ? "Остался один шаг." : mode === "signup" ? ["Подстроим findbuddy под вашу задачу.", "Укажите имя для общения на платформе.", "Занятия и переписки будут в одном аккаунте."][step] : mode === "login" ? "Войдите, чтобы продолжить с того же места." : "Укажите данные ниже, чтобы продолжить."}
+        {sent ? "Остался один шаг." : mode === "signup" ? ["Подстроим Jup edu под вашу задачу.", "Укажите имя для общения на платформе.", "Занятия и переписки будут в одном аккаунте."][step] : mode === "login" ? "Войдите, чтобы продолжить с того же места." : "Укажите данные ниже, чтобы продолжить."}
       </p>
       {intent && !sent && <p className="authContinuation">Ваш выбор сохранён. Вернёмся к нему после входа.</p>}
       {sent ? (
@@ -292,7 +294,7 @@ export default function Login() {
         <form onSubmit={submit} aria-busy={busy}>
           {mode === "signup" && step === 0 && (
             <fieldset className="setupChoices" disabled={busy}>
-              <legend className="srOnly">Как будете пользоваться findbuddy</legend>
+              <legend className="srOnly">Как будете пользоваться Jup edu</legend>
               {[["student", "Хочу учиться", "Найти преподавателя под свою цель", "teacher"], ["teacher", "Хочу преподавать", "Найти учеников и вести занятия", "calendar"], ["business", "У меня учебный центр", "Собрать команду и расписание", "groups"]].map(([value, title, description, icon]) => <ChoiceCard key={value} name="role" value={value} selected={role === value} title={title} description={description} icon={icon as IconName} onChange={setRole} />)}
             </fieldset>
           )}
@@ -323,7 +325,7 @@ export default function Login() {
             </div>}
           </>}
           <button className="primary" disabled={busy}>
-            {busy ? "Подождите…" : mode === "signup" ? step < 2 ? "Продолжить" : "Создать аккаунт" : mode === "forgot" ? "Получить ссылку" : mode === "recovery" ? "Сохранить пароль" : "Войти"}
+            {busy ? <LoadingState compact label="Подождите…" /> : mode === "signup" ? step < 2 ? "Продолжить" : "Создать аккаунт" : mode === "forgot" ? "Получить ссылку" : mode === "recovery" ? "Сохранить пароль" : "Войти"}
           </button>
           {mode === "signup" && step > 0 && <button type="button" disabled={busy} onClick={() => { setStep(step - 1); setMessage(""); }}>Назад</button>}
           <div className="authLinks">
@@ -335,7 +337,7 @@ export default function Login() {
           {!local && mode === "login" && message.includes("подтвердите") && <button type="button" onClick={resend} disabled={busy}>Отправить письмо подтверждения</button>}
         </form>
       )}
-      {local === null && !message && <p role="status">Готовим безопасный вход…</p>}
+      {local === null && !message && <div className="authPending"><LoadingState compact label="Готовим безопасный вход…" /><div aria-hidden="true"><span /><span /><span /></div></div>}
       {message && <p className="authError" role="alert">{message}</p>}
       {local === null && message && <button className="secondary" onClick={() => window.location.reload()}>Повторить загрузку</button>}
       {local && <p className="authLocal">Локальная версия: аккаунт сохраняется на этом компьютере. Подтверждение почты недоступно.</p>}

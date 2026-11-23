@@ -1,4 +1,7 @@
 "use client";
+import { LoadingState } from "../ui/LoadingState";
+import { Brand } from "../ui/Brand";
+
 import { useEffect, useState, useSyncExternalStore } from "react";
 import Link from "next/link";
 import { api } from "../lib/api";
@@ -31,7 +34,7 @@ export function Invite() {
     <main className={st.public}>
       <header className={st.publicHeader}>
         <Link className={st.brand} href="/">
-          findbuddy<span>.</span>
+          <Brand />
         </Link>
       </header>
       <section className={st.hero}>
@@ -45,7 +48,7 @@ export function Invite() {
             аккаунт.
           </p>
           {loading ? (
-            <p role="status">Проверяем вход…</p>
+            <LoadingState label="Проверяем приглашение…" />
           ) : !token ? (
             <p className={st.error}>
               В ссылке нет приглашения. Попросите отправителя создать новую.
