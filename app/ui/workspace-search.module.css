@@ -210,3 +210,18 @@
     color: #3153ed;
   }
 }
+@media (max-width: 700px) {
+  :global(html[data-telegram]) .mobileTrigger {
+    bottom: calc(
+      6px + max(env(safe-area-inset-bottom), var(--tg-safe-bottom, 0px))
+    );
+  }
+}
+@media (max-width: 700px) {
+  :global(html[data-telegram]) .mobileTrigger {
+    right: var(--tg-safe-right, 0px);
+    width: calc(
+      (100% - var(--tg-safe-left, 0px) - var(--tg-safe-right, 0px)) / 4
+    );
+  }
+}

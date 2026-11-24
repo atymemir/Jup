@@ -1,7 +1,8 @@
 const token = process.env.FINDBUDDY_TELEGRAM_BOT_TOKEN;
 const secret = process.env.FINDBUDDY_TELEGRAM_WEBHOOK_SECRET;
 const base = (
-  process.env.FINDBUDDY_PUBLIC_URL || "https://jup-atymemirs-projects.vercel.app/findbuddy"
+  process.env.FINDBUDDY_PUBLIC_URL ||
+  "https://findbuddy-kohl.vercel.app/findbuddy"
 ).replace(/\/$/, "");
 const checkOnly = process.argv.includes("--check");
 const missing = [
@@ -28,6 +29,7 @@ if (checkOnly) {
       ? "В .env.local или окружении отсутствуют: " + missing.join(", ")
       : "Локальные реквизиты для настройки найдены.",
   );
+  if (missing.length) process.exit(1);
   const state = await deployedState();
   if (state?.preview === true)
     console.log(
@@ -48,9 +50,7 @@ if (checkOnly) {
       : 0;
 } else {
   if (missing.length) {
-    console.error(
-      "Откройте .env.local и заполните: " + missing.join(", "),
-    );
+    console.error("Откройте .env.local и заполните: " + missing.join(", "));
     process.exit(1);
   }
   if (!base.startsWith("https://") || !/^[-_a-zA-Z0-9]{1,256}$/.test(secret)) {
@@ -82,7 +82,8 @@ if (!checkOnly)
         "Проверьте доступность сайта и переменные Telegram на хостинге.",
       );
     const info = await call("getMe", {});
-    const expected = process.env.FINDBUDDY_TELEGRAM_BOT_USERNAME;
+    const expected =
+      process.env.FINDBUDDY_TELEGRAM_BOT_USERNAME || "jup_edu_app";
     if (
       expected &&
       info.username.toLowerCase() !== expected.replace(/^@/, "").toLowerCase()
@@ -96,6 +97,7 @@ if (!checkOnly)
     });
     await call("setMyCommands", {
       commands: [
+        { command: "app", description: "Открыть Jup" },
         { command: "menu", description: "Открыть меню" },
         { command: "lessons", description: "Ближайшие занятия" },
         { command: "chats", description: "Чаты и новые сообщения" },
@@ -103,6 +105,16 @@ if (!checkOnly)
         { command: "help", description: "Помощь с ботом" },
       ],
     });
+    await call("setChatMenuButton", {
+      menu_button: {
+        type: "web_app",
+        text: "Открыть Jup",
+        web_app: { url: base + "/telegram" },
+      },
+    });
+    const menu = await call("getChatMenuButton", {});
+    if (menu.type !== "web_app" || menu.web_app?.url !== base + "/telegram")
+      throw Error("Telegram returned a different Mini App menu.");
     const status = await call("getWebhookInfo", {});
     if (status.url !== url)
       throw Error("Telegram returned a different webhook URL.");

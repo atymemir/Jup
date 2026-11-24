@@ -1,6 +1,7 @@
 import { localizeMetadata } from "./i18n/server";
 import type { Metadata } from "next";
 import "./base.css";
+import { TelegramProvider } from "./telegram/TelegramProvider";
 import { LocaleProvider } from "./i18n/LocaleProvider";
 import { getServerLocale } from "./i18n/server";
 const metadata: Metadata = {
@@ -16,7 +17,9 @@ export default async function Layout({
   return (
     <html lang={locale}>
       <body>
-        <LocaleProvider initialLocale={locale}>{children}</LocaleProvider>
+        <LocaleProvider initialLocale={locale}>
+          <TelegramProvider>{children}</TelegramProvider>
+        </LocaleProvider>
       </body>
     </html>
   );

@@ -1020,3 +1020,38 @@
     z-index: 40;
   }
 }
+:global(html[data-telegram]) .topbar {
+  top: var(--tg-safe-top, 0px);
+}
+:global(html[data-telegram]) .sidebar {
+  top: var(--tg-safe-top, 0px);
+  height: calc(
+    var(--tg-viewport-height, 100dvh) - var(--tg-safe-top, 0px) -
+      var(--tg-safe-bottom, 0px)
+  );
+  overflow-y: auto;
+}
+@media (max-width: 700px) {
+  :global(html[data-telegram]) .mobileDock {
+    height: calc(
+      74px + max(env(safe-area-inset-bottom), var(--tg-safe-bottom, 0px))
+    );
+    padding-bottom: calc(
+      6px + max(env(safe-area-inset-bottom), var(--tg-safe-bottom, 0px))
+    );
+  }
+  :global(html[data-telegram]) .content {
+    padding-bottom: calc(
+      100px + max(env(safe-area-inset-bottom), var(--tg-safe-bottom, 0px))
+    );
+  }
+}
+@media (max-width: 700px) {
+  :global(html[data-telegram]) .mobileDock {
+    padding-left: var(--tg-safe-left, 0px);
+    padding-right: var(--tg-safe-right, 0px);
+  }
+}
+:global(html[data-telegram]) .root {
+  min-height: calc(var(--tg-viewport-height, 100dvh) - var(--tg-safe-top, 0px));
+}

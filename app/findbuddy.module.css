@@ -2623,3 +2623,22 @@
     height: 600px;
   }
 }
+:global(html[data-telegram]) .topline {
+  top: calc(12px + var(--tg-safe-top, 0px));
+}
+@media (max-width: 800px) {
+  :global(html[data-telegram]) .topline {
+    top: var(--tg-safe-top, 0px);
+  }
+  :global(html[data-telegram]) .tabs {
+    padding-bottom: calc(
+      7px + max(env(safe-area-inset-bottom), var(--tg-safe-bottom, 0px))
+    );
+  }
+}
+@media (max-width: 800px) {
+  :global(html[data-telegram]) .tabs {
+    padding-left: calc(8px + var(--tg-safe-left, 0px));
+    padding-right: calc(8px + var(--tg-safe-right, 0px));
+  }
+}
