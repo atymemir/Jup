@@ -46,7 +46,7 @@ export function TutorCard({
   const source = tutorPortrait(tutor, local);
   return (
     <article className={st.card} aria-label={tutor.display_name}>
-      <div className={st.identity}>
+      <div className={st.cover} data-portrait={!!source && !failed}>
         <button
           type="button"
           className={st.portrait}
@@ -59,8 +59,8 @@ export function TutorCard({
             <img
               src={source}
               alt=""
-              width={112}
-              height={112}
+              width={400}
+              height={240}
               loading="lazy"
               onError={() => setFailed(true)}
             />
@@ -68,32 +68,15 @@ export function TutorCard({
             <span className={st.initial}>{tutor.display_name.slice(0, 1)}</span>
           )}
         </button>
-        <div className={st.person}>
-          <p className={st.subject}>
-            {tr(tutor.exam)} · {tr(tutor.subject)}
-          </p>
-          <h3>
-            <button type="button" onClick={open}>
-              {tutor.display_name}
-            </button>
-          </h3>
-          <p className={st.muted}>
-            {tr(
-              local
-                ? tr("Демоанкета")
-                : tutor.verification === "verified"
-                  ? tr("Личность подтверждена")
-                  : tr("Анкета на проверке"),
-            )}
-          </p>
-        </div>
+        <span className={st.subject}>
+          {tr(tutor.subject)}
+          <span>{tr(tutor.exam)}</span>
+        </span>
         {save && (
           <button
             type="button"
             className={st.save}
-            aria-label={tr(
-              saved ? tr("Убрать из избранного") : tr("Сохранить анкету"),
-            )}
+            aria-label={tr(saved ? "Убрать из избранного" : "Сохранить анкету")}
             aria-pressed={saved}
             onClick={save}
           >
@@ -101,75 +84,91 @@ export function TutorCard({
           </button>
         )}
       </div>
-      <p className={st.headline}>{tutor.headline}</p>
-      <p className={st.bio}>{tutor.bio}</p>
-      <dl className={st.facts}>
-        <div>
-          <dt>{tr("Язык")}</dt>
-          <dd>{tr(tutor.language)}</dd>
+      <div className={st.cardBody}>
+        <div className={st.identity}>
+          <h3>
+            <button type="button" onClick={open}>
+              {tutor.display_name}
+            </button>
+          </h3>
+          {!local && tutor.verification === "verified" && (
+            <span className={st.verified} title={tr("Личность подтверждена")}>
+              <Icon name="check" size={15} />
+            </span>
+          )}
+          {local && <span className={st.example}>{tr("Демоанкета")}</span>}
         </div>
-        <div>
-          <dt>{tr("Формат")}</dt>
-          <dd>{tr(tutor.city)}</dd>
-        </div>
-        <div>
-          <dt>{tr("Опыт")}</dt>
-          <dd>
-            {tutor.experience}
-            {tr(" г.")}
-          </dd>
-        </div>
-      </dl>
-      <p className={st.rating}>
-        {!!tutor.review_count && tutor.rating != null ? (
-          <>
-            <Icon name="star" size={15} />
-            {tr(" ")}
-            {tr(
-              tutor.rating.toLocaleString(
-                uiLocale === "en" ? "en-GB" : "ru-KZ",
-              ),
-            )}
-            {tr(" · оценок ")}
-            {tutor.review_count}
-          </>
-        ) : (
-          tr("Пока без отзывов")
-        )}
-      </p>
-      <div className={st.booking}>
-        <div className={st.rate}>
-          <strong>
-            {tr(
-              (next?.price ?? tutor.price) === 0
-                ? tr("Бесплатно")
-                : money(next?.price ?? tutor.price, uiLocale),
-            )}
-          </strong>
-          <span>{tr("за урок · 60 минут")}</span>
-        </div>
-        <p className={st.availability}>
-          <Icon name="calendar" size={16} />
-          {tr(
-            next
-              ? lessonDate(next.starts_at, uiLocale) + " · UTC+5"
-              : tr("Время по договорённости"),
+        <p className={st.headline}>{tutor.headline}</p>
+        <p className={st.bio}>{tutor.bio}</p>
+        <dl className={st.facts}>
+          <div>
+            <dt>{tr("Язык")}</dt>
+            <dd>{tr(tutor.language)}</dd>
+          </div>
+          <div>
+            <dt>{tr("Формат")}</dt>
+            <dd>{tr(tutor.city)}</dd>
+          </div>
+          <div>
+            <dt>{tr("Опыт")}</dt>
+            <dd>
+              {tutor.experience}
+              {tr(" г.")}
+            </dd>
+          </div>
+        </dl>
+        <p className={st.rating}>
+          {!!tutor.review_count && tutor.rating != null ? (
+            <>
+              <Icon name="star" size={15} />
+              {tr(" ")}
+              {tr(
+                tutor.rating.toLocaleString(
+                  uiLocale === "en" ? "en-GB" : "ru-KZ",
+                ),
+              )}
+              {tr(" · оценок ")}
+              {tutor.review_count}
+            </>
+          ) : (
+            tr("Пока без отзывов")
           )}
         </p>
-        <button type="button" className="primary" onClick={book ?? open}>
-          {tr(book ? tr("Записаться на урок") : tr("Открыть анкету"))}
-        </button>
-        <div className={st.links}>
-          {book && (
-            <button type="button" onClick={open}>
-              {tr("Об уроках и преподавателе")}
-            </button>
-          )}
-          {contact && (
-            <button type="button" onClick={contact}>
-              {tr("Задать вопрос")}
-            </button>
-          )}
+        <div className={st.booking}>
+          <div className={st.rate}>
+            <strong>
+              {tr(
+                (next?.price ?? tutor.price) === 0
+                  ? tr("Бесплатно")
+                  : money(next?.price ?? tutor.price, uiLocale),
+              )}
+            </strong>
+            <span>{tr("за урок · 60 минут")}</span>
+          </div>
+          <p className={st.availability}>
+            <Icon name="calendar" size={16} />
+            {tr(
+              next
+                ? lessonDate(next.starts_at, uiLocale) + " · UTC+5"
+                : tr("Время по договорённости"),
+            )}
+          </p>
+          <button type="button" className="primary" onClick={book ?? open}>
+            {tr(book ? "Записаться на урок" : "Открыть анкету")}
+            <Icon name="arrowRight" size={17} />
+          </button>
+          <div className={st.links}>
+            {book && (
+              <button type="button" onClick={open}>
+                {tr("Об уроках и преподавателе")}
+              </button>
+            )}
+            {contact && (
+              <button type="button" onClick={contact}>
+                {tr("Задать вопрос")}
+              </button>
+            )}
+          </div>
         </div>
       </div>
     </article>

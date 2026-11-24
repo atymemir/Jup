@@ -1887,3 +1887,739 @@
     padding: 18px 16px;
   }
 }
+
+/* The catalogue is a place to choose, with one clear action per surface. */
+.page {
+  width: min(1280px, calc(100% - 80px));
+  --brand-primary: #3153ed;
+}
+.topline {
+  position: sticky;
+  top: 12px;
+  z-index: 35;
+  min-height: 76px;
+  margin-top: 14px;
+  padding: 12px 20px;
+  border: 1px solid #e5e9f2;
+  border-radius: 18px;
+  background: white;
+  box-shadow: 0 4px 20px #172b5105;
+  gap: 24px;
+}
+.brand :global(.jupBrand) {
+  width: 108px;
+  height: 40px;
+}
+.tabs {
+  gap: 6px;
+}
+.tabs a,
+.tabs button {
+  padding: 11px 14px;
+  border-radius: 10px;
+  font-size: 0.83rem;
+  color: #728099;
+  font-weight: 500;
+}
+.tabs a[aria-current],
+.tabs button[aria-current] {
+  background: #eef2ff;
+  color: #3153ed;
+  font-weight: 600;
+}
+.accountLinks {
+  gap: 8px;
+}
+.accountLinks a,
+.accountLinks button {
+  font-size: 0.78rem;
+  padding: 10px 16px;
+  border-radius: 10px;
+  min-height: 40px;
+  color: #32415f;
+}
+.accountLinks .registerLink {
+  background: #3153ed;
+  color: white;
+  border-color: #3153ed;
+  box-shadow: none;
+}
+.accountLinks .registerLink:hover {
+  background: #2140ce;
+}
+.previewBanner {
+  padding: 14px 2px;
+  margin-top: 4px;
+  min-height: 48px;
+  font-size: 0.75rem;
+  border-bottom: 0;
+  color: #7a879e;
+  gap: 12px;
+}
+.previewBanner strong {
+  background: #eef2ff;
+  color: #3153ed;
+  border-radius: 6px;
+  padding: 3px 7px;
+  font-size: 0.68rem;
+}
+.hero {
+  display: grid;
+  grid-template-columns: minmax(0, 1.4fr) minmax(350px, 0.9fr);
+  gap: 60px;
+  align-items: center;
+  padding: 34px 0 36px;
+}
+.hero h1 {
+  font-size: clamp(2.9rem, 5.1vw, 4.65rem);
+  line-height: 1.08;
+  letter-spacing: -0.06em;
+  font-weight: 620;
+  max-width: 780px;
+}
+.hero h1 em {
+  color: #3153ed;
+  font-style: normal;
+  background: none;
+  font-weight: 620;
+}
+.hero .eyebrow {
+  font-size: 0.68rem;
+  font-weight: 650;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #677790;
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  gap: 9px;
+}
+.hero .eyebrow::before {
+  content: "";
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #3153ed;
+}
+.hero .intro {
+  max-width: 470px;
+  margin: 22px 0 24px;
+  font-size: 0.91rem;
+  line-height: 1.8;
+  color: #677790;
+}
+.heroActions {
+  gap: 24px;
+  margin: 0;
+}
+.heroActions :global(.primary) {
+  min-height: 48px;
+  padding: 12px 21px;
+  border-radius: 12px;
+  font-size: 0.85rem;
+}
+.heroActions a {
+  color: #64738c;
+  font-size: 0.79rem;
+}
+.goalPanel {
+  color: white;
+  background: #3153ed;
+  border-radius: 26px;
+  padding: 25px 26px 19px;
+  box-shadow: 0 15px 35px #3153ed15;
+}
+.goalPanelTop {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 17px;
+}
+.goalPanelTop > span:first-child {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border: 1px solid #ffffff35;
+  border-radius: 13px;
+}
+.goalPanelTop > span:last-child {
+  font-size: 0.62rem;
+  letter-spacing: 0.17em;
+  color: #d1daff;
+}
+.goalPanel h2 {
+  font-size: 1.55rem;
+  font-weight: 550;
+  letter-spacing: -0.04em;
+  margin-bottom: 12px;
+}
+.goalOptions {
+  display: grid;
+}
+.goalOptions button {
+  display: flex;
+  align-items: center;
+  gap: 13px;
+  text-align: left;
+  padding: 15px 0;
+  border-bottom: 1px solid #ffffff26;
+  color: white;
+}
+.goalOptions button:hover {
+  background: #ffffff0c;
+}
+.goalNumber {
+  color: #a8bbff;
+  font-size: 0.6rem;
+  padding-top: 2px;
+  align-self: flex-start;
+}
+.goalOptions button > span:nth-child(2) {
+  display: grid;
+  gap: 5px;
+  min-width: 0;
+}
+.goalOptions strong {
+  font-weight: 550;
+  font-size: 0.84rem;
+}
+.goalOptions small {
+  font-size: 0.62rem;
+  color: #e2e8ff;
+  line-height: 1.5;
+}
+.goalOptions button > svg {
+  margin-left: auto;
+  flex-shrink: 0;
+  color: #d8e0ff;
+  transition: transform 0.15s;
+}
+.goalOptions button:hover > svg {
+  transform: translateX(3px);
+}
+.goalPanel > p {
+  font-size: 0.63rem;
+  color: #e2e8ff;
+  margin-top: 16px;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+.examChoices {
+  gap: 7px;
+  margin: 3px 0 16px;
+}
+.examChoices button {
+  border: 1px solid #e2e7f0;
+  border-radius: 9px;
+  background: white;
+  min-height: 37px;
+  padding: 7px 14px;
+  font-size: 0.76rem;
+  color: #677790;
+}
+.examChoices button[aria-pressed="true"] {
+  color: #3153ed;
+  border-color: #cbd6ff;
+  background: #ecf1ff;
+}
+.searchPanel {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  column-gap: 22px;
+  padding: 22px 24px;
+  border-radius: 18px;
+  border-color: #e5e9f2;
+  background: white;
+  scroll-margin-top: 110px;
+}
+.searchPanelHeader {
+  grid-column: 1/-1;
+  margin-bottom: 16px;
+  gap: 10px;
+}
+.searchPanelHeader h2 {
+  font-size: 0.95rem;
+  letter-spacing: -0.02em;
+}
+.searchPanelHeader > span {
+  width: auto;
+  height: auto;
+  background: none;
+  color: #a1aec4;
+}
+.searchPanel .quickFilters {
+  margin: 0;
+  gap: 14px;
+}
+.searchPanel .quickFilters select {
+  min-height: 46px;
+  border-radius: 10px;
+  font-size: 0.82rem;
+  border-color: #e1e6f0;
+  background: #fbfcfe;
+}
+.searchPanel .quickFilters .field > span {
+  font-size: 0.65rem;
+  color: #677790;
+}
+.searchPanel .searchRow {
+  align-self: end;
+  padding: 0;
+  border: 0;
+  gap: 9px;
+}
+.searchBox {
+  min-height: 46px;
+  background: #fbfcfe;
+  border-color: #e1e6f0;
+  border-radius: 10px;
+}
+.searchBox input {
+  font-size: 0.8rem;
+  padding: 11px 8px;
+}
+.filterToggle {
+  background: white;
+  min-height: 46px;
+  font-size: 0.78rem;
+  border-color: #e1e6f0;
+  padding-inline: 13px;
+}
+.filterSummary,
+.more {
+  grid-column: 1/-1;
+}
+.resultsHeader {
+  margin: 32px 0 20px;
+  align-items: center;
+}
+.resultsHeader h2 {
+  font-size: 1.5rem;
+  letter-spacing: -0.045em;
+}
+.resultTools > select {
+  font-size: 0.75rem;
+  color: #718099;
+}
+.viewSwitch {
+  background: #edf0f6;
+  padding: 4px;
+  border-radius: 11px;
+  gap: 3px;
+}
+.viewSwitch button {
+  min-height: 35px;
+  padding: 7px 11px;
+  font-size: 0.72rem;
+  border-radius: 8px;
+  color: #677790;
+}
+.viewSwitch button[aria-pressed="true"] {
+  background: white;
+  box-shadow: 0 2px 5px #16295208;
+  color: #3153ed;
+}
+.tutorGrid {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 21px;
+  min-height: 520px;
+  align-items: stretch;
+}
+.focusList {
+  max-width: 720px;
+  margin: auto;
+}
+.skeleton {
+  height: 510px;
+  border-radius: 22px;
+  padding: 10px;
+  background: white;
+  border: 1px solid #e5e9f2;
+}
+.skeleton > div:first-child {
+  height: 195px;
+  width: 100%;
+  border-radius: 14px;
+}
+.skeleton > div:nth-child(2) {
+  height: 22px;
+  width: 55%;
+  margin: 22px 10px 12px;
+}
+.skeleton > div:nth-child(3) {
+  height: 50px;
+  width: 85%;
+  margin: 0 10px 22px;
+}
+.skeleton > div:last-child {
+  height: 46px;
+  width: calc(100% - 20px);
+  margin: 35px 10px 0;
+}
+@media (max-width: 1100px) {
+  .page {
+    width: calc(100% - 48px);
+  }
+  .topline {
+    gap: 12px;
+    padding-inline: 16px;
+  }
+  .tabs a,
+  .tabs button {
+    padding: 10px;
+    font-size: 0.77rem;
+  }
+  .hero {
+    gap: 32px;
+    grid-template-columns: minmax(0, 1.2fr) minmax(310px, 1fr);
+  }
+  .hero h1 {
+    font-size: 3.4rem;
+  }
+  .goalPanel {
+    padding: 22px;
+  }
+  .tutorGrid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .searchPanel {
+    gap: 18px;
+  }
+}
+@media (max-width: 800px) {
+  .page {
+    width: calc(100% - 36px);
+  }
+  .topline {
+    top: 0;
+    border: 0;
+    border-bottom: 1px solid #e7ebf3;
+    border-radius: 0;
+    box-shadow: none;
+    margin-top: 0;
+    padding: 13px 0;
+    min-height: 68px;
+  }
+  .topline .tabs {
+    background: white;
+    z-index: 40;
+    padding: 7px 8px calc(7px + env(safe-area-inset-bottom));
+    border-top: 1px solid #e4e9f2;
+  }
+  .topline .publicNavLink {
+    border-radius: 11px;
+    min-height: 52px;
+    font-size: 0.66rem;
+    padding: 7px 4px;
+    color: #8b98ad;
+  }
+  .topline .publicNavLink[aria-current] {
+    color: #3153ed;
+    background: #f0f3ff;
+  }
+  .hero {
+    gap: 26px;
+    padding: 24px 0;
+  }
+  .hero h1 {
+    font-size: clamp(2.8rem, 7vw, 3.7rem);
+  }
+  .goalPanel {
+    border-radius: 20px;
+  }
+  .accountLinks a,
+  .accountLinks button {
+    min-height: 37px;
+    padding: 8px 11px;
+    font-size: 0.72rem;
+  }
+  .accountLinks {
+    gap: 7px;
+  }
+  .brand :global(.jupBrand) {
+    width: 94px;
+    height: 36px;
+  }
+  .searchPanel {
+    padding: 20px;
+    gap: 16px;
+  }
+  .searchPanel .quickFilters {
+    margin: 0;
+  }
+  .resultsHeader {
+    gap: 16px;
+  }
+  .resultTools {
+    gap: 12px;
+  }
+  .resultTools > select {
+    max-width: 150px;
+  }
+  .viewSwitch {
+    order: 0;
+    width: auto;
+  }
+  .viewSwitch button {
+    flex: initial;
+  }
+}
+@media (max-width: 680px) {
+  .hero {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 22px;
+  }
+  .hero h1 {
+    font-size: clamp(2.7rem, 9.8vw, 4.2rem);
+  }
+  .hero .eyebrow {
+    margin-bottom: 15px;
+    font-size: 0.62rem;
+  }
+  .hero .intro {
+    margin: 17px 0 20px;
+    font-size: 0.85rem;
+    max-width: 36ch;
+  }
+  .heroActions :global(.primary) {
+    min-height: 46px;
+    font-size: 0.8rem;
+  }
+  .goalPanel {
+    padding: 17px 16px;
+    border-radius: 18px;
+  }
+  .goalPanelTop,
+  .goalPanel > p {
+    display: none;
+  }
+  .goalPanel h2 {
+    font-size: 1.1rem;
+    margin-bottom: 12px;
+  }
+  .goalOptions {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 7px;
+  }
+  .goalOptions button {
+    background: #ffffff13;
+    border: 1px solid #ffffff1f;
+    border-radius: 9px;
+    padding: 10px;
+    min-height: 64px;
+    align-items: center;
+  }
+  .goalOptions strong {
+    font-size: 0.67rem;
+    line-height: 1.5;
+  }
+  .goalOptions small,
+  .goalOptions button > svg,
+  .goalNumber {
+    display: none;
+  }
+  .searchPanel {
+    display: block;
+    padding: 19px 16px;
+    border-radius: 16px;
+  }
+  .searchPanelHeader {
+    margin-bottom: 16px;
+  }
+  .searchPanel .quickFilters {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-bottom: 14px;
+  }
+  .searchPanel .searchRow {
+    display: flex;
+    gap: 8px;
+  }
+  .searchPanel .quickFilters select {
+    font-size: 0.76rem;
+    padding-inline: 10px;
+  }
+  .examChoices {
+    gap: 6px;
+    overflow: auto;
+    scrollbar-width: none;
+    margin-bottom: 14px;
+    padding-bottom: 1px;
+  }
+  .examChoices button {
+    white-space: nowrap;
+    padding-inline: 12px;
+    font-size: 0.72rem;
+    flex-shrink: 0;
+  }
+  .previewBanner {
+    font-size: 0.65rem;
+    gap: 8px;
+    padding: 11px 0;
+    min-height: 0;
+  }
+  .previewBanner strong {
+    font-size: 0.6rem;
+  }
+  .resultsHeader {
+    flex-wrap: wrap;
+    margin-top: 26px;
+  }
+  .resultsHeader h2 {
+    font-size: 1.4rem;
+  }
+  .resultTools {
+    width: 100%;
+    flex-direction: row;
+    justify-content: space-between;
+    gap: 9px;
+  }
+  .viewSwitch button {
+    font-size: 0.65rem;
+    padding: 7px 8px;
+    gap: 5px;
+  }
+  .viewSwitch button > svg {
+    width: 14px;
+    height: 14px;
+  }
+  .tutorGrid {
+    grid-template-columns: 1fr;
+    gap: 18px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .goalOptions button > svg {
+    transition: none;
+  }
+}
+
+.page.embedded {
+  width: 100%;
+  padding: 0;
+  margin: 0;
+}
+.accountLinks :global(.languageSwitcher select) {
+  width: 108px;
+  min-height: 40px;
+  padding: 8px 20px 8px 10px;
+  font-size: 0.73rem;
+  border-radius: 10px;
+}
+@media (max-width: 800px) {
+  .accountLinks :global(.languageSwitcher select) {
+    width: 76px;
+    min-height: 37px;
+    padding-inline: 7px 15px;
+    font-size: 0.67rem;
+  }
+  .heroActions :global(.primary) {
+    flex: initial;
+  }
+}
+@media (max-width: 680px) {
+  .hero h1 {
+    font-size: clamp(1.85rem, 8.4vw, 3.5rem);
+  }
+  .heroActions {
+    flex-direction: row;
+    align-items: center;
+    gap: 17px;
+  }
+  .heroActions :global(.primary) {
+    width: auto;
+    min-width: 0;
+    padding-inline: 16px;
+  }
+  .heroActions a {
+    font-size: 0.72rem;
+  }
+  .hero .intro {
+    max-width: 42ch;
+  }
+  .resultTools {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+  .resultTools > select {
+    width: auto;
+    max-width: 125px;
+    order: -1;
+  }
+  .viewSwitch {
+    margin-left: auto;
+  }
+  .resultsHeader h2 {
+    text-align: left;
+  }
+}
+@media (max-width: 380px) {
+  .accountLinks {
+    gap: 5px;
+  }
+  .accountLinks a {
+    padding-inline: 8px;
+    font-size: 0.67rem;
+  }
+  .brand :global(.jupBrand) {
+    width: 82px;
+  }
+  .topline {
+    gap: 8px;
+  }
+  .viewSwitch {
+    width: 100%;
+    margin-left: 0;
+  }
+  .viewSwitch button {
+    flex: 1;
+    justify-content: center;
+  }
+}
+
+.viewSwitch button > .viewLabel {
+  min-width: 0;
+  background: none;
+  padding: 0;
+  border-radius: 0;
+  color: inherit;
+  font: inherit;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.skeleton {
+  height: 570px;
+}
+@media (max-width: 380px) {
+  .viewSwitch {
+    justify-content: space-between;
+  }
+  .viewSwitch button {
+    min-width: 0;
+    flex: initial;
+    padding-inline: 7px;
+  }
+  .viewSwitch button:last-child {
+    flex: 1;
+  }
+  .viewSwitch button:first-child > svg {
+    display: none;
+  }
+  .viewSwitch button > span:not(.viewLabel) {
+    min-width: 16px;
+    font-size: 0.6rem;
+  }
+}
+@media (max-width: 640px) {
+  .skeleton {
+    height: 600px;
+  }
+}

@@ -1,7 +1,50 @@
 const shapes = {
-  wand: <><path d="m4 20 12-12 4 4-12 12ZM14 10l4 4M5 3v4M3 5h4M19 1v4M17 3h4M21 17v4M19 19h4" /></>,
+  menu: (
+    <>
+      <path d="M4 6h16M4 12h16M4 18h16" />
+    </>
+  ),
+  plus: <path d="M12 5v14M5 12h14" />,
+  arrowRight: <path d="M4 12h16m-6-6 6 6-6 6" />,
+  chevron: <path d="m9 5 7 7-7 7" />,
+  home: (
+    <>
+      <path d="m3 10 9-7 9 7v10H3ZM9 20v-7h6v7" />
+    </>
+  ),
+  grid: (
+    <>
+      <rect x="3" y="3" width="7" height="7" rx="1.5" />
+      <rect x="14" y="3" width="7" height="7" rx="1.5" />
+      <rect x="3" y="14" width="7" height="7" rx="1.5" />
+      <rect x="14" y="14" width="7" height="7" rx="1.5" />
+    </>
+  ),
+  list: <path d="M9 5h12M9 12h12M9 19h12M3 5h1M3 12h1M3 19h1" />,
+  globe: (
+    <>
+      <circle cx="12" cy="12" r="9" />
+      <ellipse cx="12" cy="12" rx="4" ry="9" />
+      <path d="M3 12h18" />
+    </>
+  ),
+  logout: (
+    <>
+      <path d="M9 4H4v16h5M10 12h11m-5-5 5 5-5 5" />
+    </>
+  ),
+  wand: (
+    <>
+      <path d="m4 20 12-12 4 4-12 12ZM14 10l4 4M5 3v4M3 5h4M19 1v4M17 3h4M21 17v4M19 19h4" />
+    </>
+  ),
   arrow: <path d="M5 19 19 5M6 5h13v13" />,
-  bell: <><path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9ZM10 21h4" /><path d="M12 2V1" /></>,
+  bell: (
+    <>
+      <path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9ZM10 21h4" />
+      <path d="M12 2V1" />
+    </>
+  ),
   search: (
     <>
       <circle cx="10.5" cy="10.5" r="6.5" />
