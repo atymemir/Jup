@@ -51,7 +51,11 @@ export function LanguageSwitcher() {
             ? "Interface language"
             : "Язык интерфейса"}
       </span>
+      <span className="languageCode" aria-hidden="true">
+        {locale === "kk" ? "KZ" : locale.toUpperCase()}
+      </span>
       <select
+        style={{ width: "100%" }}
         value={locale}
         onChange={(e) => setLocale(e.target.value as Locale)}
       >

@@ -49,9 +49,9 @@ export function HeroFinder() {
           {tr("Преподаватели и занятия в Казахстане")}
         </p>
         <h1 id="hero-title">
-          {tr("Найдите своего")}
+          {tr("Ваш предмет.")}
           <br />
-          <em>{tr("преподавателя.")}</em>
+          <em>{tr("Ваш преподаватель.")}</em>
         </h1>
         <p className={st.heroText}>
           {tr(

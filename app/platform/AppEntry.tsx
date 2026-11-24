@@ -36,6 +36,7 @@ import { Moderation } from "./Moderation";
 import { OrganizationChat } from "./OrganizationChat";
 import { usePlatformAction } from "./usePlatformAction";
 import st from "./platform.module.css";
+import { WorkspaceSearch } from "../ui/WorkspaceSearch";
 type Area = "public" | "student" | "teacher" | "business" | "admin";
 type Nav = [string, string, IconName, boolean];
 const navigation: Record<Exclude<Area, "public">, Nav[]> = {
@@ -48,7 +49,7 @@ const navigation: Record<Exclude<Area, "public">, Nav[]> = {
     ["centers", "Чаты центров", "groups", false],
   ],
   teacher: [
-    ["overview", "Главная", "teacher", true],
+    ["overview", "Главная", "home", true],
     ["schedule", "Расписание", "calendar", true],
     ["students", "Ученики", "groups", false],
     ["requests", "Заявки", "requests", false],
@@ -59,7 +60,7 @@ const navigation: Record<Exclude<Area, "public">, Nav[]> = {
     ["wallet", "Расчёты в пилоте", "calendar", false],
   ],
   business: [
-    ["overview", "Главная", "teacher", true],
+    ["overview", "Главная", "home", true],
     ["team", "Команда", "groups", true],
     ["schedule", "Расписание", "calendar", true],
     ["messages", "Сообщения", "requests", true],
@@ -343,6 +344,7 @@ export default function AppEntry({ area = "public" }: { area?: Area }) {
           <p className={st.roleLabel}>{tr(roleLabels[account.role])}</p>
         </div>
         <nav className={st.nav} aria-label={tr("Ваш кабинет")}>
+          <span className={st.navCaption}>{tr("Рабочее пространство")}</span>
           <a
             href="#notifications"
             aria-current={panel === "notifications" ? "page" : undefined}
@@ -372,30 +374,52 @@ export default function AppEntry({ area = "public" }: { area?: Area }) {
           ))}
         </nav>
         <div className={st.sidebarFoot}>
-          <Link href="/">{tr("Публичный каталог")}</Link>
+          <Link href="/">
+            <Icon name="globe" size={18} />
+            {tr("Публичный каталог")}
+            <Icon name="arrow" size={15} />
+          </Link>
           <p>{tr("Бесплатный пилот · комиссия 0%")}</p>
         </div>
       </aside>
       <div className={st.body}>
         <header className={st.topbar}>
-          <div>
-            <strong>{name || tr(roleLabels[account.role])}</strong>
-            <p>
+          <Link href="/" className={st.mobileBrand} aria-label="Jup edu">
+            <Brand />
+          </Link>
+          <div className={st.breadcrumb}>
+            <span>{tr(roleLabels[account.role])}</span>
+            <Icon name="chevron" size={13} />
+            <strong>
               {tr(
-                account.role === "teacher"
-                  ? tr("Ваши ученики и занятия")
-                  : account.role === "business"
-                    ? tr("Команда и занятия центра")
-                    : account.role === "owner" || account.role === "moderator"
-                      ? tr("Проверка анкет и обращений")
-                      : tr("Ваш путь к учебной цели"),
+                panel === "notifications"
+                  ? "Уведомления"
+                  : (nav.find(([id]) => id === panel)?.[1] ?? "Мой кабинет"),
               )}
-            </p>
+            </strong>
           </div>
+          <WorkspaceSearch
+            active={
+              !nav
+                .filter(([, , , mobile]) => mobile)
+                .slice(0, 3)
+                .some(([id]) => id === panel)
+            }
+            items={[
+              ...nav.map(([id, label, icon]) => ({
+                href: "#" + id,
+                label,
+                icon,
+              })),
+              { href: "#notifications", label: "Уведомления", icon: "bell" },
+              { href: "/", label: "Публичный каталог", icon: "globe" },
+            ]}
+          />
           <LanguageSwitcher />
           <NotificationBell role={account.role} state={notifications} />
           <button
-            className={st.textButton}
+            className={st.exitButton}
+            aria-label={tr("Выйти")}
             disabled={exiting}
             onClick={async () => {
               setExiting(true);
@@ -422,7 +446,8 @@ export default function AppEntry({ area = "public" }: { area?: Area }) {
               }
             }}
           >
-            {tr(exiting ? tr("Выходим…") : tr("Выйти"))}
+            <Icon name="logout" size={18} />
+            <span>{tr(exiting ? tr("Выходим…") : tr("Выйти"))}</span>
           </button>
         </header>
         <div className={st.content}>
@@ -436,6 +461,21 @@ export default function AppEntry({ area = "public" }: { area?: Area }) {
           )}
           {content}
         </div>
+        <nav className={st.mobileDock} aria-label={tr("Основная навигация")}>
+          {nav
+            .filter(([, , , mobile]) => mobile)
+            .slice(0, 3)
+            .map(([id, label, icon]) => (
+              <a
+                key={id}
+                href={"#" + id}
+                aria-current={panel === id ? "page" : undefined}
+              >
+                <Icon name={icon} size={21} />
+                <span>{tr(label)}</span>
+              </a>
+            ))}
+        </nav>
       </div>
     </div>
   );

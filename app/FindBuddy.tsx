@@ -1159,7 +1159,7 @@ export default function FindBuddy({
   return (
     <Root
       className={styles.page + (embedded ? " " + styles.embedded : "")}
-      lang="ru"
+      lang={uiLocale}
     >
       <header className={styles.topline}>
         <Link
@@ -1350,11 +1350,7 @@ export default function FindBuddy({
       {!demo && !embedded && (
         <div className={styles.previewBanner} role="note">
           <strong>{tr("Бесплатный пилот")}</strong>
-          <span>
-            {tr(
-              "Jup edu объединяет учеников и преподавателей. Комиссия платформы — 0%.",
-            )}
-          </span>
+          <span>{tr("Комиссия платформы — 0%.")}</span>
         </div>
       )}
 
@@ -1452,7 +1448,9 @@ export default function FindBuddy({
                 <h1>
                   {tab === "tutors" ? (
                     <>
-                      {tr("Найдите своего")} <em>{tr("преподавателя.")}</em>
+                      {tr("Ваш предмет.")}
+                      <br />
+                      <em>{tr("Ваш преподаватель.")}</em>
                     </>
                   ) : (
                     <>
@@ -1495,27 +1493,100 @@ export default function FindBuddy({
                     <a href="/findbuddy/guide">{tr("Как это работает")}</a>
                   </div>
                 )}
-                <div
-                  className={styles.examChoices}
-                  role="group"
-                  aria-label={tr("Выберите экзамен")}
-                >
-                  {["", ...FB_EXAMS].map((exam) => (
-                    <button
-                      key={exam}
-                      aria-pressed={filters.exam === exam}
-                      onClick={() => filter("exam", exam)}
-                    >
-                      {tr(
-                        exam === tr("Школьная программа")
-                          ? tr("Школа")
-                          : exam || tr("Все"),
-                      )}
-                    </button>
-                  ))}
-                </div>
               </div>
+              {tab === "tutors" && (
+                <aside
+                  className={styles.goalPanel}
+                  aria-label={tr("Быстрый подбор")}
+                >
+                  <div className={styles.goalPanelTop}>
+                    <span>
+                      <Icon name="teacher" size={24} />
+                    </span>
+                    <span>JUP / EDU</span>
+                  </div>
+                  <h2>{tr("С чего начнём?")}</h2>
+                  <div className={styles.goalOptions}>
+                    {(
+                      [
+                        [
+                          "",
+                          "ЕНТ",
+                          "Подготовиться к ЕНТ",
+                          "Темы экзамена и практика",
+                          "01",
+                        ],
+                        [
+                          "Английский",
+                          "IELTS",
+                          "Сдать IELTS",
+                          "Reading, Writing, Listening, Speaking",
+                          "02",
+                        ],
+                        [
+                          "",
+                          "Школьная программа",
+                          "Разобраться в предмете",
+                          "Школьная программа без пробелов",
+                          "03",
+                        ],
+                      ] as const
+                    ).map(([subject, exam, label, description, number]) => (
+                      <button
+                        type="button"
+                        key={number}
+                        onClick={() => {
+                          updateCatalogSearch({
+                            filters: { ...filters, subject, exam, query: "" },
+                            view: "list",
+                          });
+                          document
+                            .getElementById("fb-search-panel")
+                            ?.scrollIntoView({
+                              behavior: window.matchMedia(
+                                "(prefers-reduced-motion: reduce)",
+                              ).matches
+                                ? "instant"
+                                : "smooth",
+                              block: "start",
+                            });
+                        }}
+                      >
+                        <span className={styles.goalNumber}>{number}</span>
+                        <span>
+                          <strong>{tr(label)}</strong>
+                          <small>{tr(description)}</small>
+                        </span>
+                        <Icon name="arrowRight" size={19} />
+                      </button>
+                    ))}
+                  </div>
+                  <p>
+                    <Icon name="globe" size={15} />
+                    {tr("Онлайн и в вашем городе")}
+                  </p>
+                </aside>
+              )}
             </header>
+            <div
+              className={styles.examChoices}
+              role="group"
+              aria-label={tr("Выберите экзамен")}
+            >
+              {["", ...FB_EXAMS].map((exam) => (
+                <button
+                  key={exam}
+                  aria-pressed={filters.exam === exam}
+                  onClick={() => filter("exam", exam)}
+                >
+                  {tr(
+                    exam === "Школьная программа"
+                      ? tr("Школа")
+                      : exam || tr("Все"),
+                  )}
+                </button>
+              ))}
+            </div>
             <section
               id="fb-search-panel"
               aria-label={tr("Фильтры поиска")}
@@ -1527,9 +1598,6 @@ export default function FindBuddy({
                 </span>
                 <div>
                   <h2>{tr("Какой урок вам нужен?")}</h2>
-                  <p>
-                    {tr("Выберите условия — подходящие анкеты появятся ниже.")}
-                  </p>
                 </div>
               </div>
               <div className={styles.quickFilters}>
@@ -1741,7 +1809,7 @@ export default function FindBuddy({
                   >
                     {(
                       [
-                        ["list", "Все анкеты"],
+                        ["list", "Все"],
                         ["focus", "По одной"],
                         ["saved", "Избранное"],
                       ] as const
@@ -1752,7 +1820,19 @@ export default function FindBuddy({
                         aria-pressed={view === value}
                         onClick={() => updateCatalogSearch({ view: value })}
                       >
-                        {tr(label)}
+                        <Icon
+                          name={
+                            value === "saved"
+                              ? "bookmark"
+                              : value === "focus"
+                                ? "teacher"
+                                : "grid"
+                          }
+                          size={16}
+                        />
+                        <span className={styles.viewLabel} title={tr(label)}>
+                          {tr(label)}
+                        </span>
                         {value === "saved" && saved.length > 0 && (
                           <span>{saved.length}</span>
                         )}
@@ -1776,7 +1856,7 @@ export default function FindBuddy({
                   </span>
                 )}
                 {loading &&
-                  (view === "focus" ? [0] : [0, 1]).map((id) => (
+                  (view === "focus" ? [0] : [0, 1, 2]).map((id) => (
                     <div
                       className={styles.skeleton}
                       key={id}

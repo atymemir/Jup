@@ -1228,3 +1228,181 @@
     font-size: 0.8rem;
   }
 }
+
+/* Public introduction shares the catalogue's type and controls. */
+.header {
+  margin-top: 14px;
+  border: 1px solid #e5e9f2;
+  border-radius: 18px;
+  background: white;
+  min-height: 76px;
+  padding: 12px 22px;
+  gap: 24px;
+}
+.header .brand :global(.jupBrand) {
+  width: 108px;
+  height: 40px;
+}
+.desktopNav {
+  gap: 24px;
+}
+.desktopNav a {
+  color: #677790;
+  font-size: 0.77rem;
+}
+.headerActions > a {
+  font-size: 0.76rem;
+}
+.headerCta {
+  padding: 11px 16px;
+  border-radius: 10px;
+  background: #3153ed;
+  color: white;
+  border-color: #3153ed;
+}
+.hero {
+  padding: 58px 0;
+  gap: 70px;
+}
+.hero h1 {
+  font-size: clamp(3rem, 5vw, 4.7rem);
+  letter-spacing: -0.06em;
+  line-height: 1.09;
+  font-weight: 620;
+}
+.hero h1 em {
+  color: #3153ed;
+  font-weight: 620;
+}
+.hero .eyebrow {
+  font-size: 0.65rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #72839d;
+}
+.heroText {
+  color: #677790;
+  font-size: 0.96rem;
+  line-height: 1.8;
+}
+.heroContext {
+  font-size: 0.76rem;
+  color: #71829d;
+}
+.finder {
+  border: 1px solid #e0e7f3;
+  border-radius: 22px;
+  padding: 28px;
+  box-shadow: 0 10px 40px #1e3c6f06;
+}
+.finderHeading {
+  margin-bottom: 23px;
+}
+.finderHeading h2 {
+  font-size: 1.25rem;
+  letter-spacing: -0.04em;
+}
+.finderHeading p {
+  font-size: 0.75rem;
+  color: #73849e;
+}
+.goalChoices label {
+  padding: 13px 14px;
+  min-height: 60px;
+  border-radius: 11px;
+  border-color: #e0e7f3;
+}
+.goalChoices label[data-selected="true"] {
+  background: #f1f4ff;
+  border-color: #b9caff;
+}
+.goalChoices strong {
+  font-size: 0.81rem;
+  font-weight: 550;
+}
+.goalChoices small {
+  font-size: 0.68rem;
+  color: #71829d;
+}
+.finder select {
+  min-height: 44px;
+  border-radius: 10px;
+  font-size: 0.8rem;
+  border-color: #dce4f1;
+}
+.finderFoot a {
+  border-radius: 11px;
+  background: #3153ed;
+  min-height: 46px;
+}
+.benefitGrid .featureIcon {
+  border-radius: 12px;
+  background: #edf2ff;
+  color: #3153ed;
+}
+.productPreview {
+  border: 1px solid #e1e7f2;
+  background: #eef2fa;
+  border-radius: 22px;
+}
+.previewPanel {
+  border-radius: 16px;
+  border-color: #e1e7f2;
+}
+.previewMark {
+  background: #3153ed;
+  color: white;
+  border-radius: 10px;
+}
+.finalCta {
+  background: #172238;
+  border-radius: 24px;
+}
+@media (max-width: 1050px) {
+  .header {
+    gap: 15px;
+  }
+  .desktopNav {
+    gap: 15px;
+  }
+  .desktopNav a {
+    font-size: 0.71rem;
+  }
+  .hero {
+    gap: 35px;
+  }
+}
+@media (max-width: 800px) {
+  .header {
+    border: 0;
+    background: transparent;
+    padding: 10px 0;
+    margin-top: 0;
+    min-height: 72px;
+  }
+  .hero {
+    padding-top: 28px;
+  }
+}
+@media (max-width: 640px) {
+  .hero {
+    gap: 30px;
+  }
+  .hero h1 {
+    font-size: clamp(2.65rem, 10vw, 3.8rem);
+  }
+  .finder {
+    padding: 24px 20px;
+    border-radius: 20px;
+  }
+  .headerActions {
+    gap: 10px;
+  }
+  .header .brand :global(.jupBrand) {
+    width: 92px;
+    height: 34px;
+  }
+  .heroText {
+    font-size: 0.91rem;
+  }
+}

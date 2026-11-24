@@ -8,9 +8,9 @@
     #2d41ff 76%,
     #1800ff 100%
   );
-  --ink: 27 34 44;
+  --ink: 27 39 64;
   --muted: 94 106 124;
-  --accent: 43 80 196;
+  --accent: 49 83 237;
   --surface: 255 255 255;
   --surface-subtle: 244 246 249;
   --border: 225 229 235;
@@ -30,7 +30,7 @@ html {
 body {
   margin: 0;
   color: rgb(var(--ink));
-  background: #f8f9fb;
+  background: #f7f8fc;
   font:
     16px/1.5 -apple-system,
     BlinkMacSystemFont,
@@ -1521,5 +1521,217 @@ button.primary .loadingOrbit {
 @media (max-width: 480px) {
   .authHeader > a:last-child {
     font-size: 0.8rem;
+  }
+}
+
+/* Shared controls follow the same shape and rhythm throughout the product. */
+.primary,
+.secondary {
+  gap: 8px;
+  border-radius: 11px;
+  min-height: 46px;
+  font-size: 0.875rem;
+  font-weight: 550;
+  transition:
+    background 0.16s,
+    box-shadow 0.16s,
+    transform 0.16s;
+}
+.primary {
+  background: #3153ed;
+  box-shadow: 0 4px 10px #3153ed0c;
+}
+.primary:hover:not(:disabled) {
+  background: #2545d3;
+  box-shadow: 0 5px 16px #3153ed1f;
+}
+.secondary {
+  border-color: #dce3f0;
+  color: #526581;
+}
+.secondary:hover:not(:disabled) {
+  background: #f4f6ff;
+  border-color: #c3cff4;
+}
+input,
+textarea,
+select {
+  accent-color: #3153ed;
+}
+input::placeholder,
+textarea::placeholder {
+  color: #a0acc0;
+}
+.languageSwitcher select {
+  color: #7c8aa3;
+  border-color: #e3e9f2;
+  border-radius: 9px;
+  background-color: white;
+}
+.authPage {
+  background: #f7f8fc;
+}
+.authLayout {
+  gap: 60px;
+  align-items: stretch;
+  padding-block: 20px 60px;
+}
+.authCompanion {
+  padding: 42px 40px;
+  border-radius: 26px;
+  background: #3153ed;
+  color: white;
+}
+.authCompanion h2 {
+  color: white;
+  letter-spacing: -0.055em;
+  line-height: 1.1;
+  font-weight: 550;
+}
+.authCompanion .authEyebrow,
+.authCompanion > p,
+.authCompanion .authBenefits p,
+.authCompanion small {
+  color: #cbd6ff;
+}
+.authCompanion .authBenefits > div > span {
+  color: white;
+  background: #ffffff14;
+}
+.authCompanion .authBenefits strong {
+  color: white;
+}
+.authLayout .authCard {
+  background: white;
+  border: 1px solid #e3e9f2;
+  border-radius: 22px;
+  padding: 36px;
+  box-shadow: none;
+}
+.authCard input {
+  border-color: #dfe6f2;
+  border-radius: 10px;
+  background: #fcfdff;
+}
+.siteFooter {
+  margin-top: 60px;
+  border-color: #e0e6f1;
+}
+.footerBrand {
+  font-size: 1.25rem;
+  font-weight: 600;
+  letter-spacing: -0.045em;
+}
+.siteFooter nav > span {
+  color: #9aa7bc;
+  font-size: 0.62rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+.siteFooter nav a {
+  font-size: 0.76rem;
+  color: #7d8ba3;
+}
+@media (max-width: 800px) {
+  .authLayout {
+    gap: 25px;
+  }
+  .authCompanion {
+    padding: 28px;
+    border-radius: 20px;
+  }
+  .authCompanion h2 {
+    font-size: 2.4rem;
+  }
+  .authLayout .authCard {
+    padding: 28px 24px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .primary,
+  .secondary {
+    transition: none;
+  }
+}
+
+.authCompanion > p:not(.authEyebrow):not(.authPilot),
+.authCompanion .authBenefits p,
+.authCompanion .authPilot {
+  color: #e2e8ff;
+}
+.authCompanion .authPilot {
+  border-color: #ffffff26;
+}
+.authCompanion .authEyebrow {
+  color: #e2e8ff;
+  font-size: 0.68rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+/* A compact native language picker keeps full language names in its menu. */
+.languageSwitcher {
+  position: relative;
+  width: 76px;
+  height: 38px;
+  padding: 0;
+  border: 1px solid #e0e7f2;
+  border-radius: 10px;
+  background: white;
+  color: #677790;
+}
+.languageCode {
+  display: flex;
+  align-items: center;
+  padding: 0 13px;
+  height: 100%;
+  font-size: 0.7rem;
+  letter-spacing: 0.03em;
+  font-weight: 550;
+}
+.languageSwitcher::after {
+  content: "";
+  position: absolute;
+  right: 13px;
+  top: 14px;
+  width: 5px;
+  height: 5px;
+  border-right: 1.5px solid currentColor;
+  border-bottom: 1.5px solid currentColor;
+  transform: rotate(45deg);
+  pointer-events: none;
+}
+.languageSwitcher select {
+  position: absolute;
+  inset: 0;
+  height: 100%;
+  min-height: 100%;
+  margin: 0;
+  opacity: 0;
+  cursor: pointer;
+}
+.languageSwitcher:focus-within {
+  border-color: #3153ed;
+  outline: 3px solid #3153ed18;
+  outline-offset: 2px;
+}
+.infoPage > header {
+  flex-wrap: wrap;
+  gap: 14px 20px;
+}
+@media (max-width: 640px) {
+  .languageSwitcher {
+    width: 68px;
+    height: 36px;
+  }
+  .languageCode {
+    padding-left: 11px;
+    font-size: 0.68rem;
+  }
+  .infoPage > header {
+    padding-bottom: 18px;
+  }
+  .infoPage > header > a:last-child {
+    font-size: 0.78rem;
   }
 }

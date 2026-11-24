@@ -178,3 +178,9 @@ The interface supports Russian (`ru`, default), Kazakh (`kk`) and English (`en`)
 `app/i18n/messages.json` contains the Kazakh and English translations keyed by the original Russian interface text. Use `useLocale().t` in client components or `getServerLocale()` on the server. Pass variables through `{0}` placeholders. Translate presentation labels, not form values or database enums. Tutor descriptions, names, lesson titles, messages and other authored content stay in their original language.
 
 Quick-fill templates generate text in the selected language and preserve the author's notes. Optional AI drafting receives a validated locale; it still requires the existing server-side AI configuration. No database migration is needed for these interface changes.
+
+### Workspace navigation
+
+The workspace has a keyboard section finder (`Ctrl K` / `⌘ K`) and a complete mobile menu under **All sections**. Arrow keys and Enter select a destination; Escape closes the finder while keeping the underlying form intact. The shortcut stays inactive while a lesson dialog is open. Tutor and administrator role checks remain on the server.
+
+Catalogue goal shortcuts update the existing shareable subject/exam filters. Teacher dashboard actions open the actual schedule, profile, conversations and lesson editor. This design update requires no database migration or new external service.

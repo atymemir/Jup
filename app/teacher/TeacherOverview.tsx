@@ -2,6 +2,7 @@
 import { useLocale as useJupLocale } from "../i18n/LocaleProvider";
 import { type Booking, lessonDate } from "../lib/findbuddy";
 import { Icon } from "../ui/Icon";
+import { lessonClock } from "../lib/lessonSlots";
 import st from "./teacher.module.css";
 
 export function TeacherOverview({
@@ -49,6 +50,7 @@ export function TeacherOverview({
         </div>
         <div className={st.buttons}>
           <button className="primary" onClick={add}>
+            <Icon name="plus" size={18} />
             {tr("Добавить урок")}
           </button>
           <button className="secondary" onClick={addGroup}>
@@ -65,43 +67,86 @@ export function TeacherOverview({
           ] as const
         ).map(([panel, label, count]) => (
           <button key={panel} onClick={() => openPanel(panel)}>
+            <span className={st.metricTop}>
+              <Icon
+                name={
+                  panel === "schedule"
+                    ? "calendar"
+                    : panel === "students"
+                      ? "groups"
+                      : "requests"
+                }
+                size={19}
+              />
+              <Icon name="arrow" size={15} />
+            </span>
             <strong>{count}</strong>
             <span>{tr(label)}</span>
           </button>
         ))}
       </div>
-      <div className={st.next}>
-        <div>
-          <p>
-            <Icon name="calendar" size={17} />
-            {tr(" Ближайшее занятие")}
-          </p>
-          <h2>
-            {next
-              ? next.lesson_title || tr(next.subject)
-              : tr("Ближайших записей пока нет")}
-          </h2>
-          <p>
-            {tr(
-              next
+      <div className={st.dashboardMain}>
+        <div className={st.next}>
+          <div className={st.nextHeading}>
+            <span className={st.liveDot} />
+            <p>{tr("Ближайшее занятие")}</p>
+            {next && (
+              <span className={st.lessonTime}>
+                {lessonClock(next.starts_at, uiLocale)}
+              </span>
+            )}
+          </div>
+          <div className={st.nextContent}>
+            <h2>
+              {next
+                ? next.lesson_title || tr(next.subject)
+                : tr("Ближайших записей пока нет")}
+            </h2>
+            <p>
+              {next
                 ? lessonDate(next.starts_at, uiLocale) +
-                    tr(" · время Казахстана")
+                  tr(" · время Казахстана")
                 : slots > 0
                   ? tr("Время опубликовано. Первые записи появятся здесь.")
-                  : tr("Добавьте урок и выберите время для записи."),
+                  : tr("Добавьте урок и выберите время для записи.")}
+            </p>
+          </div>
+          <div className={st.nextActions}>
+            {next ? (
+              <button className="primary" onClick={() => openNext(next.id)}>
+                {tr("Открыть занятие")}
+                <Icon name="arrowRight" size={17} />
+              </button>
+            ) : (
+              <button className="primary" onClick={add}>
+                <Icon name="plus" size={17} />
+                {tr("Добавить урок")}
+              </button>
             )}
-          </p>
+            <button onClick={() => openPanel("schedule")}>
+              {tr("Расписание")}
+              <Icon name="arrowRight" size={16} />
+            </button>
+          </div>
         </div>
-        {next && (
-          <button className="primary" onClick={() => openNext(next.id)}>
-            {tr("Открыть занятие")}
-          </button>
-        )}
-        {!next && slots > 0 && (
-          <button className="secondary" onClick={() => openPanel("schedule")}>
-            {tr("Открыть расписание")}
-          </button>
-        )}
+        <aside className={st.quickActions}>
+          <h2>{tr("Быстрые действия")}</h2>
+          {(
+            [
+              ["calendar", "Открыть расписание", () => openPanel("schedule")],
+              ["teacher", "Редактировать анкету", () => openPanel("profile")],
+              ["requests", "Личные сообщения", () => openPanel("messages")],
+            ] as const
+          ).map(([icon, label, action]) => (
+            <button type="button" key={label} onClick={action}>
+              <span>
+                <Icon name={icon} size={19} />
+              </span>
+              {tr(label)}
+              <Icon name="chevron" size={15} />
+            </button>
+          ))}
+        </aside>
       </div>
       {!!attention?.length && (
         <section className={st.attention}>

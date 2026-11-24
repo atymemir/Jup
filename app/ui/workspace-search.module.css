@@ -1,0 +1,212 @@
+.trigger {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  border: 1px solid rgb(var(--border));
+  border-radius: 11px;
+  min-width: 220px;
+  min-height: 42px;
+  color: rgb(var(--muted));
+  background: #f8f9fc;
+  font-size: 0.8rem;
+}
+.trigger:hover {
+  border-color: rgb(var(--accent-border));
+  background: white;
+}
+.trigger kbd {
+  margin-left: auto;
+  font-size: 0.7rem;
+}
+.mobileTrigger {
+  display: none;
+}
+.dialog {
+  width: min(540px, calc(100vw - 32px));
+  max-height: min(680px, calc(100dvh - 48px));
+  padding: 0;
+  border: 1px solid #e0e5ef;
+  border-radius: 22px;
+  color: rgb(var(--ink));
+  box-shadow: 0 28px 100px #101d3c33;
+  overscroll-behavior: contain;
+}
+.dialog::backdrop {
+  background: #15213e66;
+  backdrop-filter: blur(5px);
+}
+.dialog header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 22px 24px 16px;
+}
+.dialog h2 {
+  font-size: 1.05rem;
+  letter-spacing: -0.025em;
+}
+.dialog header button {
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 9px;
+  color: rgb(var(--muted));
+}
+.dialog header button:hover {
+  background: rgb(var(--surface-subtle));
+}
+.input {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 0 24px 16px;
+  padding: 12px 14px;
+  border: 1px solid rgb(var(--border-strong));
+  border-radius: 12px;
+  color: rgb(var(--muted));
+}
+.input:focus-within {
+  outline: 3px solid rgb(var(--accent) / 0.09);
+  border-color: rgb(var(--accent));
+}
+.input input {
+  border: 0;
+  outline: 0;
+  min-width: 0;
+  flex: 1;
+  background: none;
+  color: rgb(var(--ink));
+}
+.input kbd {
+  font-size: 0.7rem;
+}
+.results {
+  display: grid;
+  gap: 4px;
+  max-height: 390px;
+  overflow: auto;
+  padding: 0 12px 12px;
+}
+.results a {
+  display: flex;
+  align-items: center;
+  gap: 13px;
+  padding: 10px 12px;
+  min-height: 54px;
+  border-radius: 11px;
+  font-size: 0.9rem;
+  text-decoration: none;
+}
+.results a > span {
+  display: grid;
+  place-items: center;
+  background: #f0f3fa;
+  color: #62718b;
+  width: 34px;
+  height: 34px;
+  border-radius: 9px;
+}
+.results a > svg {
+  margin-left: auto;
+  color: #91a0b8;
+}
+.results a.selected,
+.results a:focus-visible {
+  background: #edf1ff;
+  color: #274ae7;
+  outline: none;
+}
+.results a.selected > span {
+  color: #274ae7;
+  background: white;
+}
+.empty {
+  padding: 24px 16px;
+  color: rgb(var(--muted));
+  font-size: 0.9rem;
+}
+.dialog footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  border-top: 1px solid rgb(var(--border));
+  padding: 14px 24px;
+  font-size: 0.7rem;
+  color: rgb(var(--muted));
+}
+.dialog footer span:last-child {
+  display: flex;
+  gap: 5px;
+}
+.dialog kbd {
+  font-family: inherit;
+  padding: 2px 5px;
+  border: 1px solid #e0e5ef;
+  border-radius: 4px;
+}
+@media (max-width: 1100px) {
+  .trigger {
+    min-width: 0;
+  }
+  .trigger span,
+  .trigger kbd {
+    display: none;
+  }
+}
+@media (max-width: 700px) {
+  .trigger {
+    display: none;
+  }
+  .mobileTrigger {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    position: fixed;
+    z-index: 32;
+    bottom: calc(6px + env(safe-area-inset-bottom));
+    right: 0;
+    width: 25%;
+    height: 56px;
+    padding: 6px 2px;
+    font-size: 0.64rem;
+    color: #6c7890;
+    background: none;
+  }
+  .mobileTrigger:hover {
+    color: rgb(var(--accent));
+  }
+  .dialog {
+    max-height: calc(100dvh - 36px);
+    border-radius: 18px;
+  }
+  .dialog header {
+    padding: 18px 20px 12px;
+  }
+  .input {
+    margin-inline: 20px;
+  }
+  .results {
+    max-height: 50dvh;
+  }
+}
+.input input:focus-visible {
+  outline: 0;
+  box-shadow: none;
+}
+@media (max-width: 700px) {
+  .mobileTrigger {
+    padding: 0 3px;
+    line-height: 1.15;
+  }
+  .mobileTrigger > svg {
+    flex-shrink: 0;
+  }
+  .mobileTrigger[data-active="true"] {
+    color: #3153ed;
+  }
+}
