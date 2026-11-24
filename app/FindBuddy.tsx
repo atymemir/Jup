@@ -1,4 +1,6 @@
 "use client";
+import { NotificationBell } from "./notifications/NotificationBell";
+import { useNotifications } from "./notifications/useNotifications";
 import { LoadingState } from "./ui/LoadingState";
 import { Brand } from "./ui/Brand";
 
@@ -309,6 +311,7 @@ export default function FindBuddy({
   const [dashboard, setDashboard] = useState<Dashboard>(EMPTY_DASHBOARD);
   const [userId, setUserId] = useState<string | null>(null);
   const activeUser = useRef<string | null>(null);
+  const notifications = useNotifications(embedded ? null : userId);
   const [loading, setLoading] = useState(true);
   const inbox = useInbox(userId, tab === "messages");
   const refreshNumber = useRef(0);
@@ -1135,6 +1138,7 @@ export default function FindBuddy({
           )}
         </nav>
         <div className={styles.accountLinks}>
+          {!embedded && userId && <NotificationBell role={dashboard.account?.role ?? "student"} state={notifications} />}
           {!userId ? (
             <>
               <Link

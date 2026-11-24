@@ -183,6 +183,8 @@ export function database() {
         );
       }
       await db.exec(await readFile("supabase/sql/20261123175841_findbuddy_access_grants.sql", "utf8"));
+      const notifications = await db.query<{ ready: string | null }>("select to_regprocedure('public.fb_notifications(text,jsonb)') as ready");
+      if (!notifications.rows[0].ready) await db.exec(await readFile("supabase/sql/20261124000000_findbuddy_notifications.sql", "utf8"));
       return db;
     })
     .catch((error) => {
@@ -334,7 +336,7 @@ export async function previewData(
   const db = await database();
   const user = await identity(req);
   if (view === "session") return { user, preview: true };
-  if (!user && (action || view === "dashboard" || view === "platform"))
+  if (!user && (action || view === "dashboard" || view === "platform" || view === "notifications"))
     throw Error("Войдите в аккаунт.");
   return db.transaction(async (tx) => {
     if (action === "test_pay" || action === "test_withdraw") {
@@ -378,6 +380,8 @@ export async function previewData(
     await tx.query("select set_config('request.jwt.claim.sub',$1,true)", [
       user ?? "",
     ]);
+    if (view === "notifications" || action === "notifications")
+      return (await tx.query<{ v: object }>("select fb_notifications($1,$2::jsonb) v", [action ? data.action ?? "list" : "list", JSON.stringify(data)])).rows[0].v;
     if (!action && view === "viewer")
       return (await tx.query<{ v: object }>("select fb_viewer() v")).rows[0].v;
     if (!action && view === "platform")

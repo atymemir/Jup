@@ -459,3 +459,8 @@ button.primary .loadingOrbit { border-color: #ffffff40; border-top-color: white;
 .authPending > div { display: grid; gap: 18px; margin-top: 24px; }
 .authPending > div > span { height: 50px; border-radius: 12px; background: rgb(var(--surface-subtle)); }
 .authPending > div > span:last-child { background: rgb(var(--accent) / .12); }
+
+.notificationBell { position: relative; display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-width: 44px; min-height: 44px; padding: 8px 12px; border: 1px solid rgb(var(--border)); border-radius: 12px; background: white; color: rgb(var(--accent)); font-size: .85rem; flex-shrink: 0; }
+.notificationBell:hover { background: rgb(var(--surface-subtle)); text-decoration: none; }
+.notificationBadge { display: inline-flex; align-items: center; justify-content: center; min-width: 21px; height: 21px; padding: 0 5px; font-size: .68rem; line-height: 1; border-radius: 20px; color: white; background: rgb(var(--accent)); font-weight: 650; }
+@media(max-width:760px) { .notificationBellLabel { display:none; } .notificationBell { padding:9px; } .notificationBell .notificationBadge { position:absolute; top:-5px; right:-5px; border:2px solid white; } }

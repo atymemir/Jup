@@ -3,6 +3,9 @@ import { LoadingState } from "../ui/LoadingState";
 import { Brand } from "../ui/Brand";
 
 import Link from "next/link";
+import { Notifications } from "../notifications/Notifications";
+import { NotificationBell } from "../notifications/NotificationBell";
+import { useNotifications } from "../notifications/useNotifications";
 import {
   useCallback,
   useEffect,
@@ -76,6 +79,7 @@ function watchHash(update: () => void) {
 }
 export default function AppEntry({ area = "public" }: { area?: Area }) {
   const [account, setAccount] = useState<Account | null>(null);
+  const notifications = useNotifications(account?.id ?? null);
   const [data, setData] = useState<PlatformDashboard | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -254,7 +258,9 @@ export default function AppEntry({ area = "public" }: { area?: Area }) {
     ([key]) => key !== "staff" || account.role === "owner",
   );
   let content;
-  if (area === "business")
+  if (panel === "notifications")
+    content = <Notifications state={notifications} role={account.role} />;
+  else if (area === "business")
     content = <OrganizationDesk data={data} panel={panel} refresh={refresh} />;
   else if (area === "admin")
     content = <Moderation data={data} panel={panel} refresh={refresh} />;
@@ -292,6 +298,7 @@ export default function AppEntry({ area = "public" }: { area?: Area }) {
           <p className={st.roleLabel}>{roleLabels[account.role]}</p>
         </div>
         <nav className={st.nav} aria-label="Ваш кабинет">
+          <a href="#notifications" aria-current={panel === "notifications" ? "page" : undefined}><Icon name="bell" size={19} />События{(notifications.data?.unread ?? 0) > 0 && <span className="notificationBadge">{notifications.data!.unread > 99 ? "99+" : notifications.data!.unread}</span>}</a>
           {nav.map(([id, label, icon, mobile]) => (
             <a
               key={id}
@@ -323,6 +330,7 @@ export default function AppEntry({ area = "public" }: { area?: Area }) {
                     : "Ваш путь к учебной цели"}
             </p>
           </div>
+          <NotificationBell role={account.role} state={notifications} />
           <button
             className={st.textButton}
             disabled={exiting}
