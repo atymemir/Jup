@@ -1,4 +1,6 @@
 "use client";
+import { TextEditor } from "../authoring/TextEditor";
+import { FormattedText } from "../ui/FormattedText";
 import dynamic from "next/dynamic";
 import {
   useEffect,
@@ -159,14 +161,7 @@ export function RoomEditor({
               setDraft(null);
           }}
         >
-          <Field label="План занятия">
-            <textarea
-              name="plan"
-              maxLength={2000}
-              rows={3}
-              defaultValue={draft.room?.plan}
-            />
-          </Field>
+          <TextEditor label="План занятия" name="plan" maxLength={2000} rows={3} defaultValue={draft.room?.plan} disabled={busy} />
           <Field label="Ссылка на материалы">
             <input
               type="url"
@@ -192,22 +187,8 @@ export function RoomEditor({
               defaultValue={draft.room?.location}
             />
           </Field>
-          <Field label="Домашнее задание">
-            <textarea
-              name="homework"
-              maxLength={2000}
-              rows={3}
-              defaultValue={draft.room?.homework}
-            />
-          </Field>
-          <Field label="Что разобрали на занятии">
-            <textarea
-              name="recap"
-              maxLength={2000}
-              rows={2}
-              defaultValue={draft.room?.recap}
-            />
-          </Field>
+          <TextEditor label="Домашнее задание" name="homework" maxLength={2000} rows={3} defaultValue={draft.room?.homework} disabled={busy} />
+          <TextEditor label="Что разобрали на занятии" name="recap" maxLength={2000} rows={2} defaultValue={draft.room?.recap} disabled={busy} />
           <div className={st.actions}>
             <button className="primary" disabled={busy}>
               Сохранить материалы
@@ -254,7 +235,7 @@ function Homework({
   return (
     <section className={st.panel}>
       <h3>Домашняя работа</h3>
-      <p>{room?.homework || "Преподаватель пока не добавил задание."}</p>
+      <FormattedText value={room?.homework || "Задание пока не добавлено."} />
       {work && (
         <div className={st.answer}>
           <strong>
@@ -715,7 +696,7 @@ export function Workspace({
           </section>
           <section className={st.panel}>
             <h3>План и материалы</h3>
-            <p>{room?.plan || "План занятия пока не опубликован."}</p>
+            <FormattedText value={room?.plan || "План пока не добавлен."} />
             {room?.material && (
               <a
                 className="secondary"
@@ -729,7 +710,7 @@ export function Workspace({
             {room?.recap && (
               <>
                 <h4>Итоги урока</h4>
-                <p>{room.recap}</p>
+                <FormattedText value={room.recap} />
               </>
             )}
             {teacher && (

@@ -1,4 +1,5 @@
 const shapes = {
+  wand: <><path d="m4 20 12-12 4 4-12 12ZM14 10l4 4M5 3v4M3 5h4M19 1v4M17 3h4M21 17v4M19 19h4" /></>,
   arrow: <path d="M5 19 19 5M6 5h13v13" />,
   bell: <><path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9ZM10 21h4" /><path d="M12 2V1" /></>,
   search: (

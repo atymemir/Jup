@@ -1,4 +1,7 @@
 "use client";
+import { FormattedText } from "./ui/FormattedText";
+import { lessonTimeSuggestions } from "./lib/authoring";
+import { DraftFields } from "./authoring/DraftFields";
 import { NotificationBell } from "./notifications/NotificationBell";
 import { useNotifications } from "./notifications/useNotifications";
 import { LoadingState } from "./ui/LoadingState";
@@ -350,6 +353,7 @@ export default function FindBuddy({
   const [cursor, setCursor] = useState(0);
   const [filtersOpen, setFiltersOpen] = useState(false);
   const [publicationOffering, setPublicationOffering] = useState("");
+  const [publicationStarts,setPublicationStarts] = useState("");
   const [video, setVideo] = useState(false);
   const [telegramAvailable, setTelegramAvailable] = useState(false);
   const [telegramUrl, setTelegramUrl] = useState("");
@@ -639,11 +643,14 @@ export default function FindBuddy({
     (dashboard.tutor?.id === id
       ? dashboard.tutor.display_name
       : "Преподаватель");
+  const selectedOffering = dashboard.offerings?.find(o => o.id === publicationOffering && o.active) ?? dashboard.offerings?.find(o => o.active);
   function openModal(next: Modal) {
     setError("");
     setNotice("");
-    if (next.kind === "group")
-      setPublicationOffering(dashboard.offerings?.[0]?.id ?? "");
+    if (next.kind === "group") {
+      setPublicationOffering(dashboard.offerings?.find(o => o.active)?.id ?? "");
+      setPublicationStarts("");
+    }
     setModal(next);
   }
   async function mutate(
@@ -1240,7 +1247,7 @@ export default function FindBuddy({
       )}
       {(loading || busy) && <div className="requestProgress" role="status"><span className="srOnly">{busy ? "Сохраняем изменения…" : "Загружаем занятия…"}</span></div>}
       {loading && (teacherMode || (tab !== "tutors" && tab !== "groups") || subpage === "profile") && <LoadingState label="Открываем ваши занятия…" />}
-      {!demo && (
+      {!demo && !embedded && (
         <div className={styles.previewBanner} role="note">
           <strong>Бесплатный пилот</strong>
           <span>Jup edu объединяет учеников и преподавателей. Комиссия платформы — 0%.</span>
@@ -1848,7 +1855,7 @@ export default function FindBuddy({
                         }
                       />
                       <h3>{g.title}</h3>
-                      <p>{g.description}</p>
+                      <FormattedText value={g.description} />
                       <div className={styles.meta}>
                         {g.exam} · {g.language} · {g.city}
                         <br />
@@ -2379,12 +2386,14 @@ export default function FindBuddy({
                         teacherRequests.filter((r) => r.status === "open")
                           .length
                       }
-                      unread={unread}
+                      unread={directThreads.reduce((total, thread) => total + thread.unread, 0)}
                       tasks={
                         attention.filter((x) =>
                           teaching.some((b) => b.id === x.id),
                         ).length
                       }
+                      attention={attention.filter(item => teaching.some(booking => booking.id === item.id))}
+                      openAttention={openBooking}
                       openNext={openBooking}
                       openPanel={openTeacher}
                       add={() => openModal({ kind: "group", individual: true })}
@@ -2734,7 +2743,7 @@ export default function FindBuddy({
           <details><summary>Где будут занятия и домашняя работа?</summary><p>После записи откройте «Мои занятия»: там расписание, чат, материалы и домашняя работа. Формат и место урока согласуйте с преподавателем.</p></details>
         </section>
       )}
-      <SiteFooter />
+      {!embedded && !teacherMode && <SiteFooter />}
       <dialog
         ref={dialog}
         className={styles.dialog}
@@ -3006,11 +3015,7 @@ export default function FindBuddy({
                       <select
                         name="offering_id"
                         required
-                        value={
-                          publicationOffering ||
-                          dashboard.offerings?.[0]?.id ||
-                          ""
-                        }
+                        value={selectedOffering?.id ?? ""}
                         onChange={(e) => setPublicationOffering(e.target.value)}
                       >
                         {dashboard.offerings
@@ -3022,46 +3027,30 @@ export default function FindBuddy({
                           ))}
                       </select>
                     </Field>
-                    <p>
-                      Предмет, экзамен и формат берутся из выбранного
-                      направления. Продолжительность занятия — 60 минут. Укажите
-                      начало минимум через 30 минут.
-                    </p>
-                    <Field label="Язык занятия">
-                      <select name="language" key={publicationOffering}>
-                        {(
-                          dashboard.offerings?.find(
-                            (o) =>
-                              o.id ===
-                              (publicationOffering ||
-                                dashboard.offerings?.[0]?.id),
-                          )?.languages ?? []
-                        ).map((l) => (
-                          <option key={l}>{l}</option>
-                        ))}
-                      </select>
-                    </Field>
-                    <Field label="Название / тема">
-                      <input
-                        name="title"
-                        required
-                        minLength={5}
-                        maxLength={120}
-                        placeholder="География · климат и природные зоны"
-                      />
-                    </Field>
-                    <Field label="План занятия и кому подойдёт">
-                      <textarea
-                        name="description"
-                        required
-                        minLength={20}
-                        maxLength={1500}
-                        rows={3}
-                      />
-                    </Field>
+                    <p className={styles.meta}>60 минут · начало минимум через 30 минут.</p>
+                    {(selectedOffering?.languages.length ?? 0) > 1 ? <Field label="Язык занятия"><select name="language" key={publicationOffering}>{selectedOffering?.languages.map(language => <option key={language}>{language}</option>)}</select></Field> : <input type="hidden" name="language" value={selectedOffering?.languages[0] ?? dashboard.tutor?.language ?? "Русский"} />}
+                    <DraftFields kind="lesson" subject={selectedOffering?.subject ?? dashboard.tutor?.subject ?? ""} exam={selectedOffering?.exam ?? dashboard.tutor?.exam ?? ""} disabled={busy} />
                     <Field label="Дата и время · Казахстан, UTC+5">
-                      <input name="starts_at" type="datetime-local" required />
+                      <input name="starts_at" type="datetime-local" required value={publicationStarts} onChange={e=>setPublicationStarts(e.target.value)} />
                     </Field>
+                    <div className="quickTimes" role="group" aria-label="Быстрый выбор времени">{lessonTimeSuggestions(now).map(time=><button type="button" key={time.value} onClick={()=>setPublicationStarts(time.value)}>{time.label}</button>)}</div>
+                    <div className={styles.formGrid}>
+                      <Field label="Цена за участника, ₸">
+                        <input
+                          key={publicationOffering}
+                          name="price"
+                          type="number"
+                          required
+                          min={0}
+                          max={100000}
+                          step={1}
+                          defaultValue={selectedOffering?.price ?? dashboard.tutor?.price ?? 1500}
+                        />
+                      </Field>
+                    </div>
+                    <details className="lessonAdvanced">
+                      <summary>Повторение{!modal.individual && " и размер группы"}</summary>
+                      <div>
                     <Field label="Повторение">
                       <select name="weeks" defaultValue="1">
                         {[1, 2, 3, 4, 5, 6, 7, 8].map((n) => (
@@ -3073,29 +3062,6 @@ export default function FindBuddy({
                         ))}
                       </select>
                     </Field>
-                    <div className={styles.formGrid}>
-                      <Field label="Цена за участника, ₸">
-                        <input
-                          key={publicationOffering}
-                          name="price"
-                          type="number"
-                          required
-                          min={0}
-                          max={100000}
-                          step={1}
-                          defaultValue={
-                            dashboard.offerings?.find(
-                              (o) =>
-                                o.id ===
-                                (publicationOffering ||
-                                  dashboard.offerings?.find((d) => d.active)
-                                    ?.id),
-                            )?.price ??
-                            dashboard.tutor?.price ??
-                            1500
-                          }
-                        />
-                      </Field>
                       {modal.individual ? (
                         <input type="hidden" name="capacity" value="1" />
                       ) : (
@@ -3111,11 +3077,9 @@ export default function FindBuddy({
                           />
                         </Field>
                       )}
-                    </div>
-                    <p className={styles.meta}>
-                      Запись резервирует место сразу, даже до подключения
-                      оплаты. Отмена учеником освобождает место.
-                    </p>
+                      </div>
+                    </details>
+
                   </>
                 )}
                 <PrimaryButton
