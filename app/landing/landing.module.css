@@ -1,6 +1,7 @@
 .landing {
-  --deep: #263de1;
+  --deep: #294ae3;
   overflow-x: clip;
+  background: #edf1f7;
 }
 .landing h1,
 .landing h2,
@@ -23,7 +24,7 @@
 .header {
   width: min(1240px, calc(100% - 80px));
   margin: auto;
-  min-height: 92px;
+  min-height: 80px;
   display: flex;
   align-items: center;
   gap: 32px;
@@ -63,7 +64,7 @@
   background: var(--deep);
   color: white;
   border-radius: 10px;
-  min-height: 44px;
+  min-height: 48px;
   padding: 11px 18px;
   font-weight: 600;
   text-decoration: none !important;
@@ -762,7 +763,7 @@
   line-height: 1.7;
 }
 .finalCta :global(.secondary) {
-  min-height: 52px;
+  min-height: 48px;
   border: 0;
   padding-inline: 26px;
   border-radius: 12px;
@@ -1404,5 +1405,327 @@
   }
   .heroText {
     font-size: 0.91rem;
+  }
+}
+
+/* A quiet editorial frame, with colour reserved for decisions and people. */
+.hero {
+  position: relative;
+  width: min(1320px, calc(100% - 48px));
+  margin: 12px auto 0;
+  padding: clamp(28px, 4vw, 64px);
+  gap: clamp(28px, 5vw, 72px);
+  grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr);
+  align-items: center;
+  border-radius: 28px;
+  background: #14243d;
+}
+.heroCopy {
+  color: #fff;
+}
+.heroCopy > .eyebrow {
+  color: #b5c9ff;
+  font-size: 0.75rem;
+  letter-spacing: 0.02em;
+}
+.hero h1 {
+  font-size: clamp(3.4rem, 5.3vw, 5.5rem);
+  line-height: 1.06;
+}
+.hero h1 em {
+  color: #a7e4ec;
+}
+.heroText {
+  color: #c2cfe1;
+  font-size: 1.05rem;
+  max-width: 35ch;
+}
+.heroActions {
+  gap: 12px;
+}
+.heroActions :global(.primary) {
+  background: #fff;
+  color: #18315a;
+  min-height: 48px;
+  padding: 12px 18px;
+}
+.heroActions :global(.primary):hover {
+  background: #dbe7ff;
+}
+.heroActions > a:last-child {
+  color: #d3ddf0;
+  padding: 12px;
+  min-height: 48px;
+}
+.heroNote {
+  color: #aebfd8;
+}
+.heroNote svg {
+  color: #a7e4ec;
+}
+.heroSubjects {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 18px;
+  padding-top: 25px;
+  margin-top: 34px;
+  border-top: 1px solid #ffffff25;
+}
+.heroSubjects a {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 40px;
+  font-size: 0.78rem;
+  color: #c5d4eb;
+}
+.heroSubjects a:hover {
+  color: white;
+}
+.finder {
+  border: 0;
+  box-shadow: 0 18px 48px #08152c24;
+  padding: 24px;
+  border-radius: 22px;
+  background: #f9fbff;
+}
+.finderHeading {
+  margin-bottom: 18px;
+}
+.finderHeading > .featureIcon {
+  background: #e9eefb;
+}
+.goalChoices {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+}
+.goalChoices label {
+  padding: 13px 10px;
+  gap: 6px;
+  align-items: center;
+  min-height: 84px;
+}
+.goalChoices label strong {
+  font-size: 0.8rem;
+  line-height: 1.4;
+}
+.goalChoices label small {
+  display: none;
+}
+.finderOptions {
+  gap: 16px;
+  margin-top: 20px;
+}
+.finderNote {
+  font-size: 0.75rem;
+  padding-top: 15px;
+  margin-top: 18px;
+}
+.finderFoot {
+  margin-top: 12px;
+}
+.finderFoot > a {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 48px;
+  padding: 12px 18px;
+  border-radius: 12px;
+  background: #3153ed;
+  color: white;
+  font-size: 0.9rem;
+  font-weight: 600;
+  text-decoration: none;
+}
+.finderFoot > a:hover {
+  background: #2545d3;
+}
+.finderFoot button {
+  min-height: 44px;
+  padding-inline: 10px;
+}
+.pilotStrip {
+  border-color: #d2ddec;
+}
+.benefitGrid {
+  gap: 16px;
+}
+.benefitGrid article {
+  padding: 26px;
+  border-radius: 20px;
+  background: #e0e9f7;
+}
+.benefitGrid article:nth-child(2) {
+  background: #e0edf0;
+}
+.benefitGrid article:nth-child(3) {
+  background: #e5e5f6;
+}
+.benefitGrid .featureIcon {
+  background: #ffffffa8;
+  position: static;
+  margin-bottom: 18px;
+}
+.benefitGrid h3 {
+  margin: 0 0 12px;
+}
+.partners {
+  background: #1a2c48;
+  color: white;
+  border-radius: 28px;
+  width: min(1320px, calc(100% - 48px));
+  margin: auto;
+  padding: 60px max(32px, calc((100% - 1160px) / 2));
+  column-gap: 7%;
+  row-gap: 32px;
+}
+.partners .eyebrow {
+  color: #a5bfff;
+}
+.partners h2 span {
+  color: #a7e4ec;
+}
+.partners > div:first-child > p:last-child,
+.partnerDetails > p,
+.partnerDetails > small {
+  color: #bbcbe0;
+}
+.partnerTabs {
+  border-color: #ffffff30;
+}
+.partnerTabs button {
+  color: #c1cfe4;
+  min-height: 48px;
+}
+.partnerTabs button[aria-pressed="true"] {
+  color: white;
+  border-color: #a7e4ec;
+}
+.partnerDetails li svg {
+  color: #a7e4ec;
+}
+.partnerDetails .quietLink {
+  color: #c8d7f4;
+}
+.partnerDetails :global(.primary) {
+  min-height: 48px;
+  border-radius: 12px;
+}
+.telegramPanel {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 24px;
+  width: min(1160px, calc(100% - 80px));
+  margin: 70px auto 0;
+  padding: 30px;
+  background: #dfe9fa;
+  border-radius: 22px;
+}
+.telegramIcon {
+  display: grid;
+  place-items: center;
+  width: 64px;
+  height: 64px;
+  border-radius: 18px;
+  color: #3153ed;
+  background: white;
+  flex-shrink: 0;
+}
+.telegramPanel .eyebrow {
+  margin-bottom: 5px;
+  font-size: 0.75rem;
+}
+.telegramPanel h2 {
+  font-size: clamp(1.3rem, 2.2vw, 1.8rem);
+  letter-spacing: -0.04em;
+}
+.telegramPanel p:last-child {
+  color: #526784;
+  margin-top: 6px;
+  font-size: 0.9rem;
+}
+.telegramPanel > a {
+  margin-left: auto;
+}
+.finalCta {
+  background: #294ae3;
+}
+@media (max-width: 1000px) {
+  .hero {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: 28px;
+  }
+  .hero h1 {
+    font-size: clamp(2.8rem, 5.3vw, 4rem);
+  }
+  .finder {
+    padding: 20px;
+  }
+}
+@media (max-width: 760px) {
+  .hero {
+    grid-template-columns: minmax(0, 1fr);
+    width: calc(100% - 24px);
+    padding: 32px 22px 22px;
+    border-radius: 24px;
+  }
+  .hero h1 {
+    font-size: clamp(2.8rem, 9vw, 4rem);
+  }
+  .heroText {
+    max-width: 40ch;
+  }
+  .heroSubjects {
+    margin-top: 22px;
+    padding-top: 15px;
+    gap: 4px 18px;
+  }
+  .heroActions {
+    margin-top: 24px;
+  }
+  .finder {
+    margin-top: 8px;
+    padding: 20px;
+  }
+  .goalChoices label {
+    min-height: 72px;
+  }
+  .partners {
+    width: calc(100% - 24px);
+    padding: 32px 24px;
+    border-radius: 24px;
+  }
+  .telegramPanel {
+    width: calc(100% - 32px);
+    padding: 24px;
+    margin-top: 40px;
+    gap: 18px;
+  }
+  .telegramPanel > a {
+    margin-left: 0;
+    width: 100%;
+  }
+  .telegramIcon {
+    width: 48px;
+    height: 48px;
+    border-radius: 14px;
+  }
+  .benefitGrid article {
+    padding: 24px;
+  }
+}
+@media (max-width: 380px) {
+  .hero {
+    padding-inline: 16px;
+  }
+  .finder {
+    padding: 16px;
+  }
+  .goalChoices {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .goalChoices label {
+    min-height: 56px;
   }
 }

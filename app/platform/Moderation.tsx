@@ -11,6 +11,9 @@ import {
   type Organization,
 } from "../lib/platform";
 import { usePlatformAction } from "./usePlatformAction";
+import { filterModeration } from "../lib/moderation.mjs";
+import { Icon } from "../ui/Icon";
+import { LoadingState } from "../ui/LoadingState";
 import st from "./platform.module.css";
 export function Moderation({
   data,
@@ -25,27 +28,12 @@ export function Moderation({
 
   const { run, busy, status } = usePlatformAction(refresh);
   const [filter, setFilter] = useState("pending");
+  const [query, setQuery] = useState("");
   const [selected, setSelected] = useState<{
     kind: "teacher" | "organization";
     profile: Tutor | Organization;
   } | null>(null);
-  if (panel === "staff")
-    return (
-      <section className={st.stack}>
-        <h1>{tr("Владелец и модерация")}</h1>
-        <p>{tr("Проверкой анкет и обращений управляет владелец платформы.")}</p>
-        <div className={st.list}>
-          {data.staff?.map((staff) => (
-            <div className={st.listRow} key={staff.id}>
-              <div>
-                <strong>{staff.email}</strong>
-                <p>{tr("Владелец · модератор")}</p>
-              </div>
-            </div>
-          ))}
-        </div>
-      </section>
-    );
+  if (panel === "staff") return <StaffPanel data={data} refresh={refresh} />;
   if (panel === "audit")
     return (
       <section className={st.stack}>
@@ -140,12 +128,22 @@ export function Moderation({
         {status}
       </section>
     );
-  const teachers = (data.teacher_queue ?? []).filter(
-    (t) => filter === "all" || t.verification === filter,
-  );
-  const orgs = (data.organization_queue ?? []).filter(
-    (g) => filter === "all" || g.status === filter,
-  );
+  const teacherSource =
+    panel === "organizations" ? [] : (data.teacher_queue ?? []);
+  const orgSource = panel === "teachers" ? [] : (data.organization_queue ?? []);
+  const teachers = filterModeration(teacherSource, filter, query) as Tutor[];
+  const orgs = filterModeration(orgSource, filter, query) as Organization[];
+  const total = teacherSource.length + orgSource.length;
+  const current =
+    selected &&
+    (selected.kind === "teacher"
+      ? data.teacher_queue
+      : data.organization_queue
+    )?.find((p) => p.id === selected.profile.id);
+  const stale =
+    selected &&
+    (!current ||
+      current.verification_revision !== selected.profile.verification_revision);
   return (
     <section className={st.stack}>
       <header>
@@ -159,25 +157,38 @@ export function Moderation({
                 : tr("Очередь проверки"),
           )}
         </h1>
-        <p>
-          {tr(
-            "Сверьте данные и ссылки перед решением. Одного описания анкеты недостаточно для подтверждения личности или центра.",
-          )}
-        </p>
+        <p>{tr("Анкеты, подтверждения и решения — в одном месте.")}</p>
       </header>
+      <label className={st.moderationSearch}>
+        <Icon name="search" size={18} />
+        <span className="srOnly">{tr("Поиск по имени или названию")}</span>
+        <input
+          type="search"
+          value={query}
+          onChange={(e) => setQuery(e.target.value)}
+          placeholder={tr("Поиск по имени или названию")}
+        />
+      </label>
       <div className={st.tabs}>
         {[
           ["pending", "На проверке"],
           ["rejected", "Доработка"],
           ["verified", "Проверенные"],
+          ["hidden", "Скрытые"],
           ["all", "Все"],
         ].map(([k, l]) => (
           <button
             key={k}
             aria-pressed={filter === k}
-            onClick={() => setFilter(k)}
+            onClick={() => {
+              setFilter(k);
+              setSelected(null);
+            }}
           >
             {tr(l)}
+            <span className={st.filterCount}>
+              {filterModeration([...teacherSource, ...orgSource], k).length}
+            </span>
           </button>
         ))}
       </div>
@@ -227,12 +238,28 @@ export function Moderation({
             ))}
           {!teachers.length && !orgs.length && (
             <div className={st.empty}>
-              <h2>{tr("Очередь разобрана")}</h2>
+              <h2>
+                {tr(total ? "Нет анкет по этим условиям" : "Очередь разобрана")}
+              </h2>
               <p>
                 {tr(
-                  "Новые заявки появятся после отправки анкеты преподавателем или центром.",
+                  total
+                    ? "Измените поиск или откройте все анкеты."
+                    : "Новые заявки появятся после отправки анкеты преподавателем или центром.",
                 )}
               </p>
+              {total > 0 && (
+                <button
+                  type="button"
+                  className="secondary"
+                  onClick={() => {
+                    setFilter("all");
+                    setQuery("");
+                  }}
+                >
+                  {tr("Показать все анкеты")}
+                </button>
+              )}
             </div>
           )}
         </div>
@@ -243,13 +270,40 @@ export function Moderation({
             {tr("К списку")}
           </button>
           {selected.kind === "teacher" && (
-            <ReviewPhoto id={selected.profile.id} />
+            <ReviewPhoto
+              key={
+                selected.profile.id +
+                ":" +
+                (selected.profile.verification_revision ?? 0)
+              }
+              id={selected.profile.id}
+            />
           )}
           <h2>
             {selected.kind === "teacher"
               ? (selected.profile as Tutor).display_name
               : (selected.profile as Organization).name}
           </h2>
+          {stale && (
+            <div className={st.notice} role="status">
+              <p>
+                {tr(
+                  "Анкета изменилась. Проверьте актуальную версию перед решением.",
+                )}
+              </p>
+              <button
+                type="button"
+                className="secondary"
+                onClick={() =>
+                  current
+                    ? setSelected({ ...selected, profile: current })
+                    : setSelected(null)
+                }
+              >
+                {tr("Обновить проверку")}
+              </button>
+            </div>
+          )}
           {selected.kind === "teacher" ? (
             <>
               <p>{(selected.profile as Tutor).bio}</p>
@@ -311,7 +365,7 @@ export function Moderation({
               if (result) setSelected(null);
             }}
           >
-            <fieldset className={st.fields} disabled={busy}>
+            <fieldset className={st.fields} disabled={busy || !!stale}>
               <label>
                 {tr("Решение")}
                 <select name="decision">
@@ -347,7 +401,11 @@ export function Moderation({
 }
 
 function ReviewPhoto({ id }: { id: string }) {
+  const { t: tr } = useJupLocale();
   const [photo, setPhoto] = useState("");
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(false);
+  const [attempt, setAttempt] = useState(0);
   useEffect(() => {
     let live = true;
     void api<{ photo: string | null }>("", "platform", {
@@ -357,12 +415,85 @@ function ReviewPhoto({ id }: { id: string }) {
       .then((r) => {
         if (live) setPhoto(r.photo ?? "");
       })
-      .catch(() => {});
+      .catch(() => {
+        if (live) setError(true);
+      })
+      .finally(() => {
+        if (live) setLoading(false);
+      });
     return () => {
       live = false;
     };
-  }, [id]);
+  }, [id, attempt]);
+  if (loading) return <LoadingState compact label={tr("Загружаем фото…")} />;
+  if (error)
+    return (
+      <p role="alert">
+        {tr("Не удалось загрузить фото.")}{" "}
+        <button
+          type="button"
+          className="secondary"
+          onClick={() => {
+            setError(false);
+            setLoading(true);
+            setAttempt((n) => n + 1);
+          }}
+        >
+          {tr("Повторить")}
+        </button>
+      </p>
+    );
   return photo ? (
     <TutorPhoto source={"data:image/jpeg;base64," + photo.replace(/\s/g, "")} />
-  ) : null;
+  ) : (
+    <p>{tr("Фото не добавлено")}</p>
+  );
+}
+
+function StaffPanel({
+  data,
+  refresh,
+}: {
+  data: PlatformDashboard;
+  refresh: () => Promise<void>;
+}) {
+  const { t: tr } = useJupLocale();
+  const [loading, setLoading] = useState(false);
+  return (
+    <section className={st.stack}>
+      <header>
+        <h1>{tr("Доступ к модерации")}</h1>
+        <p>
+          {tr(
+            "Административный доступ закреплён за подтверждённым аккаунтом владельца.",
+          )}
+        </p>
+      </header>
+      <div className={st.list}>
+        {data.staff?.map((staff) => (
+          <article className={st.listRow} key={staff.id}>
+            <div>
+              <strong>{staff.email}</strong>
+              <p>{tr(staff.role === "owner" ? "Владелец" : "Модератор")}</p>
+            </div>
+          </article>
+        ))}
+      </div>
+      <button
+        type="button"
+        className="secondary"
+        disabled={loading}
+        onClick={async () => {
+          setLoading(true);
+          try {
+            await refresh();
+          } finally {
+            setLoading(false);
+          }
+        }}
+      >
+        {tr(loading ? "Обновляем…" : "Обновить данные")}
+      </button>
+    </section>
+  );
 }

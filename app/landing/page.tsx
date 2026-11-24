@@ -204,6 +204,26 @@ export default async function LandingPage() {
           <LessonPreview />
         </section>
         <PartnerPanel />
+        <section className={st.telegramPanel} aria-labelledby="telegram-title">
+          <div className={st.telegramIcon}>
+            <Icon name="send" size={32} />
+          </div>
+          <div>
+            <p className={st.eyebrow}>{tr("Рядом, когда нужно")}</p>
+            <h2 id="telegram-title">
+              {tr("Ваши занятия. Теперь в Telegram.")}
+            </h2>
+            <p>
+              {tr(
+                "Расписание, сообщения и напоминания — в привычном приложении.",
+              )}
+            </p>
+          </div>
+          <Link href="/telegram" className="primary">
+            {tr("Открыть в Telegram")}
+            <Icon name="arrowRight" size={18} />
+          </Link>
+        </section>
         <section
           className={st.faq}
           id="questions"

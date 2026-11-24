@@ -20,7 +20,7 @@ export function useNotifications(user: string | null) {
   try {
    const data = await api<NotificationList>("", "notifications", { action: "list", unread: filter });
    if (n !== generation.current || owner.current !== user) return;
-   setSnapshot({ user, filter, data }); setMore(data.items.length === 50); setError("");
+   setSnapshot(current => current?.user === user && current.filter === filter && JSON.stringify(current.data) === JSON.stringify(data) ? current : { user, filter, data }); setMore(data.items.length === 50); setError("");
   } catch (e) {
    if (n === generation.current && owner.current === user) setError(e instanceof Error ? e.message : "Не удалось загрузить уведомления.");
   } finally { if (n === generation.current && owner.current === user) setLoading(false); }

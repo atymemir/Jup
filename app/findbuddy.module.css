@@ -1549,7 +1549,7 @@
   box-shadow: none !important;
 }
 .filterToggle {
-  min-height: 46px;
+  min-height: 48px;
   border-radius: 11px;
 }
 .filterToggle[aria-expanded="true"] {
@@ -1894,10 +1894,9 @@
   --brand-primary: #3153ed;
 }
 .topline {
-  position: sticky;
-  top: 12px;
+  position: relative;
   z-index: 35;
-  min-height: 76px;
+  min-height: 68px;
   margin-top: 14px;
   padding: 12px 20px;
   border: 1px solid #e5e9f2;
@@ -1929,6 +1928,8 @@
 }
 .accountLinks {
   gap: 8px;
+  min-width: min(230px, 60vw);
+  justify-content: flex-end;
 }
 .accountLinks a,
 .accountLinks button {
@@ -2227,6 +2228,29 @@
   min-height: 520px;
   align-items: stretch;
 }
+.tutorGrid,
+.focusList {
+  container-type: inline-size;
+}
+.catalogLoading {
+  grid-column: 1 / -1;
+  min-height: 720px;
+  min-height: calc((100cqw - 42px) / 3 + 400px);
+  padding-top: 45px;
+}
+.focusList .catalogLoading {
+  min-height: calc(100cqw + 400px);
+}
+@media (max-width: 1100px) {
+  .catalogLoading {
+    min-height: calc((100cqw - 21px) / 2 + 400px);
+  }
+}
+@media (max-width: 640px) {
+  .catalogLoading {
+    min-height: calc(100cqw + 400px);
+  }
+}
 .focusList {
   max-width: 720px;
   margin: auto;
@@ -2331,7 +2355,7 @@
   }
   .accountLinks a,
   .accountLinks button {
-    min-height: 37px;
+    min-height: 44px;
     padding: 8px 11px;
     font-size: 0.72rem;
   }
@@ -2624,11 +2648,11 @@
   }
 }
 :global(html[data-telegram]) .topline {
-  top: calc(12px + var(--tg-safe-top, 0px));
+  top: auto;
 }
 @media (max-width: 800px) {
   :global(html[data-telegram]) .topline {
-    top: var(--tg-safe-top, 0px);
+    top: auto;
   }
   :global(html[data-telegram]) .tabs {
     padding-bottom: calc(

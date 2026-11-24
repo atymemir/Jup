@@ -49,9 +49,9 @@ export function HeroFinder() {
           {tr("Преподаватели и занятия в Казахстане")}
         </p>
         <h1 id="hero-title">
-          {tr("Ваш предмет.")}
+          {tr("Свой человек.")}
           <br />
-          <em>{tr("Ваш преподаватель.")}</em>
+          <em>{tr("Для сложных тем.")}</em>
         </h1>
         <p className={st.heroText}>
           {tr(
@@ -61,6 +61,7 @@ export function HeroFinder() {
         <div className={st.heroActions}>
           <Link href={catalog} className="primary">
             {tr("Найти преподавателя")}
+            <Icon name="arrowRight" size={18} />
           </Link>
           <a href="#how-it-works">{tr("Как это работает")}</a>
         </div>
@@ -68,9 +69,17 @@ export function HeroFinder() {
           <Icon name="check" size={16} />
           {tr("Посмотрите анкеты без регистрации")}
         </p>
-        <p className={st.heroContext}>
-          {tr("Онлайн и очно. Индивидуальные уроки и мини-группы.")}
-        </p>
+        <nav className={st.heroSubjects} aria-label={tr("Популярные цели")}>
+          {["ЕНТ", "IELTS", "SAT", "Школьная программа"].map((goal) => (
+            <Link
+              key={goal}
+              href={"/?exam=" + encodeURIComponent(goal) + "#tutors"}
+            >
+              {tr(goal)}
+              <Icon name="arrowRight" size={14} />
+            </Link>
+          ))}
+        </nav>
       </div>
       <div className={st.finder}>
         <div className={st.finderHeading}>
@@ -86,6 +95,7 @@ export function HeroFinder() {
           <legend className="srOnly">{tr("Что хотите изучать?")}</legend>
           {[
             ["SAT", "Подготовиться к SAT", "Математика, чтение и письмо"],
+            ["IELTS", "Подготовиться к IELTS", "Английский для экзамена"],
             [
               "ЕНТ",
               "Подготовиться к ЕНТ",

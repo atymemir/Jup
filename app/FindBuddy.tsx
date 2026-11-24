@@ -14,10 +14,10 @@ import { Brand } from "./ui/Brand";
 import { CalendarSubscription } from "./lessons/CalendarSubscription";
 import { Calendar } from "./lessons/Calendar";
 import { BookingSummary } from "./lessons/BookingSummary";
-import { Workspace, RoomEditor, StudentName } from "./lessons/Workspace";
 import { api } from "./lib/api";
 import { fetchJson } from "./lib/http";
 import Link from "next/link";
+import dynamic from "next/dynamic";
 import {
   useCallback,
   useEffect,
@@ -88,6 +88,17 @@ import { TutorPhoto, TutorForm, ProfilePage } from "./profiles/TutorProfile";
 import { Icon, type IconName } from "./ui/Icon";
 import styles from "./findbuddy.module.css";
 import { SiteFooter } from "./ui/SiteFooter";
+const Workspace = dynamic(
+  () => import("./lessons/Workspace").then((m) => m.Workspace),
+  { loading: () => <LoadingState /> },
+);
+const RoomEditor = dynamic(
+  () => import("./lessons/Workspace").then((m) => m.RoomEditor),
+  { loading: () => <LoadingState compact /> },
+);
+const StudentName = dynamic(() =>
+  import("./lessons/Workspace").then((m) => m.StudentName),
+);
 
 type Tab =
   | "tutors"
@@ -550,12 +561,16 @@ export default function FindBuddy({
     let alive = true;
     let pending = false;
     const timer = window.setInterval(async () => {
-      if (document.hidden || pending) return;
+      if (document.hidden || pending || document.activeElement?.closest("form"))
+        return;
       pending = true;
       try {
         const version = refreshNumber.current;
         const next = await api<Dashboard>("dashboard");
-        if (alive && refreshNumber.current === version) setDashboard(next);
+        if (alive && refreshNumber.current === version)
+          setDashboard((current) =>
+            JSON.stringify(current) === JSON.stringify(next) ? current : next,
+          );
       } catch {
         /* Keep the last readable messages when the network is unavailable. */
       } finally {
@@ -1219,7 +1234,11 @@ export default function FindBuddy({
             </>
           )}
         </nav>
-        <div className={styles.accountLinks}>
+        <div
+          className={styles.accountLinks}
+          style={{ visibility: loading ? "hidden" : undefined }}
+          aria-busy={loading}
+        >
           <LanguageSwitcher />
           {!embedded && userId && (
             <NotificationBell
@@ -1334,7 +1353,7 @@ export default function FindBuddy({
           </button>
         </div>
       )}
-      {(loading || busy) && (
+      {busy && (
         <div className="requestProgress" role="status">
           <span className="srOnly">
             {tr(busy ? tr("Сохраняем изменения…") : tr("Загружаем занятия…"))}
@@ -1851,23 +1870,10 @@ export default function FindBuddy({
                 aria-busy={loading}
               >
                 {loading && (
-                  <span className="srOnly" role="status">
-                    {tr("Подбираем преподавателей…")}
-                  </span>
+                  <div className={styles.catalogLoading}>
+                    <LoadingState label={tr("Загружаем преподавателей…")} />
+                  </div>
                 )}
-                {loading &&
-                  (view === "focus" ? [0] : [0, 1, 2]).map((id) => (
-                    <div
-                      className={styles.skeleton}
-                      key={id}
-                      aria-hidden="true"
-                    >
-                      <div />
-                      <div />
-                      <div />
-                      <div />
-                    </div>
-                  ))}
                 {view === "saved" && !demo && savedTutors.length >= 2 && (
                   <div className={styles.compareControl}>
                     <button
