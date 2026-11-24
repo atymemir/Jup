@@ -1735,3 +1735,21 @@ textarea::placeholder {
     font-size: 0.78rem;
   }
 }
+
+html[data-telegram] body {
+  padding-top: var(--tg-safe-top, 0px);
+  padding-left: var(--tg-safe-left, 0px);
+  padding-right: var(--tg-safe-right, 0px);
+  min-height: var(--tg-viewport-height, 100dvh);
+}
+html[data-telegram] dialog {
+  max-height: calc(
+    var(--tg-viewport-height, 100dvh) - var(--tg-safe-top, 0px) -
+      var(--tg-safe-bottom, 0px) - 32px
+  );
+}
+html[data-telegram] dialog {
+  max-width: calc(
+    100vw - var(--tg-safe-left, 0px) - var(--tg-safe-right, 0px) - 32px
+  );
+}

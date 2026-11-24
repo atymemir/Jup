@@ -413,6 +413,7 @@ export default function AppEntry({ area = "public" }: { area?: Area }) {
               })),
               { href: "#notifications", label: "Уведомления", icon: "bell" },
               { href: "/", label: "Публичный каталог", icon: "globe" },
+              { href: "/telegram", label: "Jup в Telegram", icon: "send" },
             ]}
           />
           <LanguageSwitcher />

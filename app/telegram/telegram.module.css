@@ -1,0 +1,173 @@
+.page {
+  min-height: 100dvh;
+  width: min(100%, 620px);
+  margin: auto;
+  padding: 24px 24px 20px;
+  display: flex;
+  flex-direction: column;
+}
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  margin-bottom: 30px;
+}
+.header :global(.jupBrand) {
+  width: 104px;
+  height: 38px;
+}
+.card {
+  border: 1px solid #e0e7f3;
+  border-radius: 26px;
+  background: white;
+  padding: 38px 32px 30px;
+  margin: auto 0;
+}
+.mark {
+  width: 62px;
+  height: 62px;
+  background: #3153ed;
+  color: white;
+  border-radius: 18px;
+  display: grid;
+  place-items: center;
+  margin-bottom: 26px;
+}
+.eyebrow {
+  font-size: 0.64rem;
+  text-transform: uppercase;
+  letter-spacing: 0.13em;
+  color: #657997;
+  margin-bottom: 12px;
+}
+.card h1 {
+  font-size: clamp(2rem, 7vw, 2.9rem);
+  letter-spacing: -0.055em;
+  line-height: 1.12;
+  max-width: 14ch;
+  font-weight: 600;
+}
+.intro {
+  font-size: 0.9rem;
+  line-height: 1.8;
+  color: #677992;
+  margin-top: 18px;
+  max-width: 35ch;
+}
+.features {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 9px 16px;
+  margin: 24px 0 30px;
+  padding-bottom: 24px;
+  border-bottom: 1px solid #edf0f6;
+}
+.features span {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.67rem;
+  color: #61738f;
+}
+.features svg {
+  color: #3153ed;
+}
+.actions {
+  display: grid;
+  gap: 12px;
+}
+.actions > :global(.primary),
+.actions > :global(.secondary) {
+  width: 100%;
+  min-height: 48px;
+  border-radius: 12px;
+  font-size: 0.86rem;
+  justify-content: space-between;
+}
+.actions > :global(.secondary) {
+  justify-content: center;
+}
+.quiet {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 9px;
+  font-size: 0.8rem;
+  color: #667995;
+}
+.note {
+  font-size: 0.72rem;
+  line-height: 1.7;
+  color: #6a7d98;
+}
+.account {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  flex-wrap: wrap;
+  color: #436391;
+  font-size: 0.8rem;
+  margin-bottom: 4px;
+}
+.account small {
+  margin-left: auto;
+  color: #7386a1;
+  font-size: 0.7rem;
+}
+.error {
+  font-size: 0.78rem;
+  line-height: 1.6;
+  background: #fff6f2;
+  border: 1px solid #f0ded5;
+  color: #895647;
+  padding: 14px;
+  border-radius: 11px;
+}
+.error button {
+  text-decoration: underline;
+  padding: 8px 0 0;
+  font-size: 0.75rem;
+}
+.footer {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+  align-items: center;
+  color: #71839d;
+  font-size: 0.65rem;
+  margin: 24px 0 0;
+}
+.footer > span {
+  margin-right: auto;
+  color: #546982;
+  font-weight: 600;
+}
+@media (max-width: 400px) {
+  .page {
+    padding: 20px 18px;
+  }
+  .card {
+    padding: 28px 23px;
+    border-radius: 22px;
+  }
+  .card h1 {
+    font-size: 2.2rem;
+  }
+  .features {
+    gap: 12px;
+  }
+}
+:global(html[data-telegram]) .page {
+  min-height: calc(var(--tg-viewport-height, 100dvh) - var(--tg-safe-top, 0px));
+  padding-bottom: calc(20px + var(--tg-safe-bottom, 0px));
+}
+.card {
+  margin: 0;
+}
+.startup {
+  min-height: 200px;
+  display: flex;
+  align-items: center;
+}

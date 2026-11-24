@@ -13,7 +13,7 @@ npm run dev
 
 Каталог: `http://127.0.0.1:3100/findbuddy`, лендинг: `http://127.0.0.1:3100/findbuddy/landing`. Без Supabase локальный preview хранит тестовые аккаунты в `.data/`. Для настоящих аккаунтов создайте `.env.local` на основе `.env.example` и задайте настройки существующего проекта Supabase. Файл не попадает в Git. `npm run build` собирает только это приложение; `npm start` запускает его на том же порту.
 
-Основной адрес: [jup-atymemirs-projects.vercel.app](https://jup-atymemirs-projects.vercel.app). Корень перенаправляет на лендинг `/findbuddy/landing`. Прежний адрес `https://tryalga.app/findbuddy` сохраняется через прокси. `basePath: "/findbuddy"` нужен для существующих ссылок, писем и маршрутизации. У приложения собственный Supabase-проект Jup (`dczeqfgnobizshqzucmw`). Пользователи algₐ остались в исходном проекте; в Jup нужна отдельная регистрация. Бренд пока не менялся. В существующем Vercel-проекте `findbuddy` для этого репозитория Root Directory — корень (`.` / пустое значение), Install Command — `npm ci`, Build Command — `npm run build`. Переменные окружения остаются в этом проекте Vercel; в репозитории их нет.
+Основной адрес: [findbuddy-kohl.vercel.app](https://findbuddy-kohl.vercel.app). Корень перенаправляет на лендинг `/findbuddy/landing`. Прежний адрес `https://tryalga.app/findbuddy` сохраняется через прокси. `basePath: "/findbuddy"` нужен для существующих ссылок, писем и маршрутизации. У приложения собственный Supabase-проект Jup (`dczeqfgnobizshqzucmw`). Пользователи algₐ остались в исходном проекте; в Jup нужна отдельная регистрация. Бренд пока не менялся. В существующем Vercel-проекте `findbuddy` для этого репозитория Root Directory — корень (`.` / пустое значение), Install Command — `npm ci`, Build Command — `npm run build`. Переменные окружения остаются в этом проекте Vercel; в репозитории их нет.
 
 ## Отдельный лендинг
 
@@ -184,3 +184,8 @@ Quick-fill templates generate text in the selected language and preserve the aut
 The workspace has a keyboard section finder (`Ctrl K` / `⌘ K`) and a complete mobile menu under **All sections**. Arrow keys and Enter select a destination; Escape closes the finder while keeping the underlying form intact. The shortcut stays inactive while a lesson dialog is open. Tutor and administrator role checks remain on the server.
 
 Catalogue goal shortcuts update the existing shareable subject/exam filters. Teacher dashboard actions open the actual schedule, profile, conversations and lesson editor. This design update requires no database migration or new external service.
+
+
+### Telegram Mini App
+
+Jup открывается внутри Telegram через `@jup_edu_app`: [инструкция размещения и проверки](TELEGRAM_MINI_APP.md). Точка входа — `/findbuddy/telegram`. Поддерживаются существующие аккаунты, явная привязка Telegram, вход уже связанных пользователей, ссылки на конкретные занятия и чаты, нативная кнопка «Назад» и безопасные отступы экрана. Новая база и новые миграции не требуются.

@@ -1,4 +1,5 @@
 "use client";
+import { miniAppScreen } from "../lib/telegramMiniApp.mjs";
 import { LanguageSwitcher } from "../i18n/LocaleProvider";
 import { useLocale as useJupLocale } from "../i18n/LocaleProvider";
 
@@ -79,6 +80,20 @@ export default function Login() {
     const actual = viewer.account.role;
     const pending = currentAuthIntent(window.location.search);
     const invite = new URLSearchParams(window.location.search).get("invite");
+    if (
+      !invite &&
+      new URLSearchParams(window.location.search).get("returnTo") === "telegram"
+    ) {
+      location.assign(
+        "/findbuddy/telegram?screen=" +
+          encodeURIComponent(
+            miniAppScreen(
+              new URLSearchParams(window.location.search).get("screen"),
+            ),
+          ),
+      );
+      return;
+    }
     if (invite && /^[a-f0-9]{64}$/.test(invite)) {
       location.assign("/findbuddy/invite?token=" + invite);
       return;

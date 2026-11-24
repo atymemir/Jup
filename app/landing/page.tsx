@@ -19,7 +19,7 @@ const description =
 const canonical =
   (
     process.env.FINDBUDDY_PUBLIC_URL ||
-    "https://jup-atymemirs-projects.vercel.app/findbuddy"
+    "https://findbuddy-kohl.vercel.app/findbuddy"
   ).replace(/\/$/, "") + "/landing";
 const metadata: Metadata = {
   title: "Jup edu — свой человек для учёбы",

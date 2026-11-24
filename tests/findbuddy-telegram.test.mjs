@@ -126,3 +126,12 @@ test("Bot ignores group chat and callbacks from another account", async () => {
   assert.deepEqual(f.sent, []);
   assert.deepEqual(f.actions, []);
 });
+
+test("the Mini App command works before an account is linked", async () => {
+  const f = fixture();
+  await f.message("/app");
+  assert.ok(
+    f.sent.at(-1).buttons.some((button) => button.url?.endsWith("/telegram")),
+  );
+  assert.deepEqual(f.actions, []);
+});

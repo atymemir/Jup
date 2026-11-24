@@ -81,12 +81,13 @@ export async function handleTelegram(update: Update, bot: BotServices) {
     callback_data: key,
   });
   const menu: Button[][] = [
+    [linkTo("Открыть Jup", "/telegram")],
     [
       commandButton("Мои занятия", "/lessons"),
       commandButton("Сообщения", "/chats"),
     ],
     [linkTo("Заявки", "#requests"), commandButton("Уведомления", "/settings")],
-    [linkTo("Каталог"), linkTo("Кабинет преподавателя", "/teacher")],
+    [linkTo("Каталог")],
   ];
   async function welcome(message?: string) {
     await bot.send(
@@ -94,10 +95,17 @@ export async function handleTelegram(update: Update, bot: BotServices) {
       message ??
         "Откройте Jup edu, войдите в аккаунт и нажмите «Подключить Telegram» в «Моих занятиях». Затем вернитесь сюда по личной ссылке и нажмите Start.",
       [
+        [linkTo("Открыть Jup", "/telegram")],
         [linkTo("Открыть мои занятия", "#account")],
         [linkTo("Найти преподавателя")],
       ],
     );
+  }
+  if (command === "/app") {
+    await bot.send(id, "Jup в Telegram · занятия, расписание и сообщения.", [
+      [linkTo("Открыть Jup", "/telegram")],
+    ]);
+    return;
   }
   if (command === "/start" && args.length) {
     if (
@@ -111,11 +119,7 @@ export async function handleTelegram(update: Update, bot: BotServices) {
         menu,
       );
     } else if ((await bot.context(id, "status")).linked) {
-      await bot.send(
-        id,
-        "Этот Telegram уже связан с аккаунтом Jup edu.",
-        menu,
-      );
+      await bot.send(id, "Этот Telegram уже связан с аккаунтом Jup edu.", menu);
     } else
       await welcome(
         "Ссылка привязки истекла, уже использована или недоступна. Откройте «Мои занятия» и получите новую ссылку.",

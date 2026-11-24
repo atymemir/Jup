@@ -1,12 +1,15 @@
+import { telegramAppLink } from "../lib/telegramMiniApp.mjs";
 import { timingSafeEqual } from "node:crypto";
 import { createClient } from "@supabase/supabase-js";
 
 export type BotButton =
   | { text: string; url: string }
-  | { text: string; callback_data: string };
+  | { text: string; callback_data: string }
+  | { text: string; web_app: { url: string } };
 export function findbuddyUrl(suffix = "") {
   const configured =
-    process.env.FINDBUDDY_PUBLIC_URL || "https://jup-atymemirs-projects.vercel.app/findbuddy";
+    process.env.FINDBUDDY_PUBLIC_URL ||
+    "https://findbuddy-kohl.vercel.app/findbuddy";
   return configured.replace(/\/$/, "") + suffix;
 }
 export function validTelegramSecret(
@@ -70,7 +73,19 @@ export function sendTelegram(
       chat_id: chat,
       text,
       link_preview_options: { is_disabled: true },
-      ...(buttons.length ? { reply_markup: { inline_keyboard: buttons } } : {}),
+      ...(buttons.length
+        ? {
+            reply_markup: {
+              inline_keyboard: buttons.map((row) =>
+                row.map((button) => {
+                  if (!("url" in button)) return button;
+                  const url = telegramAppLink(findbuddyUrl(), button.url);
+                  return url ? { text: button.text, web_app: { url } } : button;
+                }),
+              ),
+            },
+          }
+        : {}),
     },
     timeout,
   );

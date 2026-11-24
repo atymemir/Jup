@@ -7142,5 +7142,97 @@
   "Комиссия платформы — 0%.": {
     "kk": "Платформа комиссиясы — 0%.",
     "en": "0% platform fee."
+  },
+  "Jup в Telegram": {
+    "kk": "Telegram ішіндегі Jup",
+    "en": "Jup in Telegram"
+  },
+  "Telegram не ответил. Можно продолжить через обычный вход.": {
+    "kk": "Telegram жауап бермеді. Кәдімгі кіруді қолдануға болады.",
+    "en": "Telegram did not respond. You can use normal sign-in."
+  },
+  "Аккаунт Jup подключён": {
+    "kk": "Jup аккаунты қосылған",
+    "en": "Jup account connected"
+  },
+  "Войдите в аккаунт Jup.": {
+    "kk": "Jup аккаунтыңызға кіріңіз.",
+    "en": "Sign in to your Jup account."
+  },
+  "Войти в Jup": {
+    "kk": "Jup аккаунтына кіру",
+    "en": "Sign in to Jup"
+  },
+  "Время входа истекло. Закройте приложение и откройте его заново из Telegram.": {
+    "kk": "Кіру уақыты аяқталды. Қолданбаны жауып, Telegram арқылы қайта ашыңыз.",
+    "en": "The sign-in window expired. Close the app and reopen it from Telegram."
+  },
+  "Вход через Telegram пока не подключён. Войдите по почте.": {
+    "kk": "Telegram арқылы кіру әлі қосылмаған. Поштамен кіріңіз.",
+    "en": "Telegram sign-in is not connected yet. Sign in with your email."
+  },
+  "Занятия всегда рядом.": {
+    "kk": "Сабақтар әрдайым қолыңызда.",
+    "en": "Your lessons, always close."
+  },
+  "Не удалось войти через Telegram. Попробуйте ещё раз или войдите по почте.": {
+    "kk": "Telegram арқылы кіру мүмкін болмады. Қайталап көріңіз немесе поштамен кіріңіз.",
+    "en": "Could not sign in with Telegram. Try again or use your email."
+  },
+  "Не удалось открыть приложение.": {
+    "kk": "Қолданбаны ашу мүмкін болмады.",
+    "en": "Could not open the app."
+  },
+  "Не удалось подключить Telegram.": {
+    "kk": "Telegram-ды қосу мүмкін болмады.",
+    "en": "Could not connect Telegram."
+  },
+  "Не удалось подтвердить Telegram. Откройте приложение из бота.": {
+    "kk": "Telegram-ды растау мүмкін болмады. Қолданбаны бот арқылы ашыңыз.",
+    "en": "Could not verify Telegram. Open the app from the bot."
+  },
+  "Не удалось сохранить вход. Попробуйте ещё раз.": {
+    "kk": "Кіруді сақтау мүмкін болмады. Қайталап көріңіз.",
+    "en": "Could not save your sign-in. Please try again."
+  },
+  "Открываем Jup…": {
+    "kk": "Jup ашылып жатыр…",
+    "en": "Opening Jup…"
+  },
+  "Открыть в Telegram": {
+    "kk": "Telegram ішінде ашу",
+    "en": "Open in Telegram"
+  },
+  "Первый раз? Войдите по почте и свяжите аккаунт с Telegram. Анкеты и занятия сохранятся.": {
+    "kk": "Алғаш рет кірдіңіз бе? Поштамен кіріп, аккаунтты Telegram-мен байланыстырыңыз. Анкеталар мен сабақтар сақталады.",
+    "en": "First time? Sign in with your email and connect Telegram. Your profiles and lessons stay together."
+  },
+  "Подключаем…": {
+    "kk": "Қосылып жатыр…",
+    "en": "Connecting…"
+  },
+  "После привязки вход будет без пароля. Подключайте только свой Telegram.": {
+    "kk": "Байланыстырғаннан кейін құпиясөзсіз кіресіз. Тек өз Telegram аккаунтыңызды қосыңыз.",
+    "en": "After linking, you can sign in without a password. Only connect your own Telegram account."
+  },
+  "Привязка Telegram изменилась. Войдите в свой аккаунт ещё раз.": {
+    "kk": "Telegram байланысы өзгерді. Аккаунтыңызға қайта кіріңіз.",
+    "en": "The Telegram connection changed. Sign in to your account again."
+  },
+  "Расписание, ученики и переписка — в одном приложении.": {
+    "kk": "Кесте, оқушылар және хат алмасу — бір қолданбада.",
+    "en": "Schedule, students and messages in one app."
+  },
+  "Связать с Telegram": {
+    "kk": "Telegram-мен байланыстыру",
+    "en": "Connect Telegram"
+  },
+  "Сначала войдите в Jup по почте и подтвердите адрес.": {
+    "kk": "Алдымен Jup аккаунтына поштамен кіріп, мекенжайды растаңыз.",
+    "en": "First sign in to Jup with your email and confirm the address."
+  },
+  "Этот Telegram уже связан с другим аккаунтом Jup.": {
+    "kk": "Бұл Telegram басқа Jup аккаунтына қосылған.",
+    "en": "This Telegram account is already connected to another Jup account."
   }
 }
