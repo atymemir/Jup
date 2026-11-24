@@ -28,11 +28,11 @@ const configured = () =>
     process.env.NEXT_PUBLIC_SUPABASE_URL &&
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
   );
-function failure(error: { code?: string; message: string }) {
+function failure(error: { code?: string; message: string }, area = "catalog") {
   if (["PGRST202", "42P01", "42883"].includes(error.code ?? ""))
     return NextResponse.json(
       {
-        error: "Каталог готовится к открытию. Попробуйте позже.",
+        error: area === "notifications" ? "Уведомления пока недоступны. Попробуйте позже." : "Каталог готовится к открытию. Попробуйте позже.",
         setup_required: true,
       },
       { status: 503, headers },
@@ -106,7 +106,7 @@ export async function GET(req: Request) {
   try {
     const view = new URL(req.url).searchParams.get("view") || "";
     if (
-      ["dashboard", "platform", "viewer"].includes(view) ||
+      ["dashboard", "platform", "viewer", "notifications"].includes(view) ||
       view.startsWith("student/")
     ) {
       const { user, token } = await getUserFromAccessToken(
@@ -120,7 +120,9 @@ export async function GET(req: Request) {
           { status: 401, headers },
         );
       const { data, error } = await client(token).rpc(
-        view === "viewer"
+        view === "notifications"
+          ? "fb_notifications"
+          : view === "viewer"
           ? "fb_viewer"
           : view === "platform"
             ? "fb_platform_dashboard"
@@ -129,7 +131,7 @@ export async function GET(req: Request) {
               : "fb_pilot_dashboard",
         view.startsWith("student/") ? { p_user: view.slice(8) } : {},
       );
-      if (error) return failure(error);
+      if (error) return failure(error, view === "notifications" ? "notifications" : "catalog");
       return NextResponse.json(data, { headers });
     }
     const { data, error } = view.startsWith("reviews/")
@@ -183,6 +185,7 @@ export async function POST(req: Request) {
     const actions = [
       ...classroomActions,
       "platform",
+      "notifications",
       "save_profile",
       "inbox",
       "review",
@@ -215,6 +218,10 @@ export async function POST(req: Request) {
       );
     if (raw.length > mutationBodyLimit(body.action, body.data))
       return new Response(null, { status: 413 });
+    if (body.action === "notifications") {
+      const { data, error } = await client(token).rpc("fb_notifications", { p_action: body.data.action ?? "list", p_data: body.data });
+      return error ? failure(error, "notifications") : NextResponse.json(data, { headers });
+    }
     if (body.action === "platform") {
       const { data, error } = await client(token).rpc("fb_platform_action", {
         p_action: body.data.action,

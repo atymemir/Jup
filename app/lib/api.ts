@@ -11,6 +11,7 @@ export async function api<T>(
     (view === "dashboard" ||
       view === "platform" ||
       view === "viewer" ||
+      view === "notifications" ||
       view.startsWith("student/") ||
       action)
   ) {

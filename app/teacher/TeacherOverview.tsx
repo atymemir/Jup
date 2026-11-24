@@ -14,7 +14,16 @@ export function TeacherOverview({
   openPanel,
   add,
   addGroup,
+  attention,
+  openAttention,
 }: {
+  attention?: {
+    id: string;
+    pane: "lesson" | "chat" | "work";
+    label: string;
+    peer: string;
+  }[];
+  openAttention?: (id: string, pane: "lesson" | "chat" | "work") => void;
   name: string;
   next?: Booking;
   slots: number;
@@ -36,19 +45,19 @@ export function TeacherOverview({
         </div>
         <div className={st.buttons}>
           <button className="primary" onClick={add}>
-            Добавить индивидуальный урок
+            Добавить урок
           </button>
           <button className="secondary" onClick={addGroup}>
-            Создать мини-группу
+            Мини-группа
           </button>
         </div>
       </div>
       <div className={st.metrics}>
         {(
           [
-            ["schedule", "Свободные даты", slots],
+            ["schedule", "Уроки для записи", slots],
             ["students", "Ученики", students],
-            ["requests", "Открытые заявки", requests],
+            ["requests", "Заявки", requests],
           ] as const
         ).map(([panel, label, count]) => (
           <button key={panel} onClick={() => openPanel(panel)}>
@@ -70,7 +79,9 @@ export function TeacherOverview({
           <p>
             {next
               ? lessonDate(next.starts_at) + " · время Казахстана"
-              : "Опубликуйте время, чтобы ученики могли записаться."}
+              : slots > 0
+                ? "Время опубликовано. Первые записи появятся здесь."
+                : "Добавьте урок и выберите время для записи."}
           </p>
         </div>
         {next && (
@@ -84,19 +95,42 @@ export function TeacherOverview({
           </button>
         )}
       </div>
-      {tasks > 0 && (
-        <button className={st.task} onClick={() => openPanel("students")}>
-          Требуют ответа · {tasks}
-        </button>
+      {!!attention?.length && (
+        <section className={st.attention}>
+          <h2>
+            Что требует внимания <span>{tasks}</span>
+          </h2>
+          {attention.slice(0, 3).map((item) => (
+            <button
+              key={`${item.id}:${item.pane}:${item.label}`}
+              onClick={() => openAttention?.(item.id, item.pane)}
+            >
+              <span className={st.attentionIcon}>
+                <Icon
+                  name={
+                    item.pane === "work"
+                      ? "teacher"
+                      : item.pane === "chat"
+                        ? "requests"
+                        : "calendar"
+                  }
+                  size={19}
+                />
+              </span>
+              <span>
+                <strong>{item.label}</strong>
+                <small>{item.peer}</small>
+              </span>
+              <Icon name="arrow" size={17} />
+            </button>
+          ))}
+        </section>
       )}
       {!!unread && (
         <button className={st.task} onClick={() => openPanel("messages")}>
-          Новые сообщения · {unread}
+          Личные сообщения · {unread}
         </button>
       )}
-      <button className={st.settlementLink} onClick={() => openPanel("wallet")}>
-        Расчёты · пилот без комиссии
-      </button>
     </section>
   );
 }

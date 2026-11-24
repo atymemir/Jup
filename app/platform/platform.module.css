@@ -530,3 +530,5 @@
 .organizationForm .actions > button { min-height: 50px; border-radius: 12px; }
 @media(max-width: 900px) { .formatChoices { grid-template-columns: 1fr; } .formatChoices label { flex-wrap: nowrap; } .formatChoices label > span:nth-of-type(2) { flex-basis: auto; order: initial; } }
 @media(max-width: 480px) { .formSection { padding: 22px 18px; } .logoUpload { padding: 16px; gap: 12px; } .logoPreview { height: 52px; width: 52px; } .organizationForm .actions > button { width: 100%; } }
+.nav a { position: relative; }
+@media(max-width:700px) { .nav :global(.notificationBadge) { position:absolute; top:1px; right:12px; } .nav a { min-width:0; font-size:.72rem; white-space:nowrap; } }

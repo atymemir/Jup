@@ -1,4 +1,6 @@
 "use client";
+import { DraftFields } from "../authoring/DraftFields";
+import { FormattedText } from "../ui/FormattedText";
 import {
   cloneElement,
   useId,
@@ -126,6 +128,8 @@ export function TutorForm({
   save: (data: Record<string, unknown>) => void;
 }) {
   const [stage, setStage] = useState(1);
+  const [subject,setSubject] = useState(tutor?.subject ?? "");
+  const [exam,setExam] = useState(tutor?.exam ?? "");
   const photoInput = useId();
   const basics = useRef<HTMLDivElement>(null);
   const detailsHeading = useRef<HTMLHeadingElement>(null);
@@ -252,7 +256,7 @@ export function TutorForm({
             ] as const
           ).map(([key, label]) => (
             <Field key={key} label={label}>
-              <select name={key} defaultValue={tutor?.[key] ?? ""} required>
+              <select name={key} defaultValue={tutor?.[key] ?? ""} required onChange={e => { if(key === "subject") setSubject(e.target.value); if(key === "exam") setExam(e.target.value); }}>
                 <option value="" disabled>
                   Выберите
                 </option>
@@ -318,42 +322,13 @@ export function TutorForm({
             Расскажите о ваших уроках
           </h3>
         )}
-        <Field label="Что вы помогаете освоить">
-          <input
-            name="headline"
-            required
-            minLength={5}
-            maxLength={120}
-            defaultValue={tutor?.headline}
-            placeholder="Готовлю к ЕНТ по географии"
-          />
-        </Field>
-        <Field label="О себе">
-          <textarea
-            name="bio"
-            required
-            minLength={20}
-            maxLength={1500}
-            rows={4}
-            defaultValue={tutor?.bio}
-            placeholder="С кем работаете и как помогаете освоить сложные темы"
-          />
-        </Field>
+        <DraftFields kind="profile" subject={subject} exam={exam} initialTitle={tutor?.headline} initialBody={tutor?.bio} initialPlan={tutor?.lesson_plan} disabled={busy} />
         <Field label="Образование или квалификация">
           <input
             name="education"
             maxLength={180}
             defaultValue={tutor?.education}
             placeholder="Например, КазНУ, география"
-          />
-        </Field>
-        <Field label="Как проходит первый урок">
-          <textarea
-            name="lesson_plan"
-            maxLength={600}
-            rows={3}
-            defaultValue={tutor?.lesson_plan}
-            placeholder="Проверяем уровень, разбираем одну тему и составляем план"
           />
         </Field>
         <Qualifications tutor={tutor} />
@@ -508,7 +483,7 @@ export function ProfilePage({
           </p>
           <div className={st.info}>
             <h2>О преподавателе</h2>
-            <p>{tutor.bio}</p>
+            <FormattedText value={tutor.bio} />
             {!!tutor.education_entries?.length && (
               <>
                 <h3>Образование</h3>
@@ -571,7 +546,7 @@ export function ProfilePage({
             {tutor.lesson_plan && (
               <>
                 <h3>Первый урок</h3>
-                <p>{tutor.lesson_plan}</p>
+                <FormattedText value={tutor.lesson_plan} />
               </>
             )}
           </div>
@@ -591,7 +566,7 @@ export function ProfilePage({
                     {o.subject} · {o.exam} · {o.languages.join(", ")} ·{" "}
                     {o.format === "online" ? "Онлайн" : o.city}
                   </p>
-                  <p>{o.description}</p>
+                  <FormattedText value={o.description} />
                   <strong>
                     {o.price === 0 ? "Бесплатно" : money(o.price)}
                   </strong>

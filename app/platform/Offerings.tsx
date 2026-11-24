@@ -1,4 +1,5 @@
 "use client";
+import { DraftFields } from "../authoring/DraftFields";
 import { useState } from "react";
 import {
   FB_SUBJECTS,
@@ -21,6 +22,8 @@ export function Offerings({
 }) {
   const [editing, setEditing] = useState<Offering | "new" | null>(null);
   const [format, setFormat] = useState("online");
+  const [subject,setSubject] = useState<string>(FB_SUBJECTS[0]);
+  const [exam,setExam] = useState<string>(FB_EXAMS[0]);
   const { run, busy, status } = usePlatformAction(refresh);
   const current = editing && editing !== "new" ? editing : null;
   return (
@@ -37,7 +40,7 @@ export function Offerings({
         <button
           className="primary"
           onClick={() => {
-            setEditing("new");
+            setEditing("new");setSubject(FB_SUBJECTS[0]);setExam(FB_EXAMS[0]);
             setFormat("online");
           }}
         >
@@ -63,17 +66,6 @@ export function Offerings({
         >
           <fieldset disabled={busy} className={st.fields}>
             <h2>{current ? "Изменить направление" : "Новое направление"}</h2>
-            <label>
-              Название
-              <input
-                required
-                name="title"
-                minLength={5}
-                maxLength={120}
-                defaultValue={current?.title}
-                placeholder="Математика · подготовка к ЕНТ"
-              />
-            </label>
             {members && (
               <label>
                 Преподаватель команды
@@ -110,7 +102,7 @@ export function Offerings({
             <div className={st.formGrid}>
               <label>
                 Предмет
-                <select name="subject" defaultValue={current?.subject}>
+                <select name="subject" value={subject} onChange={e=>setSubject(e.target.value)}>
                   {FB_SUBJECTS.map((x) => (
                     <option key={x}>{x}</option>
                   ))}
@@ -118,7 +110,7 @@ export function Offerings({
               </label>
               <label>
                 Экзамен
-                <select name="exam" defaultValue={current?.exam}>
+                <select name="exam" value={exam} onChange={e=>setExam(e.target.value)}>
                   {FB_EXAMS.map((x) => (
                     <option key={x}>{x}</option>
                   ))}
@@ -180,15 +172,7 @@ export function Offerings({
                 ))}
               </div>
             </div>
-            <label>
-              О занятиях
-              <textarea
-                name="description"
-                rows={3}
-                maxLength={1500}
-                defaultValue={current?.description}
-              />
-            </label>
+            <DraftFields kind="offering" subject={subject} exam={exam} initialTitle={current?.title} initialBody={current?.description} disabled={busy} />
             <label className={st.check}>
               <input
                 type="checkbox"
@@ -236,7 +220,7 @@ export function Offerings({
               <button
                 className={st.textButton}
                 onClick={() => {
-                  setEditing(o);
+                  setEditing(o);setSubject(o.subject);setExam(o.exam);
                   setFormat(o.format);
                 }}
               >
