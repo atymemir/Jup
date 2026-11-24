@@ -1,4 +1,6 @@
 "use client";
+import { useLocale as useJupLocale } from "../i18n/LocaleProvider";
+
 import { useState } from "react";
 import { api } from "../lib/api";
 import st from "./platform.module.css";
@@ -9,11 +11,15 @@ export function ReportProfile({
   kind: "teacher" | "organization";
   id: string;
 }) {
+  const { t: tr } = useJupLocale();
+
   const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState("");
   return (
     <details>
-      <summary className={st.textButton}>Сообщить о проблеме с анкетой</summary>
+      <summary className={st.textButton}>
+        {tr("Сообщить о проблеме с анкетой")}
+      </summary>
       <form
         className={st.form}
         onSubmit={async (e) => {
@@ -39,7 +45,7 @@ export function ReportProfile({
         }}
       >
         <label>
-          Что нужно проверить
+          {tr("Что нужно проверить")}
           <textarea
             name="reason"
             required
@@ -50,13 +56,14 @@ export function ReportProfile({
           />
         </label>
         <small>
-          Обращение видят только модераторы. Личная переписка не прикладывается
-          автоматически.
+          {tr(
+            "Обращение видят только модераторы. Личная переписка не прикладывается автоматически.",
+          )}
         </small>
         <button className="secondary" disabled={busy}>
-          Отправить обращение
+          {tr("Отправить обращение")}
         </button>
-        {message && <p role="status">{message}</p>}
+        {message && <p role="status">{tr(message)}</p>}
       </form>
     </details>
   );

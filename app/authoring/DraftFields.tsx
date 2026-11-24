@@ -1,4 +1,6 @@
 "use client";
+import { useLocale as useJupLocale } from "../i18n/LocaleProvider";
+
 import { useEffect, useRef, useState } from "react";
 import {
   makeTemplate,
@@ -28,6 +30,8 @@ export function DraftFields({
   initialPlan?: string;
   disabled?: boolean;
 }) {
+  const { t: tr, locale: uiLocale } = useJupLocale();
+
   const [title, setTitle] = useState(initialTitle),
     [body, setBody] = useState(initialBody),
     [plan, setPlan] = useState(initialPlan);
@@ -40,6 +44,7 @@ export function DraftFields({
   const [draft, setDraft] = useState<{
     value: TextDraft;
     source: "template" | "ai";
+    locale: string;
     subject: string;
     exam: string;
   } | null>(null);
@@ -51,17 +56,21 @@ export function DraftFields({
   const details = useRef<HTMLDetailsElement>(null),
     titleField = useRef<HTMLInputElement>(null);
   const lock = useRef(false),
-    owner = useRef({ subject, exam });
+    owner = useRef({ subject, exam, locale: uiLocale });
   useEffect(() => {
-    owner.current = { subject, exam };
-  }, [subject, exam]);
+    owner.current = { subject, exam, locale: uiLocale };
+  }, [subject, exam, uiLocale]);
   const topics = topicsFor(subject, exam);
   const selected =
     selection.subject === subject && selection.exam === exam
       ? selection.topics
       : [];
   const currentDraft =
-    draft?.subject === subject && draft?.exam === exam ? draft : null;
+    draft?.subject === subject &&
+    draft?.exam === exam &&
+    draft?.locale === uiLocale
+      ? draft
+      : null;
   useEffect(() => {
     let active = true;
     void fetchJson<{ available: boolean }>("/findbuddy/api/draft")
@@ -77,10 +86,18 @@ export function DraftFields({
     if (disabled || lock.current) return;
     setError("");
     setApplied(false);
-    const input = { kind, subject, exam, topics: selected, notes };
+    const input = {
+      kind,
+      subject,
+      exam,
+      topics: selected,
+      notes,
+      locale: uiLocale,
+    };
     if (!ai) {
       setDraft({
-        value: makeTemplate(input),
+        value: makeTemplate(input, tr),
+        locale: uiLocale,
         source: "template",
         subject,
         exam,
@@ -104,8 +121,18 @@ export function DraftFields({
           body: JSON.stringify(input),
         },
       );
-      if (owner.current.subject === subject && owner.current.exam === exam)
-        setDraft({ value: result.draft, source: "ai", subject, exam });
+      if (
+        owner.current.subject === subject &&
+        owner.current.exam === exam &&
+        owner.current.locale === uiLocale
+      )
+        setDraft({
+          value: result.draft,
+          source: "ai",
+          subject,
+          exam,
+          locale: uiLocale,
+        });
     } catch (e) {
       setError(e instanceof Error ? e.message : "Не удалось собрать черновик.");
     } finally {
@@ -119,16 +146,17 @@ export function DraftFields({
         <summary>
           <Icon name="wand" size={19} />
           <span>
-            Заполнить быстрее<small>Темы, заметки и готовый черновик</small>
+            {tr("Заполнить быстрее")}
+            <small>{tr("Темы, заметки и готовый черновик")}</small>
           </span>
         </summary>
         <div className="draftAssistantBody">
           <div className="draftContext">
-            {subject || "Сначала выберите предмет"}
-            {exam && ` · ${exam}`}
+            {tr(subject || tr("Сначала выберите предмет"))}
+            {tr(exam && ` · ${exam}`)}
           </div>
           <div className="topicHeading">
-            <strong>Темы</strong>
+            <strong>{tr("Темы")}</strong>
             <button
               type="button"
               disabled={disabled || busy || !topics.length}
@@ -140,12 +168,18 @@ export function DraftFields({
                 })
               }
             >
-              {selected.length === topics.length
-                ? "Снять выбор"
-                : "Выбрать все"}
+              {tr(
+                selected.length === topics.length
+                  ? tr("Снять выбор")
+                  : tr("Выбрать все"),
+              )}
             </button>
           </div>
-          <div className="topicChips" role="group" aria-label="Темы занятия">
+          <div
+            className="topicChips"
+            role="group"
+            aria-label={tr("Темы занятия")}
+          >
             {topics.map((topic) => (
               <button
                 type="button"
@@ -162,23 +196,23 @@ export function DraftFields({
                   })
                 }
               >
-                {topic}
+                {tr(topic)}
               </button>
             ))}
           </div>
           <label>
-            Пара слов своими словами
+            {tr("Пара слов своими словами")}
             <textarea
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
               maxLength={1200}
               rows={3}
               disabled={disabled || busy}
-              placeholder={
+              placeholder={tr(
                 kind === "profile"
-                  ? "С кем работаете, что объясняете и как ведёте уроки"
-                  : "Для кого урок и что хотите разобрать"
-              }
+                  ? tr("С кем работаете, что объясняете и как ведёте уроки")
+                  : tr("Для кого урок и что хотите разобрать"),
+              )}
             />
           </label>
           <div className="draftButtons">
@@ -188,7 +222,7 @@ export function DraftFields({
               disabled={disabled || busy || !topics.length}
               onClick={() => void generate()}
             >
-              Собрать по темам
+              {tr("Собрать по темам")}
             </button>
             {available && (
               <button
@@ -199,42 +233,45 @@ export function DraftFields({
                 }
                 onClick={() => void generate(true)}
               >
-                {busy ? "Готовим черновик…" : "Заполнить с ИИ"}
+                {tr(busy ? tr("Готовим черновик…") : tr("Заполнить с ИИ"))}
               </button>
             )}
           </div>
           {error && (
             <p role="alert" className="draftError">
-              {error}
+              {tr(error)}
             </p>
           )}
           {currentDraft && (
             <div className="draftPreview">
               <div className="draftPreviewTop">
                 <strong>
-                  {currentDraft.source === "ai"
-                    ? "Черновик ИИ"
-                    : "Черновик по темам"}
+                  {tr(
+                    currentDraft.source === "ai"
+                      ? tr("Черновик ИИ")
+                      : tr("Черновик по темам"),
+                  )}
                 </strong>
                 <button
                   type="button"
                   disabled={busy}
                   onClick={() => setDraft(null)}
                 >
-                  Закрыть
+                  {tr("Закрыть")}
                 </button>
               </div>
               <h4>{currentDraft.value.title}</h4>
               <FormattedText value={currentDraft.value.body} />
               {kind === "profile" && (
                 <>
-                  <h4>Первый урок</h4>
+                  <h4>{tr("Первый урок")}</h4>
                   <FormattedText value={currentDraft.value.lessonPlan} />
                 </>
               )}
               <p>
-                Проверьте текст. Подстановка заменит поля ниже; публикация —
-                отдельно.
+                {tr(
+                  "Проверьте текст. Подстановка заменит поля ниже; публикация — отдельно.",
+                )}
               </p>
               <button
                 type="button"
@@ -251,7 +288,7 @@ export function DraftFields({
                   requestAnimationFrame(() => titleField.current?.focus());
                 }}
               >
-                Подставить в форму
+                {tr("Подставить в форму")}
               </button>
             </div>
           )}
@@ -259,7 +296,7 @@ export function DraftFields({
       </details>
       {applied && (
         <div className="draftApplied" role="status">
-          Черновик подставлен.
+          {tr("Черновик подставлен.")}
           <button
             type="button"
             disabled={disabled}
@@ -272,16 +309,18 @@ export function DraftFields({
               setApplied(false);
             }}
           >
-            Вернуть мой текст
+            {tr("Вернуть мой текст")}
           </button>
         </div>
       )}
       <label className="draftTitle">
-        {kind === "profile"
-          ? "Заголовок анкеты"
-          : kind === "offering"
-            ? "Название направления"
-            : "Тема урока"}
+        {tr(
+          kind === "profile"
+            ? tr("Заголовок анкеты")
+            : kind === "offering"
+              ? tr("Название направления")
+              : tr("Тема урока"),
+        )}
         <input
           ref={titleField}
           name={kind === "profile" ? "headline" : "title"}
@@ -291,15 +330,15 @@ export function DraftFields({
           required
           minLength={5}
           maxLength={120}
-          placeholder={
+          placeholder={tr(
             subject
-              ? `${subject} · ${topics[0] ?? "первый урок"}`
-              : "Короткое название"
-          }
+              ? `${subject} · ${topics[0] ?? tr("первый урок")}`
+              : tr("Короткое название"),
+          )}
         />
       </label>
       <TextEditor
-        label={kind === "profile" ? "О себе" : "Описание и план"}
+        label={tr(kind === "profile" ? tr("О себе") : tr("Описание и план"))}
         name={kind === "profile" ? "bio" : "description"}
         value={body}
         onChange={setBody}
@@ -307,11 +346,11 @@ export function DraftFields({
         minLength={kind !== "offering" ? 20 : undefined}
         maxLength={1500}
         disabled={disabled}
-        placeholder="Кому подойдёт и что разберёте"
+        placeholder={tr("Кому подойдёт и что разберёте")}
       />
       {kind === "profile" && (
         <TextEditor
-          label="Первый урок"
+          label={tr("Первый урок")}
           name="lesson_plan"
           value={plan}
           onChange={setPlan}

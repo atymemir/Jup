@@ -169,3 +169,12 @@ Deploy this directory as its own service. Before building the main site set FIND
 ИИ доступен авторизованным преподавателям и центрам; анкеты — только преподавателям. Запрос включает выбранные предмет, экзамен, темы и введённые пользователем заметки, а не профиль целиком. Сервер использует Responses API с `store: false`, ограничивает длину и проверяет структуру результата. Одновременно разрешён один запрос и до шести запросов за десять минут на аккаунт в одном процессе приложения; этот лимит не является общим биллинговым лимитом для всех экземпляров Vercel. Установите лимит расходов в проекте провайдера перед использованием ИИ. Результат всегда сначала показывается как редактируемый черновик. Реальный вызов провайдера требует действующего ключа; в тестах проверяются имитированные ответы, проверка прав и обработка ошибок.
 
 Для этого изменения новые SQL-миграции не требуются. Если уведомления из предыдущего изменения ещё не размещены, их отдельная миграция по-прежнему нужна.
+
+
+### Interface languages
+
+The interface supports Russian (`ru`, default), Kazakh (`kk`) and English (`en`). The language picker stores a `jup-locale` cookie; the server uses it for the document language, initial rendering and metadata. Changing language keeps active form values and refreshes server-rendered copy. Dates use the chosen locale and retain Kazakhstan time (UTC+5). Use `app/lib/localeFormat.mjs` for date labels: it supplies Kazakh month and weekday names consistently across server and browser ICU versions.
+
+`app/i18n/messages.json` contains the Kazakh and English translations keyed by the original Russian interface text. Use `useLocale().t` in client components or `getServerLocale()` on the server. Pass variables through `{0}` placeholders. Translate presentation labels, not form values or database enums. Tutor descriptions, names, lesson titles, messages and other authored content stay in their original language.
+
+Quick-fill templates generate text in the selected language and preserve the author's notes. Optional AI drafting receives a validated locale; it still requires the existing server-side AI configuration. No database migration is needed for these interface changes.

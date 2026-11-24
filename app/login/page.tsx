@@ -1,4 +1,7 @@
 "use client";
+import { LanguageSwitcher } from "../i18n/LocaleProvider";
+import { useLocale as useJupLocale } from "../i18n/LocaleProvider";
+
 import { LoadingState } from "../ui/LoadingState";
 import { Brand } from "../ui/Brand";
 
@@ -43,6 +46,8 @@ function authError(error: unknown) {
 }
 
 export default function Login() {
+  const { t: tr } = useJupLocale();
+
   const [local, setLocal] = useState<boolean | null>(null);
   const [mode, setMode] = useState<Mode>("login");
   const [role, setRole] = useState("student");
@@ -55,9 +60,15 @@ export default function Login() {
   const [name, setName] = useState("");
   const [birthDate, setBirthDate] = useState("");
   const [password, setPassword] = useState("");
-  const stepTitle = ["Что вас сюда привело?", "Как вас называть?", "Сохраним ваш прогресс"];
+  const stepTitle = [
+    "Что вас сюда привело?",
+    "Как вас называть?",
+    "Сохраним ваш прогресс",
+  ];
   const stepInput = useRef<HTMLInputElement>(null);
-  useEffect(() => { if (step > 0) stepInput.current?.focus(); }, [step]);
+  useEffect(() => {
+    if (step > 0) stepInput.current?.focus();
+  }, [step]);
   const [intent, setIntent] = useState<string | null>(null);
   const lock = useRef(false);
 
@@ -91,12 +102,15 @@ export default function Login() {
       setIntent(currentAuthIntent(window.location.search));
       setRole(target);
       setMode(params.get("mode") === "signup" ? "signup" : "login");
-      const config = await fetchJson<{ preview: boolean; authAvailable?: boolean }>(
-        "/findbuddy/api/preview",
-      );
+      const config = await fetchJson<{
+        preview: boolean;
+        authAvailable?: boolean;
+      }>("/findbuddy/api/preview");
       if (!active) return;
       if (config.authAvailable === false) {
-        setMessage("Вход и регистрация временно недоступны. Подключение аккаунтов ещё не настроено.");
+        setMessage(
+          "Вход и регистрация временно недоступны. Подключение аккаунтов ещё не настроено.",
+        );
         return;
       }
       if (config.preview) {
@@ -213,7 +227,11 @@ export default function Login() {
           email,
           password,
           options: {
-            data: { display_name: name.trim(), account_type: role, birth_date: birthDate || null },
+            data: {
+              display_name: name.trim(),
+              account_type: role,
+              birth_date: birthDate || null,
+            },
             emailRedirectTo: redirect("confirm"),
           },
         });
@@ -264,85 +282,489 @@ export default function Login() {
 
   return (
     <main className="authPage">
-      <header className="authHeader"><Link className="authBrand" href="/" aria-label="Jup edu — главная"><Brand /></Link><Link href="/">К преподавателям</Link></header>
+      <header className="authHeader">
+        <LanguageSwitcher />
+        <Link
+          className="authBrand"
+          href="/"
+          aria-label={tr("Jup edu — главная")}
+        >
+          <Brand />
+        </Link>
+        <Link href="/">{tr("К преподавателям")}</Link>
+      </header>
       <div className="authLayout">
-      <aside className="authCompanion">
-        <p className="authEyebrow">Свой человек для учёбы</p>
-        <h2>{role === "teacher" ? <>Ваши знания.<br />Чей-то следующий шаг.</> : role === "business" ? <>Ваша команда.<br />Всё в одном месте.</> : <>Когда понятно,<br />учиться проще.</>}</h2>
-        <p>{role === "teacher" ? "Расскажите о своём подходе, откройте свободное время и найдите учеников." : role === "business" ? "Соберите преподавателей, направления и расписание вашего центра." : "Найдите преподавателя, с которым можно задавать вопросы и двигаться к своей цели."}</p>
-        <div className="authBenefits">
-          {(role === "teacher" ? [["teacher", "Анкета с вашим подходом", "Покажите, чему и как вы учите."], ["calendar", "Расписание без переписок", "Ученики выбирают свободное время."], ["requests", "Связь после урока", "Чат, материалы и домашние задания рядом."]] : role === "business" ? [["groups", "Своя команда", "Приглашайте преподавателей в центр."], ["calendar", "Общее расписание", "Направления, занятия и записи учеников."], ["requests", "Прямой контакт", "Обращения учеников в одном кабинете."]] : [["search", "Выбираете вы", "Подход, язык и цена видны заранее."], ["calendar", "Урок в удобное время", "Запишитесь или обсудите свой вариант."], ["requests", "Дальше всё рядом", "Занятия, чат и материалы в одном аккаунте."]]).map(([icon, title, description]) => <div key={title}><span><Icon name={icon as IconName} size={21} /></span><div><strong>{title}</strong><p>{description}</p></div></div>)}
-        </div>
-        <p className="authPilot">Бесплатный пилот · комиссия платформы 0%</p>
-      </aside>
-      <section className="auth authCard" aria-label={mode === "signup" ? "Регистрация" : "Вход в аккаунт"}>
-      {mode === "signup" && !sent && (
-        <SetupProgress labels={["Роль", "О вас", "Доступ"]} step={step} onBack={busy ? undefined : (next) => { setStep(next); setMessage(""); }} />
-      )}
-      <h1>{sent ? "Проверьте почту" : mode === "signup" ? stepTitle[step] : mode === "forgot" ? "Вернём вам доступ" : mode === "recovery" ? "Новый пароль" : "С возвращением"}</h1>
-      <p className="authSubtitle">
-        {sent ? "Остался один шаг." : mode === "signup" ? ["Подстроим Jup edu под вашу задачу.", "Укажите имя для общения на платформе.", "Занятия и переписки будут в одном аккаунте."][step] : mode === "login" ? "Войдите, чтобы продолжить с того же места." : "Укажите данные ниже, чтобы продолжить."}
-      </p>
-      {intent && !sent && <p className="authContinuation">Ваш выбор сохранён. Вернёмся к нему после входа.</p>}
-      {sent ? (
-        <div className="authSent">
-          <p>{mode === "signup" ? "Подтвердите адрес по ссылке в письме на" : "Если аккаунт существует, ссылка для смены пароля придёт на"} <strong>{email}</strong>.</p>
-          {mode === "signup" && <button className="primary" disabled={busy} onClick={resend}>{busy ? "Отправляем…" : "Отправить письмо ещё раз"}</button>}
-          <button onClick={() => switchMode("login")}>Вернуться ко входу</button>
-        </div>
-      ) : local !== null && (
-        <form onSubmit={submit} aria-busy={busy}>
-          {mode === "signup" && step === 0 && (
-            <fieldset className="setupChoices" disabled={busy}>
-              <legend className="srOnly">Как будете пользоваться Jup edu</legend>
-              {[["student", "Хочу учиться", "Найти преподавателя под свою цель", "teacher"], ["teacher", "Хочу преподавать", "Найти учеников и вести занятия", "calendar"], ["business", "У меня учебный центр", "Собрать команду и расписание", "groups"]].map(([value, title, description, icon]) => <ChoiceCard key={value} name="role" value={value} selected={role === value} title={title} description={description} icon={icon as IconName} onChange={setRole} />)}
-            </fieldset>
-          )}
-          {mode === "signup" && step === 1 && (
-            <>
-              <label htmlFor="fb-name">Ваше имя
-                <input ref={stepInput} id="fb-name" name="name" disabled={busy} autoComplete="given-name" placeholder="Например, Аружан" minLength={2} maxLength={50} required value={name} onChange={(e) => setName(e.target.value)} />
-              </label>
-              <details className="authOptional"><summary>Добавить дату рождения <span>Необязательно</span></summary><label htmlFor="fb-birthday">Дата рождения <small>Видна только вам</small>
-                <input id="fb-birthday" name="birth_date" type="date" autoComplete="bday" disabled={busy} min={`${new Date().getFullYear() - 120}-01-01`} max={new Date().toLocaleDateString("en-CA", { timeZone: "Asia/Almaty" })} value={birthDate} onChange={(e) => setBirthDate(e.target.value)} />
-              </label></details>
-            </>
-          )}
-          {(mode !== "signup" || step === 2) && <>
-            {mode === "signup" && <div className="authIdentity"><span><Icon name="check" size={17} /></span><div><strong>{name}</strong><small>{role === "teacher" ? "Преподаватель" : role === "business" ? "Учебный центр" : "Ученик"}</small></div><button type="button" disabled={busy} onClick={() => setStep(1)}>Изменить</button></div>}
-            {mode !== "recovery" && (
-              <label htmlFor="fb-email">Электронная почта
-                <input ref={stepInput} id="fb-email" name="email" disabled={busy} type="email" autoComplete="email" inputMode="email" autoCapitalize="none" spellCheck={false} placeholder="you@example.com" maxLength={254} required value={email} onChange={(e) => setEmail(e.target.value)} />
-              </label>
+        <aside className="authCompanion">
+          <p className="authEyebrow">{tr("Свой человек для учёбы")}</p>
+          <h2>
+            {role === "teacher" ? (
+              <>
+                {tr("Ваши знания.")}
+                <br />
+                {tr("Чей-то следующий шаг.")}
+              </>
+            ) : role === "business" ? (
+              <>
+                {tr("Ваша команда.")}
+                <br />
+                {tr("Всё в одном месте.")}
+              </>
+            ) : (
+              <>
+                {tr("Когда понятно,")}
+                <br />
+                {tr("учиться проще.")}
+              </>
             )}
-            {mode !== "forgot" && <div className="authPassword">
-              <label htmlFor="fb-password">{mode === "recovery" ? "Новый пароль" : "Пароль"}</label>
-              <span className="passwordField">
-                <input id="fb-password" name="password" disabled={busy} type={visible ? "text" : "password"} autoComplete={mode === "login" ? "current-password" : "new-password"} required minLength={mode === "login" ? 1 : 8} maxLength={128} value={password} onChange={(e) => setPassword(e.target.value)} aria-describedby={mode !== "login" ? "fb-password-hint" : undefined} />
-                <button type="button" onClick={() => setVisible(!visible)} aria-pressed={visible}>{visible ? "Скрыть" : "Показать"}</button>
-              </span>
-              {mode !== "login" && <small id="fb-password-hint">От 8 символов. Можно использовать менеджер паролей.</small>}
-            </div>}
-          </>}
-          <button className="primary" disabled={busy}>
-            {busy ? <LoadingState compact label="Подождите…" /> : mode === "signup" ? step < 2 ? "Продолжить" : "Создать аккаунт" : mode === "forgot" ? "Получить ссылку" : mode === "recovery" ? "Сохранить пароль" : "Войти"}
-          </button>
-          {mode === "signup" && step > 0 && <button type="button" disabled={busy} onClick={() => { setStep(step - 1); setMessage(""); }}>Назад</button>}
-          <div className="authLinks">
-            {mode === "login" ? <>
-              <button type="button" disabled={busy} onClick={() => switchMode("signup")}>Создать аккаунт</button>
-              {!local && <button type="button" disabled={busy} onClick={() => switchMode("forgot")}>Забыли пароль?</button>}
-            </> : mode !== "recovery" && <button type="button" disabled={busy} onClick={() => switchMode("login")}>Уже есть аккаунт? Войти</button>}
+          </h2>
+          <p>
+            {tr(
+              role === "teacher"
+                ? tr(
+                    "Расскажите о своём подходе, откройте свободное время и найдите учеников.",
+                  )
+                : role === "business"
+                  ? tr(
+                      "Соберите преподавателей, направления и расписание вашего центра.",
+                    )
+                  : tr(
+                      "Найдите преподавателя, с которым можно задавать вопросы и двигаться к своей цели.",
+                    ),
+            )}
+          </p>
+          <div className="authBenefits">
+            {(role === "teacher"
+              ? [
+                  [
+                    "teacher",
+                    "Анкета с вашим подходом",
+                    "Покажите, чему и как вы учите.",
+                  ],
+                  [
+                    "calendar",
+                    "Расписание без переписок",
+                    "Ученики выбирают свободное время.",
+                  ],
+                  [
+                    "requests",
+                    "Связь после урока",
+                    "Чат, материалы и домашние задания рядом.",
+                  ],
+                ]
+              : role === "business"
+                ? [
+                    [
+                      "groups",
+                      "Своя команда",
+                      "Приглашайте преподавателей в центр.",
+                    ],
+                    [
+                      "calendar",
+                      "Общее расписание",
+                      "Направления, занятия и записи учеников.",
+                    ],
+                    [
+                      "requests",
+                      "Прямой контакт",
+                      "Обращения учеников в одном кабинете.",
+                    ],
+                  ]
+                : [
+                    [
+                      "search",
+                      "Выбираете вы",
+                      "Подход, язык и цена видны заранее.",
+                    ],
+                    [
+                      "calendar",
+                      "Урок в удобное время",
+                      "Запишитесь или обсудите свой вариант.",
+                    ],
+                    [
+                      "requests",
+                      "Дальше всё рядом",
+                      "Занятия, чат и материалы в одном аккаунте.",
+                    ],
+                  ]
+            ).map(([icon, title, description]) => (
+              <div key={title}>
+                <span>
+                  <Icon name={icon as IconName} size={21} />
+                </span>
+                <div>
+                  <strong>{tr(title)}</strong>
+                  <p>{tr(description)}</p>
+                </div>
+              </div>
+            ))}
           </div>
-          {!local && mode === "login" && message.includes("подтвердите") && <button type="button" onClick={resend} disabled={busy}>Отправить письмо подтверждения</button>}
-        </form>
-      )}
-      {local === null && !message && <div className="authPending"><LoadingState compact label="Готовим безопасный вход…" /><div aria-hidden="true"><span /><span /><span /></div></div>}
-      {message && <p className="authError" role="alert">{message}</p>}
-      {local === null && message && <button className="secondary" onClick={() => window.location.reload()}>Повторить загрузку</button>}
-      {local && <p className="authLocal">Локальная версия: аккаунт сохраняется на этом компьютере. Подтверждение почты недоступно.</p>}
-      <div className="authFoot"><Link href="/guide">Помощь</Link><Link href="/privacy">Конфиденциальность</Link></div>
-      </section>
+          <p className="authPilot">
+            {tr("Бесплатный пилот · комиссия платформы 0%")}
+          </p>
+        </aside>
+        <section
+          className="auth authCard"
+          aria-label={tr(
+            mode === "signup" ? tr("Регистрация") : tr("Вход в аккаунт"),
+          )}
+        >
+          {mode === "signup" && !sent && (
+            <SetupProgress
+              labels={[tr("Роль"), tr("О вас"), tr("Доступ")]}
+              step={step}
+              onBack={
+                busy
+                  ? undefined
+                  : (next) => {
+                      setStep(next);
+                      setMessage("");
+                    }
+              }
+            />
+          )}
+          <h1>
+            {tr(
+              sent
+                ? tr("Проверьте почту")
+                : mode === "signup"
+                  ? stepTitle[step]
+                  : mode === "forgot"
+                    ? tr("Вернём вам доступ")
+                    : mode === "recovery"
+                      ? tr("Новый пароль")
+                      : tr("С возвращением"),
+            )}
+          </h1>
+          <p className="authSubtitle">
+            {tr(
+              sent
+                ? tr("Остался один шаг.")
+                : mode === "signup"
+                  ? [
+                      tr("Подстроим Jup edu под вашу задачу."),
+                      tr("Укажите имя для общения на платформе."),
+                      tr("Занятия и переписки будут в одном аккаунте."),
+                    ][step]
+                  : mode === "login"
+                    ? tr("Войдите, чтобы продолжить с того же места.")
+                    : tr("Укажите данные ниже, чтобы продолжить."),
+            )}
+          </p>
+          {intent && !sent && (
+            <p className="authContinuation">
+              {tr("Ваш выбор сохранён. Вернёмся к нему после входа.")}
+            </p>
+          )}
+          {sent ? (
+            <div className="authSent">
+              <p>
+                {tr(
+                  mode === "signup"
+                    ? tr("Подтвердите адрес по ссылке в письме на")
+                    : tr(
+                        "Если аккаунт существует, ссылка для смены пароля придёт на",
+                      ),
+                )}{" "}
+                <strong>{email}</strong>.
+              </p>
+              {mode === "signup" && (
+                <button className="primary" disabled={busy} onClick={resend}>
+                  {tr(
+                    busy ? tr("Отправляем…") : tr("Отправить письмо ещё раз"),
+                  )}
+                </button>
+              )}
+              <button onClick={() => switchMode("login")}>
+                {tr("Вернуться ко входу")}
+              </button>
+            </div>
+          ) : (
+            local !== null && (
+              <form onSubmit={submit} aria-busy={busy}>
+                {mode === "signup" && step === 0 && (
+                  <fieldset className="setupChoices" disabled={busy}>
+                    <legend className="srOnly">
+                      {tr("Как будете пользоваться Jup edu")}
+                    </legend>
+                    {[
+                      [
+                        "student",
+                        "Хочу учиться",
+                        "Найти преподавателя под свою цель",
+                        "teacher",
+                      ],
+                      [
+                        "teacher",
+                        "Хочу преподавать",
+                        "Найти учеников и вести занятия",
+                        "calendar",
+                      ],
+                      [
+                        "business",
+                        "У меня учебный центр",
+                        "Собрать команду и расписание",
+                        "groups",
+                      ],
+                    ].map(([value, title, description, icon]) => (
+                      <ChoiceCard
+                        key={value}
+                        name="role"
+                        value={value}
+                        selected={role === value}
+                        title={tr(title)}
+                        description={tr(description)}
+                        icon={icon as IconName}
+                        onChange={setRole}
+                      />
+                    ))}
+                  </fieldset>
+                )}
+                {mode === "signup" && step === 1 && (
+                  <>
+                    <label htmlFor="fb-name">
+                      {tr("Ваше имя")}
+                      <input
+                        ref={stepInput}
+                        id="fb-name"
+                        name="name"
+                        disabled={busy}
+                        autoComplete="given-name"
+                        placeholder={tr("Например, Аружан")}
+                        minLength={2}
+                        maxLength={50}
+                        required
+                        value={name}
+                        onChange={(e) => setName(e.target.value)}
+                      />
+                    </label>
+                    <details className="authOptional">
+                      <summary>
+                        {tr("Добавить дату рождения ")}
+                        <span>{tr("Необязательно")}</span>
+                      </summary>
+                      <label htmlFor="fb-birthday">
+                        {tr("Дата рождения ")}
+                        <small>{tr("Видна только вам")}</small>
+                        <input
+                          id="fb-birthday"
+                          name="birth_date"
+                          type="date"
+                          autoComplete="bday"
+                          disabled={busy}
+                          min={`${new Date().getFullYear() - 120}-01-01`}
+                          max={new Date().toLocaleDateString("en-CA", {
+                            timeZone: "Asia/Almaty",
+                          })}
+                          value={birthDate}
+                          onChange={(e) => setBirthDate(e.target.value)}
+                        />
+                      </label>
+                    </details>
+                  </>
+                )}
+                {(mode !== "signup" || step === 2) && (
+                  <>
+                    {mode === "signup" && (
+                      <div className="authIdentity">
+                        <span>
+                          <Icon name="check" size={17} />
+                        </span>
+                        <div>
+                          <strong>{name}</strong>
+                          <small>
+                            {tr(
+                              role === "teacher"
+                                ? tr("Преподаватель")
+                                : role === "business"
+                                  ? tr("Учебный центр")
+                                  : tr("Ученик"),
+                            )}
+                          </small>
+                        </div>
+                        <button
+                          type="button"
+                          disabled={busy}
+                          onClick={() => setStep(1)}
+                        >
+                          {tr("Изменить")}
+                        </button>
+                      </div>
+                    )}
+                    {mode !== "recovery" && (
+                      <label htmlFor="fb-email">
+                        {tr("Электронная почта")}
+                        <input
+                          ref={stepInput}
+                          id="fb-email"
+                          name="email"
+                          disabled={busy}
+                          type="email"
+                          autoComplete="email"
+                          inputMode="email"
+                          autoCapitalize="none"
+                          spellCheck={false}
+                          placeholder="you@example.com"
+                          maxLength={254}
+                          required
+                          value={email}
+                          onChange={(e) => setEmail(e.target.value)}
+                        />
+                      </label>
+                    )}
+                    {mode !== "forgot" && (
+                      <div className="authPassword">
+                        <label htmlFor="fb-password">
+                          {tr(
+                            mode === "recovery"
+                              ? tr("Новый пароль")
+                              : tr("Пароль"),
+                          )}
+                        </label>
+                        <span className="passwordField">
+                          <input
+                            id="fb-password"
+                            name="password"
+                            disabled={busy}
+                            type={visible ? "text" : "password"}
+                            autoComplete={
+                              mode === "login"
+                                ? "current-password"
+                                : "new-password"
+                            }
+                            required
+                            minLength={mode === "login" ? 1 : 8}
+                            maxLength={128}
+                            value={password}
+                            onChange={(e) => setPassword(e.target.value)}
+                            aria-describedby={
+                              mode !== "login" ? "fb-password-hint" : undefined
+                            }
+                          />
+                          <button
+                            type="button"
+                            onClick={() => setVisible(!visible)}
+                            aria-pressed={visible}
+                          >
+                            {tr(visible ? tr("Скрыть") : tr("Показать"))}
+                          </button>
+                        </span>
+                        {mode !== "login" && (
+                          <small id="fb-password-hint">
+                            {tr(
+                              "От 8 символов. Можно использовать менеджер паролей.",
+                            )}
+                          </small>
+                        )}
+                      </div>
+                    )}
+                  </>
+                )}
+                <button className="primary" disabled={busy}>
+                  {busy ? (
+                    <LoadingState compact label={tr("Подождите…")} />
+                  ) : mode === "signup" ? (
+                    step < 2 ? (
+                      tr("Продолжить")
+                    ) : (
+                      tr("Создать аккаунт")
+                    )
+                  ) : mode === "forgot" ? (
+                    tr("Получить ссылку")
+                  ) : mode === "recovery" ? (
+                    tr("Сохранить пароль")
+                  ) : (
+                    tr("Войти")
+                  )}
+                </button>
+                {mode === "signup" && step > 0 && (
+                  <button
+                    type="button"
+                    disabled={busy}
+                    onClick={() => {
+                      setStep(step - 1);
+                      setMessage("");
+                    }}
+                  >
+                    {tr("Назад")}
+                  </button>
+                )}
+                <div className="authLinks">
+                  {mode === "login" ? (
+                    <>
+                      <button
+                        type="button"
+                        disabled={busy}
+                        onClick={() => switchMode("signup")}
+                      >
+                        {tr("Создать аккаунт")}
+                      </button>
+                      {!local && (
+                        <button
+                          type="button"
+                          disabled={busy}
+                          onClick={() => switchMode("forgot")}
+                        >
+                          {tr("Забыли пароль?")}
+                        </button>
+                      )}
+                    </>
+                  ) : (
+                    mode !== "recovery" && (
+                      <button
+                        type="button"
+                        disabled={busy}
+                        onClick={() => switchMode("login")}
+                      >
+                        {tr("Уже есть аккаунт? Войти")}
+                      </button>
+                    )
+                  )}
+                </div>
+                {!local &&
+                  mode === "login" &&
+                  message.includes("подтвердите") && (
+                    <button type="button" onClick={resend} disabled={busy}>
+                      {tr("Отправить письмо подтверждения")}
+                    </button>
+                  )}
+              </form>
+            )
+          )}
+          {local === null && !message && (
+            <div className="authPending">
+              <LoadingState compact label={tr("Готовим безопасный вход…")} />
+              <div aria-hidden="true">
+                <span />
+                <span />
+                <span />
+              </div>
+            </div>
+          )}
+          {message && (
+            <p className="authError" role="alert">
+              {tr(message)}
+            </p>
+          )}
+          {local === null && message && (
+            <button
+              className="secondary"
+              onClick={() => window.location.reload()}
+            >
+              {tr("Повторить загрузку")}
+            </button>
+          )}
+          {local && (
+            <p className="authLocal">
+              {tr(
+                "Локальная версия: аккаунт сохраняется на этом компьютере. Подтверждение почты недоступно.",
+              )}
+            </p>
+          )}
+          <div className="authFoot">
+            <Link href="/guide">{tr("Помощь")}</Link>
+            <Link href="/privacy">{tr("Конфиденциальность")}</Link>
+          </div>
+        </section>
       </div>
     </main>
   );

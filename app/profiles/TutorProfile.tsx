@@ -1,4 +1,6 @@
 "use client";
+import { useLocale as useJupLocale } from "../i18n/LocaleProvider";
+
 import { DraftFields } from "../authoring/DraftFields";
 import { FormattedText } from "../ui/FormattedText";
 import {
@@ -99,10 +101,12 @@ function Field({
   label: string;
   children: ReactElement<{ id?: string }>;
 }) {
+  const { t: tr } = useJupLocale();
+
   const id = useId();
   return (
     <div className={st.field}>
-      <label htmlFor={id}>{label}</label>
+      <label htmlFor={id}>{tr(label)}</label>
       {cloneElement(children, { id })}
     </div>
   );
@@ -127,9 +131,11 @@ export function TutorForm({
   busy: boolean;
   save: (data: Record<string, unknown>) => void;
 }) {
+  const { t: tr } = useJupLocale();
+
   const [stage, setStage] = useState(1);
-  const [subject,setSubject] = useState(tutor?.subject ?? "");
-  const [exam,setExam] = useState(tutor?.exam ?? "");
+  const [subject, setSubject] = useState(tutor?.subject ?? "");
+  const [exam, setExam] = useState(tutor?.exam ?? "");
   const photoInput = useId();
   const basics = useRef<HTMLDivElement>(null);
   const detailsHeading = useRef<HTMLHeadingElement>(null);
@@ -194,34 +200,55 @@ export function TutorForm({
   }
   return (
     <form className={st.form} onSubmit={submit}>
-      {!tutor && <SetupProgress labels={["Основное", "Ваш подход"]} step={stage - 1} onBack={busy ? undefined : () => setStage(1)} />}
+      {!tutor && (
+        <SetupProgress
+          labels={[tr("Основное"), tr("Ваш подход")]}
+          step={stage - 1}
+          onBack={busy ? undefined : () => setStage(1)}
+        />
+      )}
       {error && (
         <p role="alert" className={st.error}>
-          {error}
+          {tr(error)}
         </p>
       )}
       <div ref={basics} hidden={!tutor && stage === 2} className={st.stage}>
         <div className={st.upload}>
           <TutorPhoto tutor={tutor} source={source} />
           <div>
-            <strong>Ваше фото</strong>
-            <p className={st.photoHint}>Помогите ученику узнать вас до первого урока.</p>
-            <label className={st.photoButton + " secondary"} htmlFor={photoInput}>{processing ? "Подготавливаем…" : source || tutor?.photo_version ? "Заменить фото" : "Выбрать фото"}</label>
-              <input
-                id={photoInput}
-                className="srOnly"
-                type="file"
-                accept="image/jpeg,image/png,image/webp"
-                onChange={(e) => {
-                  void choose(e.target.files?.[0]);
-                  e.target.value = "";
-                }}
-                disabled={busy || processing}
-              />
+            <strong>{tr("Ваше фото")}</strong>
+            <p className={st.photoHint}>
+              {tr("Помогите ученику узнать вас до первого урока.")}
+            </p>
+            <label
+              className={st.photoButton + " secondary"}
+              htmlFor={photoInput}
+            >
+              {tr(
+                processing
+                  ? tr("Подготавливаем…")
+                  : source || tutor?.photo_version
+                    ? tr("Заменить фото")
+                    : tr("Выбрать фото"),
+              )}
+            </label>
+            <input
+              id={photoInput}
+              className="srOnly"
+              type="file"
+              accept="image/jpeg,image/png,image/webp"
+              onChange={(e) => {
+                void choose(e.target.files?.[0]);
+                e.target.value = "";
+              }}
+              disabled={busy || processing}
+            />
             <small>
-              {processing
-                ? "Подготавливаем фото…"
-                : "JPG, PNG или WebP · до 12 МБ"}
+              {tr(
+                processing
+                  ? tr("Подготавливаем фото…")
+                  : tr("JPG, PNG или WebP · до 12 МБ"),
+              )}
             </small>
             {tutor && (source || tutor.photo_version) && photo !== "" && (
               <button
@@ -232,12 +259,12 @@ export function TutorForm({
                   setError("");
                 }}
               >
-                Удалить фото
+                {tr("Удалить фото")}
               </button>
             )}
           </div>
         </div>
-        <Field label="Имя в анкете">
+        <Field label={tr("Имя в анкете")}>
           <input
             name="display_name"
             defaultValue={tutor?.display_name ?? name ?? ""}
@@ -255,45 +282,57 @@ export function TutorForm({
               ["language", "Язык занятий"],
             ] as const
           ).map(([key, label]) => (
-            <Field key={key} label={label}>
-              <select name={key} defaultValue={tutor?.[key] ?? ""} required onChange={e => { if(key === "subject") setSubject(e.target.value); if(key === "exam") setExam(e.target.value); }}>
+            <Field key={key} label={tr(label)}>
+              <select
+                name={key}
+                defaultValue={tutor?.[key] ?? ""}
+                required
+                onChange={(e) => {
+                  if (key === "subject") setSubject(e.target.value);
+                  if (key === "exam") setExam(e.target.value);
+                }}
+              >
                 <option value="" disabled>
-                  Выберите
+                  {tr("Выберите")}
                 </option>
                 {options[key].map((item) => (
-                  <option key={item}>{item}</option>
+                  <option key={item} value={item}>
+                    {tr(item)}
+                  </option>
                 ))}
               </select>
             </Field>
           ))}
-          <Field label="Формат первого направления">
+          <Field label={tr("Формат первого направления")}>
             <select
               value={delivery}
               onChange={(e) => setDelivery(e.target.value)}
             >
-              <option value="online">Онлайн</option>
-              <option value="in_person">Очно</option>
+              <option value="online">{tr("Онлайн")}</option>
+              <option value="in_person">{tr("Очно")}</option>
             </select>
           </Field>
           {delivery === "online" ? (
             <input type="hidden" name="city" value="Онлайн" />
           ) : (
-            <Field label="Город занятий">
+            <Field label={tr("Город занятий")}>
               <select
                 name="city"
                 required
                 defaultValue={tutor?.city !== "Онлайн" ? tutor?.city : ""}
               >
                 <option value="" disabled>
-                  Выберите город
+                  {tr("Выберите город")}
                 </option>
                 {FB_CITIES.filter((city) => city !== "Онлайн").map((city) => (
-                  <option key={city}>{city}</option>
+                  <option key={city} value={city}>
+                    {tr(city)}
+                  </option>
                 ))}
               </select>
             </Field>
           )}
-          <Field label="Цена за 60 минут, ₸">
+          <Field label={tr("Цена за 60 минут, ₸")}>
             <input
               name="price"
               type="number"
@@ -305,7 +344,7 @@ export function TutorForm({
             />
           </Field>
         </div>
-        <Field label="Опыт, лет">
+        <Field label={tr("Опыт, лет")}>
           <input
             name="experience"
             type="number"
@@ -319,24 +358,33 @@ export function TutorForm({
       <div hidden={!tutor && stage === 1} className={st.stage}>
         {!tutor && (
           <h3 tabIndex={-1} ref={detailsHeading}>
-            Расскажите о ваших уроках
+            {tr("Расскажите о ваших уроках")}
           </h3>
         )}
-        <DraftFields kind="profile" subject={subject} exam={exam} initialTitle={tutor?.headline} initialBody={tutor?.bio} initialPlan={tutor?.lesson_plan} disabled={busy} />
-        <Field label="Образование или квалификация">
+        <DraftFields
+          kind="profile"
+          subject={subject}
+          exam={exam}
+          initialTitle={tutor?.headline}
+          initialBody={tutor?.bio}
+          initialPlan={tutor?.lesson_plan}
+          disabled={busy}
+        />
+        <Field label={tr("Образование или квалификация")}>
           <input
             name="education"
             maxLength={180}
             defaultValue={tutor?.education}
-            placeholder="Например, КазНУ, география"
+            placeholder={tr("Например, КазНУ, география")}
           />
         </Field>
         <Qualifications tutor={tutor} />
         {!tutor && (
           <label className={st.consent}>
             <input type="checkbox" name="adult_consent" required />
-            Мне есть 18 лет. Я согласен на проверку личности перед публикацией
-            анкеты.
+            {tr(
+              "Мне есть 18 лет. Я согласен на проверку личности перед публикацией анкеты.",
+            )}
           </label>
         )}
       </div>
@@ -347,16 +395,18 @@ export function TutorForm({
           disabled={processing}
           onClick={next}
         >
-          Продолжить
+          {tr("Продолжить")}
         </button>
       ) : (
         <>
           <button className="primary" disabled={busy || processing}>
-            {busy
-              ? "Сохраняем…"
-              : tutor
-                ? "Сохранить анкету"
-                : "Отправить анкету"}
+            {tr(
+              busy
+                ? tr("Сохраняем…")
+                : tutor
+                  ? tr("Сохранить анкету")
+                  : tr("Отправить анкету"),
+            )}
           </button>
           {!tutor && (
             <button
@@ -368,7 +418,7 @@ export function TutorForm({
                 setStage(1);
               }}
             >
-              Назад к фото и цене
+              {tr("Назад к фото и цене")}
             </button>
           )}
         </>
@@ -407,6 +457,8 @@ export function ProfilePage({
   contact?: () => void;
   reviews?: ReactNode;
 }) {
+  const { t: tr, locale: uiLocale } = useJupLocale();
+
   const orderedSlots = [...slots].sort(
     (a, b) => Date.parse(a.starts_at) - Date.parse(b.starts_at),
   );
@@ -418,10 +470,10 @@ export function ProfilePage({
       ? Math.min(...tutor.offerings.map((o) => o.price))
       : tutor.price);
   return (
-    <section className={st.profile} aria-label="Анкета преподавателя">
+    <section className={st.profile} aria-label={tr("Анкета преподавателя")}>
       <div className={st.profileNav}>
         <button className={st.link} onClick={back}>
-          {own ? "Кабинет преподавателя" : "Вернуться к поиску"}
+          {tr(own ? tr("Кабинет преподавателя") : tr("Вернуться к поиску"))}
         </button>
         {tutor.verification === "verified" && !example && (
           <button
@@ -437,13 +489,13 @@ export function ProfilePage({
               }
             }}
           >
-            Поделиться анкетой
+            {tr("Поделиться анкетой")}
           </button>
         )}
       </div>
       {shared && (
         <p className={st.muted} role="status">
-          {shared}
+          {tr(shared)}
         </p>
       )}
       <div className={st.layout}>
@@ -452,7 +504,7 @@ export function ProfilePage({
             <TutorPhoto tutor={tutor} source={photo} />
             <div>
               <p className={st.muted}>
-                {tutor.subject} · {tutor.exam}
+                {tr(tutor.subject)} · {tr(tutor.exam)}
               </p>
               <h1>{tutor.display_name}</h1>
               <p>{tutor.headline}</p>
@@ -460,33 +512,38 @@ export function ProfilePage({
           </header>
           <dl className={st.facts}>
             <div>
-              <dt>Формат</dt>
-              <dd>{tutor.city}</dd>
+              <dt>{tr("Формат")}</dt>
+              <dd>{tr(tutor.city)}</dd>
             </div>
             <div>
-              <dt>Язык</dt>
-              <dd>{tutor.language}</dd>
+              <dt>{tr("Язык")}</dt>
+              <dd>{tr(tutor.language)}</dd>
             </div>
             <div>
-              <dt>Опыт</dt>
-              <dd>{tutor.experience} г.</dd>
+              <dt>{tr("Опыт")}</dt>
+              <dd>
+                {tutor.experience}
+                {tr(" г.")}
+              </dd>
             </div>
           </dl>
           <p className={st.status}>
-            {example
-              ? "Демоанкета"
-              : local
-                ? "Локальная анкета"
-                : tutor.verification === "verified"
-                  ? "Личность подтверждена"
-                  : "Анкета ожидает проверки"}
+            {tr(
+              example
+                ? tr("Демоанкета")
+                : local
+                  ? tr("Локальная анкета")
+                  : tutor.verification === "verified"
+                    ? tr("Личность подтверждена")
+                    : tr("Анкета ожидает проверки"),
+            )}
           </p>
           <div className={st.info}>
-            <h2>О преподавателе</h2>
+            <h2>{tr("О преподавателе")}</h2>
             <FormattedText value={tutor.bio} />
             {!!tutor.education_entries?.length && (
               <>
-                <h3>Образование</h3>
+                <h3>{tr("Образование")}</h3>
                 {tutor.education_entries.map((e, i) => (
                   <p key={i}>
                     <strong>{e.institution}</strong>
@@ -494,7 +551,9 @@ export function ProfilePage({
                     {[
                       e.degree,
                       e.field,
-                      e.status === "studying" ? "Продолжает учиться" : e.year,
+                      e.status === "studying"
+                        ? tr("Продолжает учиться")
+                        : e.year,
                     ]
                       .filter(Boolean)
                       .join(" · ")}
@@ -504,7 +563,7 @@ export function ProfilePage({
             )}
             {!!tutor.certificates?.length && (
               <>
-                <h3>Сертификаты</h3>
+                <h3>{tr("Сертификаты")}</h3>
                 {tutor.certificates.map((c, i) => (
                   <p key={i}>
                     {[c.name, c.issuer, c.result, c.year]
@@ -512,47 +571,49 @@ export function ProfilePage({
                       .join(" · ")}
                   </p>
                 ))}
-                <small>Сведения указаны преподавателем.</small>
+                <small>{tr("Сведения указаны преподавателем.")}</small>
               </>
             )}
             {!!tutor.spoken_languages?.length && (
               <>
-                <h3>Владение языками</h3>
+                <h3>{tr("Владение языками")}</h3>
                 <p>
-                  {tutor.spoken_languages
-                    .map((l) => l.language + " · " + l.level)
-                    .join(", ")}
+                  {tr(
+                    tutor.spoken_languages
+                      .map((l) => l.language + " · " + l.level)
+                      .join(", "),
+                  )}
                 </p>
               </>
             )}
             {tutor.teaching_approach && (
               <>
-                <h3>Подход к занятиям</h3>
+                <h3>{tr("Подход к занятиям")}</h3>
                 <p>{tutor.teaching_approach}</p>
               </>
             )}
             {tutor.audience && (
               <>
-                <h3>С кем работает</h3>
-                <p>{tutor.audience}</p>
+                <h3>{tr("С кем работает")}</h3>
+                <p>{tr(tutor.audience)}</p>
               </>
             )}
             {tutor.education && (
               <>
-                <h3>Образование и квалификация</h3>
+                <h3>{tr("Образование и квалификация")}</h3>
                 <p>{tutor.education}</p>
               </>
             )}
             {tutor.lesson_plan && (
               <>
-                <h3>Первый урок</h3>
+                <h3>{tr("Первый урок")}</h3>
                 <FormattedText value={tutor.lesson_plan} />
               </>
             )}
           </div>
           {!!tutor.offerings?.length && (
             <div className={st.info}>
-              <h2>Направления занятий</h2>
+              <h2>{tr("Направления занятий")}</h2>
               {tutor.offerings.map((o) => (
                 <article
                   key={o.id}
@@ -563,16 +624,21 @@ export function ProfilePage({
                 >
                   <h3>{o.title}</h3>
                   <p>
-                    {o.subject} · {o.exam} · {o.languages.join(", ")} ·{" "}
-                    {o.format === "online" ? "Онлайн" : o.city}
+                    {tr(o.subject)} · {tr(o.exam)} ·{" "}
+                    {tr(o.languages.join(", "))} ·{tr(" ")}
+                    {tr(o.format === "online" ? tr("Онлайн") : o.city)}
                   </p>
                   <FormattedText value={o.description} />
                   <strong>
-                    {o.price === 0 ? "Бесплатно" : money(o.price)}
+                    {tr(
+                      o.price === 0
+                        ? tr("Бесплатно")
+                        : money(o.price, uiLocale),
+                    )}
                   </strong>
                   {!own && !example && (
                     <button className={st.link} onClick={() => request(o)}>
-                      Предложить время по этому направлению
+                      {tr("Предложить время по этому направлению")}
                     </button>
                   )}
                 </article>
@@ -583,7 +649,7 @@ export function ProfilePage({
           <ReportProfile kind="teacher" id={tutor.id} />
           {groups.length > 0 && (
             <div className={st.info}>
-              <h2>Мини-группы</h2>
+              <h2>{tr("Мини-группы")}</h2>
               {groups.map((g) => (
                 <button
                   key={g.id}
@@ -594,40 +660,47 @@ export function ProfilePage({
                   <span>
                     <strong>{g.title}</strong>
                     <small>
-                      {lessonDate(g.starts_at)} · UTC+5 · мест{" "}
+                      {tr(lessonDate(g.starts_at, uiLocale))}
+                      {tr(" · UTC+5 · мест")}
+                      {tr(" ")}
                       {g.capacity - g.reserved}
                     </small>
                   </span>
-                  <strong>{money(g.price)}</strong>
+                  <strong>{tr(money(g.price, uiLocale))}</strong>
                 </button>
               ))}
             </div>
           )}
         </div>
         <aside className={st.reserve}>
-          <h2>Ваш первый урок</h2>
+          <h2>{tr("Ваш первый урок")}</h2>
           <p className={st.rate}>
             <strong>
-              {firstPrice === 0 ? "Бесплатно" : money(firstPrice)}
+              {tr(
+                firstPrice === 0
+                  ? tr("Бесплатно")
+                  : money(firstPrice, uiLocale),
+              )}
             </strong>
-            <span> за 60 минут</span>
+            <span>{tr(" за 60 минут")}</span>
           </p>
           {!editable && (
             <p className={st.bookingNote}>
-              60 минут с преподавателем. Запись без списания денег;
-              онлайн-оплата пока не подключена.
+              {tr(
+                "60 минут с преподавателем. Запись без списания денег; онлайн-оплата пока не подключена.",
+              )}
             </p>
           )}
           {editable ? (
             <button className="primary" onClick={edit}>
-              Редактировать анкету
+              {tr("Редактировать анкету")}
             </button>
           ) : (
             <>
               {slots.length > 0 ? (
                 <>
-                  <h3>Ближайшие даты</h3>
-                  <small>Время Казахстана · UTC+5</small>
+                  <h3>{tr("Ближайшие даты")}</h3>
+                  <small>{tr("Время Казахстана · UTC+5")}</small>
                   {orderedSlots.slice(0, all ? undefined : 4).map((slot) => (
                     <button
                       className={st.slot}
@@ -635,20 +708,21 @@ export function ProfilePage({
                       disabled={example}
                       onClick={() => book(slot)}
                     >
-                      <span>{lessonDate(slot.starts_at)}</span>
-                      <strong>{money(slot.price)}</strong>
+                      <span>{tr(lessonDate(slot.starts_at, uiLocale))}</span>
+                      <strong>{tr(money(slot.price, uiLocale))}</strong>
                     </button>
                   ))}
                   {slots.length > 4 && !all && (
                     <button className={st.link} onClick={() => setAll(true)}>
-                      Показать все даты
+                      {tr("Показать все даты")}
                     </button>
                   )}
                 </>
               ) : (
                 <p>
-                  Свободных дат в расписании пока нет. Предложите удобное время
-                  и бюджет.
+                  {tr(
+                    "Свободных дат в расписании пока нет. Предложите удобное время и бюджет.",
+                  )}
                 </p>
               )}
               {contact && (
@@ -656,7 +730,7 @@ export function ProfilePage({
                   className={slots.length ? "secondary" : "primary"}
                   onClick={contact}
                 >
-                  Написать преподавателю
+                  {tr("Написать преподавателю")}
                 </button>
               )}
               <button
@@ -664,7 +738,7 @@ export function ProfilePage({
                 onClick={() => request()}
                 disabled={example}
               >
-                Предложить время и цену
+                {tr("Предложить время и цену")}
               </button>
             </>
           )}

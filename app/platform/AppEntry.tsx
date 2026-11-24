@@ -1,4 +1,7 @@
 "use client";
+import { LanguageSwitcher } from "../i18n/LocaleProvider";
+import { useLocale as useJupLocale } from "../i18n/LocaleProvider";
+
 import { LoadingState } from "../ui/LoadingState";
 import { Brand } from "../ui/Brand";
 
@@ -78,6 +81,8 @@ function watchHash(update: () => void) {
   return () => window.removeEventListener("hashchange", update);
 }
 export default function AppEntry({ area = "public" }: { area?: Area }) {
+  const { t: tr } = useJupLocale();
+
   const [account, setAccount] = useState<Account | null>(null);
   const notifications = useNotifications(account?.id ?? null);
   const [data, setData] = useState<PlatformDashboard | null>(null);
@@ -128,7 +133,8 @@ export default function AppEntry({ area = "public" }: { area?: Area }) {
     let lastRefresh = Date.now();
     let pending = false;
     const update = async () => {
-      if (pending || document.hidden || Date.now() - lastRefresh < 10000) return;
+      if (pending || document.hidden || Date.now() - lastRefresh < 10000)
+        return;
       lastRefresh = Date.now();
       pending = true;
       try {
@@ -155,7 +161,7 @@ export default function AppEntry({ area = "public" }: { area?: Area }) {
   if (loading)
     return (
       <main className={st.public}>
-        <LoadingState label="Открываем ваш кабинет…" />
+        <LoadingState label={tr("Открываем ваш кабинет…")} />
       </main>
     );
   if (!account || !expected)
@@ -165,32 +171,44 @@ export default function AppEntry({ area = "public" }: { area?: Area }) {
           <Link className={st.brand} href="/">
             <Brand />
           </Link>
+          <LanguageSwitcher />
         </header>
         <section className={st.hero}>
           <div>
             <p className={st.eyebrow}>
-              {area === "teacher"
-                ? "Для преподавателей"
-                : area === "business"
-                  ? "Для учебных центров"
-                  : area === "admin"
-                    ? "Команда Jup edu"
-                    : "Кабинет ученика"}
+              {tr(
+                area === "teacher"
+                  ? tr("Для преподавателей")
+                  : area === "business"
+                    ? tr("Для учебных центров")
+                    : area === "admin"
+                      ? tr("Команда Jup edu")
+                      : tr("Кабинет ученика"),
+              )}
             </p>
             <h1>
-              {account
-                ? "У этого аккаунта другой кабинет"
-                : "Войдите в свой кабинет"}
+              {tr(
+                account
+                  ? tr("У этого аккаунта другой кабинет")
+                  : tr("Войдите в свой кабинет"),
+              )}
             </h1>
             <p>
-              {account
-                ? `Вы зарегистрированы как «${roleLabels[account.role]}». Откройте свой кабинет, чтобы продолжить.`
-                : "Ученики, преподаватели и учебные центры работают в отдельных кабинетах."}
+              {tr(
+                account
+                  ? tr(
+                      "Вы зарегистрированы как \u00AB{0}\u00BB. Откройте свой кабинет, чтобы продолжить.",
+                      [roleLabels[account.role]],
+                    )
+                  : tr(
+                      "Ученики, преподаватели и учебные центры работают в отдельных кабинетах.",
+                    ),
+              )}
             </p>
             <div className={st.actions}>
               {account && (
                 <a className="primary" href={roleHome(account.role)}>
-                  В свой кабинет
+                  {tr("В свой кабинет")}
                 </a>
               )}
               <Link
@@ -204,7 +222,7 @@ export default function AppEntry({ area = "public" }: { area?: Area }) {
                       : "student")
                 }
               >
-                Войти
+                {tr("Войти")}
               </Link>
               {area !== "admin" && (
                 <Link
@@ -218,14 +236,16 @@ export default function AppEntry({ area = "public" }: { area?: Area }) {
                         : "student")
                   }
                 >
-                  Создать аккаунт
+                  {tr("Создать аккаунт")}
                 </Link>
               )}
             </div>
             {error && (
               <p className={st.error}>
-                {error}
-                <button onClick={() => void refresh()}>Повторить</button>
+                {tr(error)}
+                <button onClick={() => void refresh()}>
+                  {tr("Повторить")}
+                </button>
               </p>
             )}
           </div>
@@ -235,17 +255,36 @@ export default function AppEntry({ area = "public" }: { area?: Area }) {
   if (!data)
     return (
       <main className={st.public}>
-        <p className={st.error}>{error || "Кабинет пока не загрузился."}</p>
+        <p className={st.error}>
+          {tr(error || tr("Кабинет пока не загрузился."))}
+        </p>
         <button className="secondary" onClick={() => void refresh()}>
-          Повторить загрузку
+          {tr("Повторить загрузку")}
         </button>
       </main>
     );
-  if (area === "student" && panel === "account" && !studentReady(data.student_profile))
+  if (
+    area === "student" &&
+    panel === "account" &&
+    !studentReady(data.student_profile)
+  )
     return (
       <main className="onboardingPage">
-        <header><Link className={st.brand} href="/"><Brand /></Link><Link href="/#tutors">К поиску</Link></header>
-        <StudentProfile key={account.id} profile={data.student_profile} refresh={refresh} onComplete={(search) => { location.assign("/findbuddy?" + search + "#tutors"); }} />
+        <header>
+          <Link className={st.brand} href="/">
+            <Brand />
+          </Link>
+          <LanguageSwitcher />
+          <Link href="/#tutors">{tr("К поиску")}</Link>
+        </header>
+        <StudentProfile
+          key={account.id}
+          profile={data.student_profile}
+          refresh={refresh}
+          onComplete={(search) => {
+            location.assign("/findbuddy?" + search + "#tutors");
+          }}
+        />
       </main>
     );
   const name =
@@ -270,7 +309,13 @@ export default function AppEntry({ area = "public" }: { area?: Area }) {
         key={account.id}
         profile={data.student_profile}
         refresh={refresh}
-        onComplete={!studentReady(data.student_profile) ? (search) => { location.assign("/findbuddy?" + search + "#tutors"); } : undefined}
+        onComplete={
+          !studentReady(data.student_profile)
+            ? (search) => {
+                location.assign("/findbuddy?" + search + "#tutors");
+              }
+            : undefined
+        }
       />
     );
   else if (area === "student" && panel === "centers")
@@ -295,10 +340,25 @@ export default function AppEntry({ area = "public" }: { area?: Area }) {
           <Link className={st.brand} href="/">
             <Brand />
           </Link>
-          <p className={st.roleLabel}>{roleLabels[account.role]}</p>
+          <p className={st.roleLabel}>{tr(roleLabels[account.role])}</p>
         </div>
-        <nav className={st.nav} aria-label="Ваш кабинет">
-          <a href="#notifications" aria-current={panel === "notifications" ? "page" : undefined}><Icon name="bell" size={19} />События{(notifications.data?.unread ?? 0) > 0 && <span className="notificationBadge">{notifications.data!.unread > 99 ? "99+" : notifications.data!.unread}</span>}</a>
+        <nav className={st.nav} aria-label={tr("Ваш кабинет")}>
+          <a
+            href="#notifications"
+            aria-current={panel === "notifications" ? "page" : undefined}
+          >
+            <Icon name="bell" size={19} />
+            {tr("События")}
+            {(notifications.data?.unread ?? 0) > 0 && (
+              <span className="notificationBadge">
+                {tr(
+                  notifications.data!.unread > 99
+                    ? "99+"
+                    : notifications.data!.unread,
+                )}
+              </span>
+            )}
+          </a>
           {nav.map(([id, label, icon, mobile]) => (
             <a
               key={id}
@@ -307,29 +367,32 @@ export default function AppEntry({ area = "public" }: { area?: Area }) {
               aria-current={panel === id ? "page" : undefined}
             >
               <Icon name={icon} size={19} />
-              {label}
+              {tr(label)}
             </a>
           ))}
         </nav>
         <div className={st.sidebarFoot}>
-          <Link href="/">Публичный каталог</Link>
-          <p>Бесплатный пилот · комиссия 0%</p>
+          <Link href="/">{tr("Публичный каталог")}</Link>
+          <p>{tr("Бесплатный пилот · комиссия 0%")}</p>
         </div>
       </aside>
       <div className={st.body}>
         <header className={st.topbar}>
           <div>
-            <strong>{name || roleLabels[account.role]}</strong>
+            <strong>{name || tr(roleLabels[account.role])}</strong>
             <p>
-              {account.role === "teacher"
-                ? "Ваши ученики и занятия"
-                : account.role === "business"
-                  ? "Команда и занятия центра"
-                  : account.role === "owner" || account.role === "moderator"
-                    ? "Проверка анкет и обращений"
-                    : "Ваш путь к учебной цели"}
+              {tr(
+                account.role === "teacher"
+                  ? tr("Ваши ученики и занятия")
+                  : account.role === "business"
+                    ? tr("Команда и занятия центра")
+                    : account.role === "owner" || account.role === "moderator"
+                      ? tr("Проверка анкет и обращений")
+                      : tr("Ваш путь к учебной цели"),
+              )}
             </p>
           </div>
+          <LanguageSwitcher />
           <NotificationBell role={account.role} state={notifications} />
           <button
             className={st.textButton}
@@ -347,7 +410,9 @@ export default function AppEntry({ area = "public" }: { area?: Area }) {
                     body: JSON.stringify({ role: "logout" }),
                   });
                 else {
-                  const r = await getSupabase().auth.signOut({ scope: "local" });
+                  const r = await getSupabase().auth.signOut({
+                    scope: "local",
+                  });
                   if (r.error) throw r.error;
                 }
                 location.assign("/findbuddy");
@@ -357,15 +422,15 @@ export default function AppEntry({ area = "public" }: { area?: Area }) {
               }
             }}
           >
-            {exiting ? "Выходим…" : "Выйти"}
+            {tr(exiting ? tr("Выходим…") : tr("Выйти"))}
           </button>
         </header>
         <div className={st.content}>
           {error && (
             <div className={st.error} role="alert">
-              {error}
+              {tr(error)}
               <button className={st.textButton} onClick={() => void refresh()}>
-                Повторить загрузку
+                {tr("Повторить загрузку")}
               </button>
             </div>
           )}
@@ -382,6 +447,8 @@ function TeacherProfile({
   data: PlatformDashboard;
   refresh: () => Promise<void>;
 }) {
+  const { t: tr } = useJupLocale();
+
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
   const [notice, setNotice] = useState("");
@@ -389,37 +456,46 @@ function TeacherProfile({
   return (
     <main className={st.stack}>
       <header>
-        <p className={st.eyebrow}>Личная анкета преподавателя</p>
+        <p className={st.eyebrow}>{tr("Личная анкета преподавателя")}</p>
         <h1>
-          {data.tutor ? "Ваш опыт и подход" : "Познакомим учеников с вами"}
+          {tr(
+            data.tutor
+              ? tr("Ваш опыт и подход")
+              : tr("Познакомим учеников с вами"),
+          )}
         </h1>
         <p>
-          Образование, языки и первый урок. Отдельные предметы и цены
-          настраиваются в направлениях.
+          {tr(
+            "Образование, языки и первый урок. Отдельные предметы и цены настраиваются в направлениях.",
+          )}
         </p>
         <div className={st.actions}>
           <a className={st.textButton} href="#offerings">
-            Предметы и цены
+            {tr("Предметы и цены")}
           </a>
           <a className={st.textButton} href="#centers">
-            Мои учебные центры
+            {tr("Мои учебные центры")}
           </a>
         </div>
         {data.tutor && (
           <p className={st.notice}>
-            Статус:{" "}
-            {data.tutor.verification === "verified"
-              ? "Профиль проверен"
-              : data.tutor.verification === "pending"
-                ? "На проверке"
-                : "Нужна доработка"}
-            . Изменение имени или фото требует повторной проверки.
+            {tr("Статус:")}
+            {tr(" ")}
+            {tr(
+              data.tutor.verification === "verified"
+                ? tr("Профиль проверен")
+                : data.tutor.verification === "pending"
+                  ? tr("На проверке")
+                  : tr("Нужна доработка"),
+            )}
+            {tr(". Изменение имени или фото требует повторной проверки.")}
           </p>
         )}
       </header>
       {data.tutor_review_note && (
         <p className={st.notice}>
-          Комментарий модератора: {data.tutor_review_note}
+          {tr("Комментарий модератора: ")}
+          {tr(data.tutor_review_note)}
         </p>
       )}
       <TutorForm
@@ -450,12 +526,12 @@ function TeacherProfile({
       />
       {error && (
         <p className={st.error} role="alert">
-          {error}
+          {tr(error)}
         </p>
       )}
       {notice && (
         <p className={st.notice} role="status">
-          {notice} <a href="#offerings">Открыть направления</a>
+          {tr(notice)} <a href="#offerings">{tr("Открыть направления")}</a>
         </p>
       )}
     </main>
@@ -468,22 +544,24 @@ function TeacherCenters({
   data: PlatformDashboard;
   refresh: () => Promise<void>;
 }) {
+  const { t: tr } = useJupLocale();
+
   const { run, busy, status } = usePlatformAction(refresh);
   return (
     <main className={st.stack}>
       <header>
-        <h1>Учебные центры</h1>
+        <h1>{tr("Учебные центры")}</h1>
         <p>
-          Вы принимаете каждое приглашение самостоятельно. Центр управляет
-          только занятиями от своего имени, ваши личные диалоги остаются
-          закрытыми.
+          {tr(
+            "Вы принимаете каждое приглашение самостоятельно. Центр управляет только занятиями от своего имени, ваши личные диалоги остаются закрытыми.",
+          )}
         </p>
       </header>
       {data.members
         .filter((m) => m.state === "active")
         .map((m) => (
           <div className={st.listRow} key={m.organization_id}>
-            <strong>{m.organization_name}</strong>
+            <strong>{tr(m.organization_name)}</strong>
             <button
               className={st.textButton}
               disabled={busy}
@@ -503,14 +581,15 @@ function TeacherCenters({
                   );
               }}
             >
-              Выйти из команды
+              {tr("Выйти из команды")}
             </button>
           </div>
         ))}
       {!data.members.some((m) => m.state === "active") && (
         <p>
-          Пока нет подключённых центров. Владелец центра может прислать вам
-          личное приглашение.
+          {tr(
+            "Пока нет подключённых центров. Владелец центра может прислать вам личное приглашение.",
+          )}
         </p>
       )}
       {status}

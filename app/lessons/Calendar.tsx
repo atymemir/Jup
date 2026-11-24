@@ -1,3 +1,7 @@
+"use client";
+import { dateFormatter } from "../lib/localeFormat.mjs";
+
+import { useLocale as useJupLocale } from "../i18n/LocaleProvider";
 import { useState } from "react";
 import { type Booking, type Group } from "../lib/findbuddy";
 import { downloadCalendar, type CalendarItem } from "../lib/schedule";
@@ -6,10 +10,15 @@ import st from "./lessons.module.css";
 const day = 86400000;
 const dateKey = (time: number) =>
   new Date(time + 5 * 3600000).toISOString().slice(0, 10);
-const dayLabel = (value: number, options: Intl.DateTimeFormatOptions) =>
-  new Intl.DateTimeFormat("ru-KZ", { ...options, timeZone: "UTC" }).format(
-    value,
-  );
+const dayLabel = (
+  value: number,
+  options: Intl.DateTimeFormatOptions,
+  language: "ru" | "kk" | "en",
+) =>
+  dateFormatter(language, {
+    ...options,
+    timeZone: "UTC",
+  }).format(value);
 type Event = CalendarItem & { detail: string; slotId?: string };
 export function Calendar({
   now,
@@ -26,6 +35,8 @@ export function Calendar({
   openBooking: (id: string) => void;
   openSlot: (id: string) => void;
 }) {
+  const { t: tr, locale: uiLocale } = useJupLocale();
+
   const today = Date.parse(dateKey(now) + "T00:00:00Z");
   const [selected, setSelected] = useState(today);
   const start = selected - ((new Date(selected).getUTCDay() + 6) % 7) * day;
@@ -74,22 +85,22 @@ export function Calendar({
     );
   const upcoming = ordered.find((e) => Date.parse(e.starts_at) + 3600000 > now);
   return (
-    <section className={st.calendar} aria-label="Календарь занятий">
+    <section className={st.calendar} aria-label={tr("Календарь занятий")}>
       <div className={st.row}>
         <div>
-          <h3>Календарь занятий</h3>
-          <small>Время Казахстана · UTC+5</small>
+          <h3>{tr("Календарь занятий")}</h3>
+          <small>{tr("Время Казахстана · UTC+5")}</small>
         </div>
         <div className={st.actions}>
           <button
-            aria-label="Предыдущая неделя"
+            aria-label={tr("Предыдущая неделя")}
             onClick={() => setSelected(selected - 7 * day)}
           >
             ‹
           </button>
-          <button onClick={() => setSelected(today)}>Сегодня</button>
+          <button onClick={() => setSelected(today)}>{tr("Сегодня")}</button>
           <button
-            aria-label="Следующая неделя"
+            aria-label={tr("Следующая неделя")}
             onClick={() => setSelected(selected + 7 * day)}
           >
             ›
@@ -97,12 +108,19 @@ export function Calendar({
         </div>
       </div>
       <p className={st.weekTitle}>
-        {dayLabel(start, { day: "numeric", month: "short" })} —{" "}
-        {dayLabel(start + 6 * day, {
-          day: "numeric",
-          month: "long",
-          year: "numeric",
-        })}
+        {tr(dayLabel(start, { day: "numeric", month: "short" }, uiLocale))} —
+        {tr(" ")}
+        {tr(
+          dayLabel(
+            start + 6 * day,
+            {
+              day: "numeric",
+              month: "long",
+              year: "numeric",
+            },
+            uiLocale,
+          ),
+        )}
       </p>
       <div className={st.days}>
         {Array.from({ length: 7 }, (_, i) => {
@@ -112,19 +130,23 @@ export function Calendar({
             <button
               key={d}
               aria-pressed={d === selected}
-              aria-label={
-                dayLabel(d, {
-                  weekday: "long",
-                  day: "numeric",
-                  month: "long",
-                }) +
-                ", занятий: " +
-                count
-              }
+              aria-label={tr(
+                dayLabel(
+                  d,
+                  {
+                    weekday: "long",
+                    day: "numeric",
+                    month: "long",
+                  },
+                  uiLocale,
+                ) +
+                  tr(", занятий: ") +
+                  count,
+              )}
               onClick={() => setSelected(d)}
             >
-              <span>{dayLabel(d, { weekday: "short" })}</span>
-              <strong>{dayLabel(d, { day: "numeric" })}</strong>
+              <span>{tr(dayLabel(d, { weekday: "short" }, uiLocale))}</span>
+              <strong>{tr(dayLabel(d, { day: "numeric" }, uiLocale))}</strong>
               <i data-events={count > 0} />
             </button>
           );
@@ -141,20 +163,22 @@ export function Calendar({
           }
         >
           <time>
-            {new Intl.DateTimeFormat("ru-KZ", {
-              hour: "2-digit",
-              minute: "2-digit",
-              timeZone: "Asia/Almaty",
-            }).format(new Date(e.starts_at))}
+            {tr(
+              dateFormatter(uiLocale, {
+                hour: "2-digit",
+                minute: "2-digit",
+                timeZone: "Asia/Almaty",
+              }).format(new Date(e.starts_at)),
+            )}
           </time>
           <span>
             <strong>{e.lesson_title || e.subject}</strong>
-            <small>{e.detail}</small>
+            <small>{tr(e.detail)}</small>
           </span>
         </button>
       ))}
       {!forDay(selected).length && (
-        <p className={st.muted}>В этот день занятий нет.</p>
+        <p className={st.muted}>{tr("В этот день занятий нет.")}</p>
       )}
       <div className={st.actions}>
         {upcoming && (
@@ -163,12 +187,12 @@ export function Calendar({
               setSelected(Date.parse(dateKey(Date.parse(upcoming.starts_at))))
             }
           >
-            К ближайшему занятию
+            {tr("К ближайшему занятию")}
           </button>
         )}
         {week.length > 0 && (
           <button onClick={() => downloadCalendar(week)}>
-            Скачать неделю (.ics)
+            {tr("Скачать неделю (.ics)")}
           </button>
         )}
       </div>

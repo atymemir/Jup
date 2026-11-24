@@ -1,8 +1,12 @@
 "use client";
+import { useLocale as useJupLocale } from "../i18n/LocaleProvider";
+
 import { useRef, useState } from "react";
 import { LoadingState } from "../ui/LoadingState";
 import { api } from "../lib/api";
 export function usePlatformAction(refresh: () => Promise<void>) {
+  const { t: tr } = useJupLocale();
+
   const lock = useRef(false);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
@@ -41,15 +45,15 @@ export function usePlatformAction(refresh: () => Promise<void>) {
     notice,
     status: (
       <div className="platformFeedback">
-        {busy && <LoadingState compact label="Сохраняем изменения…" />}
+        {busy && <LoadingState compact label={tr("Сохраняем изменения…")} />}
         {error && (
           <p className="platformError" role="alert">
-            {error}
+            {tr(error)}
           </p>
         )}
         {notice && (
           <p className="platformNotice" role="status">
-            {notice}
+            {tr(notice)}
           </p>
         )}
       </div>

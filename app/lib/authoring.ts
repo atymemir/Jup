@@ -5,6 +5,7 @@ export type DraftInput = {
   exam: string;
   topics: string[];
   notes: string;
+  locale?: "ru" | "kk" | "en";
 };
 export type TextDraft = { title: string; body: string; lessonPlan: string };
 export const SUBJECT_TOPICS: Record<string, readonly string[]> = {
@@ -143,6 +144,7 @@ export function validDraftInput(value: unknown): value is DraftInput {
     ["ЕНТ", "IELTS", "SAT", "Школьная программа"].includes(v.exam) &&
     typeof v.notes === "string" &&
     v.notes.length <= 1200 &&
+    (v.locale === undefined || ["ru", "kk", "en"].includes(v.locale)) &&
     Array.isArray(v.topics) &&
     v.topics.length <= 12 &&
     v.topics.every(
@@ -152,36 +154,64 @@ export function validDraftInput(value: unknown): value is DraftInput {
     )
   );
 }
-export function makeTemplate(input: DraftInput): TextDraft {
+type DraftTranslator = (text: string, params?: readonly unknown[]) => string;
+export function makeTemplate(
+  input: DraftInput,
+  translate?: DraftTranslator,
+): TextDraft {
+  const tr: DraftTranslator =
+    translate ??
+    ((text, params) =>
+      text.replace(/\{(\d+)\}/g, (_, index) =>
+        String(params?.[Number(index)] ?? ""),
+      ));
+  const subject = tr(input.subject);
   const focus = input.topics.length
-    ? input.topics.join(", ")
-    : input.subject.toLowerCase();
-  const exam =
-    input.exam === "Школьная программа" ? "школьная программа" : input.exam;
+    ? input.topics.map((topic) => tr(topic)).join(", ")
+    : subject;
+  const exam = tr(
+    input.exam === "Школьная программа" ? "школьная программа" : input.exam,
+  );
   const title =
     input.kind === "lesson"
-      ? `${input.subject} · ${input.topics[0] ?? "первый урок"}`
-      : `${input.subject} · ${exam}`;
-  const notes = input.notes.trim();
-  const plan = `1. Знакомство и короткая проверка уровня.\n2. Разбор темы: ${input.topics[0] ?? input.subject.toLowerCase()}.\n3. Практика с объяснением каждого шага.\n4. Обратная связь и план дальнейшей работы.`;
-  const body =
+      ? `${subject} · ${tr(input.topics[0] ?? "первый урок")}`
+      : `${subject} · ${exam}`;
+  const plan = [
+    tr("1. Знакомство и короткая проверка уровня."),
+    tr("2. Разбор темы: {0}.", [tr(input.topics[0] ?? input.subject)]),
+    tr("3. Практика с объяснением каждого шага."),
+    tr("4. Обратная связь и план дальнейшей работы."),
+  ].join("\n");
+  const body = (
     input.kind === "profile"
       ? [
-          notes,
-          `Помогаю разобраться в предмете «${input.subject}». Направление: ${exam}.`,
-          `Темы, с которыми можно обратиться: ${focus}.`,
-          "На первом уроке обсудим вашу цель, определим сложные места и подберём план занятий.",
+          input.notes.trim(),
+          tr("Помогаю разобраться в предмете «{0}». Направление: {1}.", [
+            subject,
+            exam,
+          ]),
+          tr("Темы, с которыми можно обратиться: {0}.", [focus]),
+          tr(
+            "На первом уроке обсудим вашу цель, определим сложные места и подберём план занятий.",
+          ),
         ]
-          .filter(Boolean)
-          .join("\n\n")
       : [
-          notes,
-          `Тема: ${focus}.`,
-          `Предмет: ${input.subject}. Подготовка: ${exam}.`,
-          "План занятия:\n• Короткая диагностика и вопросы.\n• Объяснение на примерах.\n• Самостоятельная практика с разбором.\n• Итоги и следующий шаг.",
+          input.notes.trim(),
+          tr("Тема: {0}.", [focus]),
+          tr("Предмет: {0}. Подготовка: {1}.", [subject, exam]),
+          [
+            "План занятия:",
+            "• Короткая диагностика и вопросы.",
+            "• Объяснение на примерах.",
+            "• Самостоятельная практика с разбором.",
+            "• Итоги и следующий шаг.",
+          ]
+            .map((text) => tr(text))
+            .join("\n"),
         ]
-          .filter(Boolean)
-          .join("\n\n");
+  )
+    .filter(Boolean)
+    .join("\n\n");
   return {
     title: title.slice(0, 120),
     body: body.slice(0, 1500),
@@ -267,7 +297,10 @@ export function textBlocks(value: string): TextBlock[] {
   return blocks;
 }
 
-export function lessonTimeSuggestions(now: number) {
+export function lessonTimeSuggestions(
+  now: number,
+  locale: "ru" | "kk" | "en" = "ru",
+) {
   const local = new Date(now + 5 * 3600000);
   return [
     [1, 17],
@@ -283,7 +316,7 @@ export function lessonTimeSuggestions(now: number) {
       ),
     );
     return {
-      label: `${day === 1 ? "Завтра" : "Послезавтра"}, ${hour}:00`,
+      label: `${{ ru: ["Завтра", "Послезавтра"], kk: ["Ертең", "Бүрсігүні"], en: ["Tomorrow", "Day after tomorrow"] }[locale][day === 1 ? 0 : 1]}, ${hour}:00`,
       value: date.toISOString().slice(0, 16),
     };
   });

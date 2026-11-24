@@ -1,4 +1,6 @@
 "use client";
+import { useLocale as useJupLocale } from "../i18n/LocaleProvider";
+
 import { useEffect, useRef, useState } from "react";
 import { api } from "../lib/api";
 import { lessonDate } from "../lib/findbuddy";
@@ -20,6 +22,8 @@ export function OrganizationChat({
   refresh: () => Promise<void>;
   organizationId?: string;
 }) {
+  const { t: tr, locale: uiLocale } = useJupLocale();
+
   const [selected, setSelected] = useState(
     data.org_threads.find((t) => t.organization_id === organizationId)?.id ??
       "",
@@ -66,13 +70,16 @@ export function OrganizationChat({
     <section className={st.stack}>
       <header>
         <h1>
-          {data.account.role === "student"
-            ? "Связаться с центром"
-            : "Сообщения центра"}
+          {tr(
+            data.account.role === "student"
+              ? tr("Связаться с центром")
+              : tr("Сообщения центра"),
+          )}
         </h1>
         <p>
-          Этот диалог видят только ученик и владелец центра. Личные чаты
-          преподавателей отделены.
+          {tr(
+            "Этот диалог видят только ученик и владелец центра. Личные чаты преподавателей отделены.",
+          )}
         </p>
       </header>
       {data.org_threads.length > 0 && (
@@ -84,21 +91,21 @@ export function OrganizationChat({
               onClick={() => setSelected(t.id)}
             >
               {t.name}
-              {t.unread ? ` · ${t.unread}` : ""}
+              {tr(t.unread ? ` · ${t.unread}` : "")}
             </button>
           ))}
         </div>
       )}
       {error && (
         <p className={st.error} role="alert">
-          {error}
+          {tr(error)}
         </p>
       )}
       {selected && (
         <div
           className={st.timeline}
           role="log"
-          aria-label="Переписка с центром"
+          aria-label={tr("Переписка с центром")}
         >
           {page.map((m) => (
             <div
@@ -107,8 +114,11 @@ export function OrganizationChat({
               key={m.id}
             >
               <small>
-                {m.sender_id === data.account.id ? "Вы" : "Собеседник"} ·{" "}
-                {lessonDate(m.created_at)}
+                {tr(
+                  m.sender_id === data.account.id ? tr("Вы") : tr("Собеседник"),
+                )}{" "}
+                ·{tr(" ")}
+                {tr(lessonDate(m.created_at, uiLocale))}
               </small>
               <p>{m.body}</p>
             </div>
@@ -155,7 +165,7 @@ export function OrganizationChat({
           }}
         >
           <label>
-            Сообщение
+            {tr("Сообщение")}
             <textarea
               required
               name="body"
@@ -165,14 +175,15 @@ export function OrganizationChat({
             />
           </label>
           <button className="primary" disabled={busy}>
-            Отправить
+            {tr("Отправить")}
           </button>
           {status}
         </form>
       ) : (
         <div className={st.empty}>
-          Выберите диалог. Новые обращения появятся после сообщения ученика на
-          странице центра.
+          {tr(
+            "Выберите диалог. Новые обращения появятся после сообщения ученика на странице центра.",
+          )}
         </div>
       )}
     </section>

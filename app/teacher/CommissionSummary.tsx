@@ -1,3 +1,5 @@
+"use client";
+import { useLocale as useJupLocale } from "../i18n/LocaleProvider";
 import { useMemo } from "react";
 import { commissionSummary, outcomeLabel } from "../lib/outcomes";
 import { lessonDate, money, type Dashboard } from "../lib/findbuddy";
@@ -14,6 +16,8 @@ export function CommissionSummary({
   now: number;
   open: (id: string) => void;
 }) {
+  const { t: tr, locale: uiLocale } = useJupLocale();
+
   const summary = useMemo(
     () =>
       commissionSummary(
@@ -25,48 +29,55 @@ export function CommissionSummary({
     [dashboard.bookings, dashboard.outcomes, user, now],
   );
   return (
-    <section className={st.settlements} aria-label="Расчёты в пилоте">
+    <section className={st.settlements} aria-label={tr("Расчёты в пилоте")}>
       <div>
-        <h1>Расчёты в пилоте</h1>
+        <h1>{tr("Расчёты в пилоте")}</h1>
         <p>
-          Jup edu в пилоте бесплатен для преподавателей. В итог стоимости
-          включены только записи, проведение которых подтвердили вы и ученик.
+          {tr(
+            "Jup edu в пилоте бесплатен для преподавателей. В итог стоимости включены только записи, проведение которых подтвердили вы и ученик.",
+          )}
         </p>
       </div>
       <dl className={st.settlementTotals}>
         <div>
-          <dt>Подтверждено записей</dt>
+          <dt>{tr("Подтверждено записей")}</dt>
           <dd>{summary.confirmed}</dd>
         </div>
         <div>
-          <dt>Стоимость этих занятий</dt>
-          <dd>{money(summary.gross)}</dd>
+          <dt>{tr("Стоимость этих занятий")}</dt>
+          <dd>{tr(money(summary.gross, uiLocale))}</dd>
         </div>
         <div>
-          <dt>Комиссия Jup edu · 0%</dt>
-          <dd>{money(summary.commission)}</dd>
+          <dt>{tr("Комиссия Jup edu · 0%")}</dt>
+          <dd>{tr(money(summary.commission, uiLocale))}</dd>
         </div>
       </dl>
       <p className={st.settlementNote}>
-        Планируемый тариф после пилота — 5%, сейчас он не действует. Пилотные
-        записи останутся без комиссии. Подтверждение проведения не подтверждает
-        получение оплаты за урок.
+        {tr(
+          "Планируемый тариф после пилота — 5%, сейчас он не действует. Пилотные записи останутся без комиссии. Подтверждение проведения не подтверждает получение оплаты за урок.",
+        )}
       </p>
       {summary.rows.length ? (
         <>
           <p>
-            {summary.pending} ждут подтверждения · {summary.problems} с вопросом
-            по проведению. Участники мини-группы учитываются отдельно.
+            {summary.pending}
+            {tr(" ждут подтверждения · ")}
+            {summary.problems}
+            {tr(
+              " с вопросом по проведению. Участники мини-группы учитываются отдельно.",
+            )}
           </p>
           <div className={st.settlementTable}>
             <table>
-              <caption>Прошедшие записи · время Казахстана, UTC+5</caption>
+              <caption>
+                {tr("Прошедшие записи · время Казахстана, UTC+5")}
+              </caption>
               <thead>
                 <tr>
-                  <th scope="col">Занятие</th>
-                  <th scope="col">Проведение</th>
-                  <th scope="col">Стоимость</th>
-                  <th scope="col">Комиссия</th>
+                  <th scope="col">{tr("Занятие")}</th>
+                  <th scope="col">{tr("Проведение")}</th>
+                  <th scope="col">{tr("Стоимость")}</th>
+                  <th scope="col">{tr("Комиссия")}</th>
                 </tr>
               </thead>
               <tbody>
@@ -77,17 +88,21 @@ export function CommissionSummary({
                         {booking.lesson_title || booking.subject}
                       </button>
                       <small>
-                        {dashboard.seats?.find((s) => s.id === booking.id)
-                          ?.name ?? "Ученик"}{" "}
-                        · {lessonDate(booking.starts_at)}
+                        {tr(
+                          dashboard.seats?.find((s) => s.id === booking.id)
+                            ?.name ?? tr("Ученик"),
+                        )}
+                        {tr(" ")}· {tr(lessonDate(booking.starts_at, uiLocale))}
                       </small>
                     </th>
-                    <td>{outcomeLabel(outcome)}</td>
-                    <td>{money(booking.price)}</td>
+                    <td>{tr(outcomeLabel(outcome))}</td>
+                    <td>{tr(money(booking.price, uiLocale))}</td>
                     <td>
-                      {state === "confirmed"
-                        ? money(booking.commission)
-                        : "Не включено"}
+                      {tr(
+                        state === "confirmed"
+                          ? money(booking.commission, uiLocale)
+                          : tr("Не включено"),
+                      )}
                     </td>
                   </tr>
                 ))}
@@ -97,8 +112,9 @@ export function CommissionSummary({
         </>
       ) : (
         <p>
-          После первого занятия подтвердите его проведение в комнате. Здесь
-          появится история расчёта.
+          {tr(
+            "После первого занятия подтвердите его проведение в комнате. Здесь появится история расчёта.",
+          )}
         </p>
       )}
     </section>

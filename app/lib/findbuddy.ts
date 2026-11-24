@@ -1,3 +1,4 @@
+import { dateFormatter } from "./localeFormat.mjs";
 export const FB_SUBJECTS = [
   "География",
   "Математика",
@@ -185,10 +186,10 @@ export const EMPTY_DASHBOARD: Dashboard = {
   messages: [],
   telegram_connected: false,
 };
-export const money = (amount: number) =>
-  `${new Intl.NumberFormat("ru-KZ").format(amount)} ₸`;
-export const lessonDate = (value: string) =>
-  new Intl.DateTimeFormat("ru-KZ", {
+export const money = (amount: number, locale: "ru" | "kk" | "en" = "ru") =>
+  `${new Intl.NumberFormat(locale === "en" ? "en-GB" : "ru-KZ").format(amount)} ₸`;
+export const lessonDate = (value: string, locale: "ru" | "kk" | "en" = "ru") =>
+  dateFormatter(locale, {
     timeZone: "Asia/Almaty",
     day: "numeric",
     month: "short",
@@ -220,6 +221,29 @@ export function splitLessonPrice(price: number) {
   const commission = Math.floor((price * 5 + 50) / 100);
   return { price, commission, tutorNet: price - commission };
 }
+// Search aliases describe catalogue fields; authored names and descriptions stay intact.
+const searchAliases: Record<string, string> = {
+  Математика: "mathematics maths math",
+  География: "geography",
+  Английский: "english ағылшын ағылшынша ағылшын тілі",
+  "История Казахстана": "history of kazakhstan қазақстан тарихы",
+  Физика: "physics",
+  Химия: "chemistry",
+  Биология: "biology",
+  Информатика: "computer science computing",
+  ЕНТ: "unt ұбт",
+  "Школьная программа": "school curriculum мектеп бағдарламасы",
+  Русский: "russian орысша орыс тілі",
+  Қазақша: "kazakh қазақ тілі",
+  English: "английский ағылшын ағылшынша",
+  Онлайн: "online",
+  Алматы: "almaty",
+  Астана: "astana",
+  Шымкент: "shymkent",
+  Караганда: "karaganda қарағанды",
+  Актобе: "aktobe ақтөбе",
+};
+const searchLabel = (value: string) => `${value} ${searchAliases[value] ?? ""}`;
 export function filterTutors(
   tutors: Tutor[],
   filters: {
@@ -249,11 +273,30 @@ export function filterTutors(
               o.price <= filters.maxPrice,
           )
         : null;
-      const wordsMatch = words.every((word) =>
-        normalize(
-          `${t.display_name} ${t.subject} ${t.exam} ${t.headline} ${t.bio} ${t.education ?? ""} ${t.language} ${t.city} ${entries?.map((o) => `${o.title} ${o.subject} ${o.exam} ${o.languages.join(" ")} ${o.description}`).join(" ") ?? ""}`,
-        ).includes(word),
+      const searchable = normalize(
+        [
+          t.display_name,
+          t.headline,
+          t.bio,
+          t.education ?? "",
+          ...[t.subject, t.exam, t.language, t.city].map(searchLabel),
+          ...(entries
+            ?.filter((o) => o.active)
+            .map((o) =>
+              [
+                o.title,
+                o.description,
+                ...[
+                  o.subject,
+                  o.exam,
+                  ...o.languages,
+                  o.format === "online" ? "Онлайн" : o.city,
+                ].map(searchLabel),
+              ].join(" "),
+            ) ?? []),
+        ].join(" "),
       );
+      const wordsMatch = words.every((word) => searchable.includes(word));
       return (
         wordsMatch &&
         (matches

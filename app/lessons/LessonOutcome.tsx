@@ -1,4 +1,6 @@
 "use client";
+import { useLocale as useJupLocale } from "../i18n/LocaleProvider";
+
 import { useRef, useState } from "react";
 import { api } from "../lib/api";
 import { outcomeLabel, outcomeState } from "../lib/outcomes";
@@ -16,6 +18,8 @@ export function LessonOutcome({
   outcome?: Outcome;
   refresh: () => Promise<void>;
 }) {
+  const { t: tr } = useJupLocale();
+
   const own = teacher ? outcome?.teacher_response : outcome?.student_response;
   const ownNote = teacher ? outcome?.teacher_note : outcome?.student_note;
   const revision =
@@ -50,22 +54,26 @@ export function LessonOutcome({
     }
   }
   return (
-    <section className={st.outcome} aria-label="Результат занятия">
-      <p className={st.muted}>После урока</p>
-      <h3>{outcomeLabel(outcome)}</h3>
+    <section className={st.outcome} aria-label={tr("Результат занятия")}>
+      <p className={st.muted}>{tr("После урока")}</p>
+      <h3>{tr(outcomeLabel(outcome))}</h3>
       <p>
-        {outcomeState(outcome) === "confirmed"
-          ? "Вы и второй участник подтвердили, что занятие состоялось."
-          : "Подтвердите, что урок состоялся, или опишите проблему. Ваш ответ увидит второй участник."}
+        {tr(
+          outcomeState(outcome) === "confirmed"
+            ? tr("Вы и второй участник подтвердили, что занятие состоялось.")
+            : tr(
+                "Подтвердите, что урок состоялся, или опишите проблему. Ваш ответ увидит второй участник.",
+              ),
+        )}
       </p>
       {outcome?.teacher_note && (
         <p>
-          <strong>Преподаватель:</strong> {outcome.teacher_note}
+          <strong>{tr("Преподаватель:")}</strong> {tr(outcome.teacher_note)}
         </p>
       )}
       {outcome?.student_note && (
         <p>
-          <strong>Ученик:</strong> {outcome.student_note}
+          <strong>{tr("Ученик:")}</strong> {tr(outcome.student_note)}
         </p>
       )}
       {!own || own === "pending" || editing ? (
@@ -77,14 +85,14 @@ export function LessonOutcome({
                 disabled={busy}
                 onClick={() => void save("completed")}
               >
-                {busy ? "Сохраняем…" : "Занятие состоялось"}
+                {tr(busy ? tr("Сохраняем…") : tr("Занятие состоялось"))}
               </button>
               <button
                 className={st.back}
                 disabled={busy}
                 onClick={() => setProblem(true)}
               >
-                Сообщить о проблеме
+                {tr("Сообщить о проблеме")}
               </button>
             </div>
           ) : (
@@ -99,7 +107,7 @@ export function LessonOutcome({
               }}
             >
               <label className={st.field}>
-                Что случилось на занятии?
+                {tr("Что случилось на занятии?")}
                 <textarea
                   name="note"
                   required
@@ -107,16 +115,19 @@ export function LessonOutcome({
                   maxLength={1000}
                   rows={3}
                   defaultValue={ownNote ?? ""}
-                  placeholder="Например, не удалось встретиться в назначенное время."
+                  placeholder={tr(
+                    "Например, не удалось встретиться в назначенное время.",
+                  )}
                 />
               </label>
               <small>
-                Описание доступно только вам и второму участнику. Оно не
-                публикуется в отзывах.
+                {tr(
+                  "Описание доступно только вам и второму участнику. Оно не публикуется в отзывах.",
+                )}
               </small>
               <div className={st.outcomeActions}>
                 <button className="primary" disabled={busy}>
-                  {busy ? "Сохраняем…" : "Сохранить описание"}
+                  {tr(busy ? tr("Сохраняем…") : tr("Сохранить описание"))}
                 </button>
                 <button
                   type="button"
@@ -124,7 +135,7 @@ export function LessonOutcome({
                   disabled={busy}
                   onClick={() => setProblem(false)}
                 >
-                  Назад
+                  {tr("Назад")}
                 </button>
               </div>
             </form>
@@ -138,7 +149,7 @@ export function LessonOutcome({
                 setProblem(false);
               }}
             >
-              Отмена изменения
+              {tr("Отмена изменения")}
             </button>
           )}
         </>
@@ -150,21 +161,23 @@ export function LessonOutcome({
             setProblem(own === "problem");
           }}
         >
-          Изменить свой ответ
+          {tr("Изменить свой ответ")}
         </button>
       )}
       {error && (
         <p className={st.error} role="alert">
-          {error}
+          {tr(error)}
         </p>
       )}
       {notice && (
         <p className={st.status} role="status">
-          {notice}
+          {tr(notice)}
         </p>
       )}
       <small>
-        Подтверждение проведения не подтверждает оплату и не списывает деньги.
+        {tr(
+          "Подтверждение проведения не подтверждает оплату и не списывает деньги.",
+        )}
       </small>
     </section>
   );

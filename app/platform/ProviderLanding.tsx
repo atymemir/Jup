@@ -1,36 +1,52 @@
+"use client";
+import { useLocale as useJupLocale } from "../i18n/LocaleProvider";
 import { Brand } from "../ui/Brand";
 import Link from "next/link";
+import { LanguageSwitcher } from "../i18n/LocaleProvider";
 import st from "./platform.module.css";
 export function ProviderLanding({ business = false }: { business?: boolean }) {
+  const { t: tr } = useJupLocale();
+
   return (
     <main className={st.public}>
       <header className={st.publicHeader}>
         <Link href="/" className={st.brand}>
           <Brand />
         </Link>
+        <LanguageSwitcher />
         <nav>
           <Link href={business ? "/teach" : "/for-centers"}>
-            {business ? "Преподавателям" : "Учебным центрам"}
+            {tr(business ? tr("Преподавателям") : tr("Учебным центрам"))}
           </Link>
           <Link href={"/login?role=" + (business ? "business" : "teacher")}>
-            Войти
+            {tr("Войти")}
           </Link>
         </nav>
       </header>
       <section className={st.hero}>
         <div>
           <p className={st.eyebrow}>
-            {business ? "Для учебных центров" : "Для преподавателей"}
+            {tr(
+              business ? tr("Для учебных центров") : tr("Для преподавателей"),
+            )}
           </p>
           <h1>
-            {business
-              ? "Ваша команда. Одно расписание."
-              : "Ваш опыт заслуживает своих учеников."}
+            {tr(
+              business
+                ? tr("Ваша команда. Одно расписание.")
+                : tr("Ваш опыт заслуживает своих учеников."),
+            )}
           </h1>
           <p>
-            {business
-              ? "Соберите преподавателей в одном центре, публикуйте занятия и принимайте обращения учеников."
-              : "Расскажите о подходе, добавьте направления и откройте удобное время. Материалы, переписка и работы останутся рядом с занятием."}
+            {tr(
+              business
+                ? tr(
+                    "Соберите преподавателей в одном центре, публикуйте занятия и принимайте обращения учеников.",
+                  )
+                : tr(
+                    "Расскажите о подходе, добавьте направления и откройте удобное время. Материалы, переписка и работы останутся рядом с занятием.",
+                  ),
+            )}
           </p>
           <div className={st.actions}>
             <Link
@@ -39,15 +55,17 @@ export function ProviderLanding({ business = false }: { business?: boolean }) {
                 "/login?mode=signup&role=" + (business ? "business" : "teacher")
               }
             >
-              {business
-                ? "Зарегистрировать центр"
-                : "Создать аккаунт преподавателя"}
+              {tr(
+                business
+                  ? tr("Зарегистрировать центр")
+                  : tr("Создать аккаунт преподавателя"),
+              )}
             </Link>
             <Link className={st.textButton} href="/">
-              Я ищу занятия
+              {tr("Я ищу занятия")}
             </Link>
           </div>
-          <p>Бесплатный пилот Jup edu · комиссия платформы 0%</p>
+          <p>{tr("Бесплатный пилот Jup edu · комиссия платформы 0%")}</p>
         </div>
         <div className={st.stack}>
           {(business
@@ -81,8 +99,8 @@ export function ProviderLanding({ business = false }: { business?: boolean }) {
               ]
           ).map(([title, text]) => (
             <article className={st.tile} key={title}>
-              <h2>{title}</h2>
-              <p>{text}</p>
+              <h2>{tr(title)}</h2>
+              <p>{tr(text)}</p>
             </article>
           ))}
         </div>

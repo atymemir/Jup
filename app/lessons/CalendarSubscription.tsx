@@ -1,3 +1,5 @@
+"use client";
+import { useLocale as useJupLocale } from "../i18n/LocaleProvider";
 import { useRef, useState } from "react";
 import { api } from "../lib/api";
 import st from "./lessons.module.css";
@@ -8,6 +10,8 @@ export function CalendarSubscription({
   enabled: boolean;
   refresh: () => Promise<void>;
 }) {
+  const { t: tr } = useJupLocale();
+
   const [url, setUrl] = useState(""),
     [notice, setNotice] = useState(""),
     [busy, setBusy] = useState(false);
@@ -54,10 +58,11 @@ export function CalendarSubscription({
   }
   return (
     <details className={st.tools}>
-      <summary>Подписка на расписание</summary>
+      <summary>{tr("Подписка на расписание")}</summary>
       <p>
-        Apple Calendar, Google Календарь и Outlook могут обновлять даты по
-        личной ссылке. Обладатель ссылки увидит темы и время занятий.
+        {tr(
+          "Apple Calendar, Google Календарь и Outlook могут обновлять даты по личной ссылке. Обладатель ссылки увидит темы и время занятий.",
+        )}
       </p>
       <div className={st.actions}>
         <button
@@ -65,18 +70,18 @@ export function CalendarSubscription({
           disabled={busy}
           onClick={() => change(true)}
         >
-          {enabled ? "Заменить ссылку" : "Создать личную ссылку"}
+          {tr(enabled ? tr("Заменить ссылку") : tr("Создать личную ссылку"))}
         </button>
         {enabled && (
           <button disabled={busy} onClick={() => change(false)}>
-            Отключить подписку
+            {tr("Отключить подписку")}
           </button>
         )}
       </div>
       {url && enabled && (
         <div className={st.form}>
           <label className={st.field}>
-            Адрес подписки
+            {tr("Адрес подписки")}
             <input
               readOnly
               value={url}
@@ -94,15 +99,15 @@ export function CalendarSubscription({
                 }
               }}
             >
-              Скопировать
+              {tr("Скопировать")}
             </button>
             <a className="secondary" href={url.replace(/^https?:/, "webcal:")}>
-              Открыть в календаре
+              {tr("Открыть в календаре")}
             </a>
           </div>
         </div>
       )}
-      {notice && <p role="status">{notice}</p>}
+      {notice && <p role="status">{tr(notice)}</p>}
     </details>
   );
 }

@@ -141,3 +141,21 @@ test("multi-direction filters match one actual offer and retain a free-only shar
     initialFilters.maxPrice,
   );
 });
+
+test("catalogue search accepts English and Kazakh subject, exam and language terms", () => {
+  for (const query of ["SAT mathematics", "SAT math", "SAT орысша"])
+    assert.equal(
+      filterTutors(DEMO_CATALOG.tutors, { ...initialFilters, query })[0]?.id,
+      "demo-sat",
+    );
+  for (const query of ["geography UNT", "география ҰБТ", "geography kazakh"])
+    assert.equal(
+      filterTutors(DEMO_CATALOG.tutors, { ...initialFilters, query })[0]?.id,
+      "demo-geo",
+    );
+  for (const query of ["English IELTS", "ағылшын IELTS"])
+    assert.equal(
+      filterTutors(DEMO_CATALOG.tutors, { ...initialFilters, query })[0]?.id,
+      "demo-ielts",
+    );
+});

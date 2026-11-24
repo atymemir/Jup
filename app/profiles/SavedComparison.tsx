@@ -1,3 +1,5 @@
+"use client";
+import { useLocale as useJupLocale } from "../i18n/LocaleProvider";
 import { useState } from "react";
 import { lessonDate, money, type Tutor, type Group } from "../lib/findbuddy";
 import { tutorPortrait } from "./TutorCard";
@@ -17,6 +19,8 @@ export function SavedComparison({
   profile: (id: string) => void;
   write: (id: string) => void;
 }) {
+  const { t: tr, locale: uiLocale } = useJupLocale();
+
   const [left, setLeft] = useState(tutors[0].id);
   const [right, setRight] = useState(tutors[1].id);
   const first = tutors.find((t) => t.id === left) ?? tutors[0];
@@ -24,17 +28,22 @@ export function SavedComparison({
     tutors.find((t) => t.id === right && t.id !== first.id) ??
     tutors.find((t) => t.id !== first.id)!;
   return (
-    <section className={st.comparison} aria-label="Сравнение преподавателей">
-      <h3>Сравнить преподавателей</h3>
+    <section
+      className={st.comparison}
+      aria-label={tr("Сравнение преподавателей")}
+    >
+      <h3>{tr("Сравнить преподавателей")}</h3>
       <div className={st.comparisonGrid}>
         {[first, second].map((t, index) => {
           const next = available(t.id);
           return (
             <div key={index} className={st.comparisonCard}>
               <select
-                aria-label={
-                  index ? "Второй преподаватель" : "Первый преподаватель"
-                }
+                aria-label={tr(
+                  index
+                    ? tr("Второй преподаватель")
+                    : tr("Первый преподаватель"),
+                )}
                 value={t.id}
                 onChange={(e) =>
                   index ? setRight(e.target.value) : setLeft(e.target.value)
@@ -57,37 +66,44 @@ export function SavedComparison({
                 <div>
                   <strong>{t.display_name}</strong>
                   <p>
-                    {t.subject} · {t.exam}
+                    {tr(t.subject)} · {tr(t.exam)}
                   </p>
                 </div>
               </div>
               <dl>
                 <div>
-                  <dt>Цена за 60 минут</dt>
-                  <dd>{money(next?.price ?? t.price)}</dd>
+                  <dt>{tr("Цена за 60 минут")}</dt>
+                  <dd>{tr(money(next?.price ?? t.price, uiLocale))}</dd>
                 </div>
                 <div>
-                  <dt>Ближайшее время</dt>
+                  <dt>{tr("Ближайшее время")}</dt>
                   <dd>
-                    {next ? lessonDate(next.starts_at) : "По договорённости"}
+                    {tr(
+                      next
+                        ? lessonDate(next.starts_at, uiLocale)
+                        : tr("По договорённости"),
+                    )}
                   </dd>
                 </div>
                 <div>
-                  <dt>Формат и язык</dt>
+                  <dt>{tr("Формат и язык")}</dt>
                   <dd>
-                    {t.city} · {t.language}
+                    {tr(t.city)} · {tr(t.language)}
                   </dd>
                 </div>
                 <div>
-                  <dt>Опыт</dt>
-                  <dd>{t.experience} г.</dd>
+                  <dt>{tr("Опыт")}</dt>
+                  <dd>
+                    {t.experience}
+                    {tr(" г.")}
+                  </dd>
                 </div>
               </dl>
               <button className="primary" onClick={() => profile(t.id)}>
-                Открыть анкету
+                {tr("Открыть анкету")}
               </button>
               <button className={st.link} onClick={() => write(t.id)}>
-                Написать
+                {tr("Написать")}
               </button>
             </div>
           );

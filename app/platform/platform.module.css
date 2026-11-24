@@ -497,38 +497,237 @@
   }
 }
 
-.qualificationGroup { border: 1px solid rgb(var(--border)); border-radius: 14px; padding: 18px; background: rgb(var(--surface)); }
-.qualificationGroup > summary { cursor: pointer; font-weight: 600; font-size: .9375rem; display: flex; align-items: center; justify-content: space-between; list-style: none; gap: 16px; }
-.qualificationGroup > summary::after { content: "+"; color: rgb(var(--accent)); font-size: 1.3rem; font-weight: 400; }
-.qualificationGroup[open] > summary::after { content: "−"; }
-.qualificationGroup > summary small { display: block; font-size: .8125rem; color: rgb(var(--muted)); font-weight: 400; margin-top: 4px; }
-.qualificationGroup > :not(summary) { margin-top: 18px; }
-.qualificationGroup > .textButton { display: block; }
-.organizationForm { max-width: 920px; }
-.organizationForm > .fields { gap: 24px; }
-.formSection { display: grid; gap: 22px; border: 1px solid rgb(var(--border)); border-radius: 20px; padding: 28px; background: white; min-width: 0; }
-.formSection > header { display: flex; align-items: center; gap: 12px; margin-bottom: 4px; }
-.formSection > header > span { width: 42px; height: 42px; display: grid; place-items: center; background: rgb(var(--surface-subtle)); color: rgb(var(--accent)); border-radius: 12px; flex-shrink: 0; }
-.formSection > header h2 { font-size: 1.2rem; margin-bottom: 3px; }
-.formSection > header p { color: rgb(var(--muted)); font-size: .875rem; }
-.formatChoices { padding: 0; border: 0; margin: 0; display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 10px; min-width: 0; }
-.formatChoices legend { font-size: .9375rem; margin-bottom: 12px; }
-.formatChoices label { flex-wrap: wrap; padding: 14px; gap: 10px !important; }
-.formatChoices label > span:nth-of-type(2) { flex-basis: calc(100% - 30px); order: 2; }
-.formatChoices label > span:last-child { margin-left: auto; }
-.logoUpload { display: flex; gap: 18px; align-items: flex-start; padding: 20px; border: 1px dashed rgb(var(--accent-border)); border-radius: 14px; background: rgb(var(--surface-subtle)); }
-.logoPreview { display: grid; place-items: center; width: 72px; height: 72px; border-radius: 14px; flex-shrink: 0; background: white; color: rgb(var(--accent)); overflow: hidden; }
-.logoPreview img { width: 100%; height: 100%; object-fit: contain; }
-.logoUpload > div:last-child { flex: 1; min-width: 0; }
-.logoUpload strong { display: block; font-size: .9375rem; }
-.logoUpload strong small { display: inline; font-size: .8125rem; font-weight: 400; }
-.logoUpload p { margin: 5px 0 12px; color: rgb(var(--muted)); font-size: .8125rem; }
-.logoUpload label { width: fit-content; min-height: 40px; padding: 8px 14px; font-size: .875rem; cursor: pointer; }
-.logoUpload input[type="file"] { width: 1px; height: 1px; min-height: 0; padding: 0; border: 0; }
-.logoUpload > div > small[role="alert"] { color: rgb(var(--danger-text)); display: block; margin-top: 10px; }
-.organizationForm .actions { padding-top: 4px; }
-.organizationForm .actions > button { min-height: 50px; border-radius: 12px; }
-@media(max-width: 900px) { .formatChoices { grid-template-columns: 1fr; } .formatChoices label { flex-wrap: nowrap; } .formatChoices label > span:nth-of-type(2) { flex-basis: auto; order: initial; } }
-@media(max-width: 480px) { .formSection { padding: 22px 18px; } .logoUpload { padding: 16px; gap: 12px; } .logoPreview { height: 52px; width: 52px; } .organizationForm .actions > button { width: 100%; } }
-.nav a { position: relative; }
-@media(max-width:700px) { .nav :global(.notificationBadge) { position:absolute; top:1px; right:12px; } .nav a { min-width:0; font-size:.72rem; white-space:nowrap; } }
+.qualificationGroup {
+  border: 1px solid rgb(var(--border));
+  border-radius: 14px;
+  padding: 18px;
+  background: rgb(var(--surface));
+}
+.qualificationGroup > summary {
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 0.9375rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  list-style: none;
+  gap: 16px;
+}
+.qualificationGroup > summary::after {
+  content: "+";
+  color: rgb(var(--accent));
+  font-size: 1.3rem;
+  font-weight: 400;
+}
+.qualificationGroup[open] > summary::after {
+  content: "−";
+}
+.qualificationGroup > summary small {
+  display: block;
+  font-size: 0.8125rem;
+  color: rgb(var(--muted));
+  font-weight: 400;
+  margin-top: 4px;
+}
+.qualificationGroup > :not(summary) {
+  margin-top: 18px;
+}
+.qualificationGroup > .textButton {
+  display: block;
+}
+.organizationForm {
+  max-width: 920px;
+}
+.organizationForm > .fields {
+  gap: 24px;
+}
+.formSection {
+  display: grid;
+  gap: 22px;
+  border: 1px solid rgb(var(--border));
+  border-radius: 20px;
+  padding: 28px;
+  background: white;
+  min-width: 0;
+}
+.formSection > header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 4px;
+}
+.formSection > header > span {
+  width: 42px;
+  height: 42px;
+  display: grid;
+  place-items: center;
+  background: rgb(var(--surface-subtle));
+  color: rgb(var(--accent));
+  border-radius: 12px;
+  flex-shrink: 0;
+}
+.formSection > header h2 {
+  font-size: 1.2rem;
+  margin-bottom: 3px;
+}
+.formSection > header p {
+  color: rgb(var(--muted));
+  font-size: 0.875rem;
+}
+.formatChoices {
+  padding: 0;
+  border: 0;
+  margin: 0;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+  min-width: 0;
+}
+.formatChoices legend {
+  font-size: 0.9375rem;
+  margin-bottom: 12px;
+}
+.formatChoices label {
+  flex-wrap: wrap;
+  padding: 14px;
+  gap: 10px !important;
+}
+.formatChoices label > span:nth-of-type(2) {
+  flex-basis: calc(100% - 30px);
+  order: 2;
+}
+.formatChoices label > span:last-child {
+  margin-left: auto;
+}
+.logoUpload {
+  display: flex;
+  gap: 18px;
+  align-items: flex-start;
+  padding: 20px;
+  border: 1px dashed rgb(var(--accent-border));
+  border-radius: 14px;
+  background: rgb(var(--surface-subtle));
+}
+.logoPreview {
+  display: grid;
+  place-items: center;
+  width: 72px;
+  height: 72px;
+  border-radius: 14px;
+  flex-shrink: 0;
+  background: white;
+  color: rgb(var(--accent));
+  overflow: hidden;
+}
+.logoPreview img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+.logoUpload > div:last-child {
+  flex: 1;
+  min-width: 0;
+}
+.logoUpload strong {
+  display: block;
+  font-size: 0.9375rem;
+}
+.logoUpload strong small {
+  display: inline;
+  font-size: 0.8125rem;
+  font-weight: 400;
+}
+.logoUpload p {
+  margin: 5px 0 12px;
+  color: rgb(var(--muted));
+  font-size: 0.8125rem;
+}
+.logoUpload label {
+  width: fit-content;
+  min-height: 40px;
+  padding: 8px 14px;
+  font-size: 0.875rem;
+  cursor: pointer;
+}
+.logoUpload input[type="file"] {
+  width: 1px;
+  height: 1px;
+  min-height: 0;
+  padding: 0;
+  border: 0;
+}
+.logoUpload > div > small[role="alert"] {
+  color: rgb(var(--danger-text));
+  display: block;
+  margin-top: 10px;
+}
+.organizationForm .actions {
+  padding-top: 4px;
+}
+.organizationForm .actions > button {
+  min-height: 50px;
+  border-radius: 12px;
+}
+@media (max-width: 900px) {
+  .formatChoices {
+    grid-template-columns: 1fr;
+  }
+  .formatChoices label {
+    flex-wrap: nowrap;
+  }
+  .formatChoices label > span:nth-of-type(2) {
+    flex-basis: auto;
+    order: initial;
+  }
+}
+@media (max-width: 480px) {
+  .formSection {
+    padding: 22px 18px;
+  }
+  .logoUpload {
+    padding: 16px;
+    gap: 12px;
+  }
+  .logoPreview {
+    height: 52px;
+    width: 52px;
+  }
+  .organizationForm .actions > button {
+    width: 100%;
+  }
+}
+.nav a {
+  position: relative;
+}
+@media (max-width: 700px) {
+  .nav :global(.notificationBadge) {
+    position: absolute;
+    top: 1px;
+    right: 12px;
+  }
+  .nav a {
+    min-width: 0;
+    font-size: 0.72rem;
+    white-space: nowrap;
+  }
+}
+
+.topbar > div:first-child {
+  margin-right: auto;
+  min-width: 0;
+}
+.topbar {
+  justify-content: flex-end;
+  gap: 18px;
+}
+.publicHeader {
+  flex-wrap: wrap;
+}
+@media (max-width: 640px) {
+  .topbar {
+    gap: 9px;
+  }
+  .topbar > div:first-child {
+    flex-basis: 100%;
+  }
+}
