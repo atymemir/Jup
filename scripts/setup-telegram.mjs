@@ -1,3 +1,10 @@
+import { telegramCommands, telegramCommandsText } from "../app/lib/telegramCommands.mjs";
+
+if (process.argv.includes("--commands")) {
+  console.log(telegramCommandsText());
+  process.exit(0);
+}
+
 const token = process.env.FINDBUDDY_TELEGRAM_BOT_TOKEN;
 const secret = process.env.FINDBUDDY_TELEGRAM_WEBHOOK_SECRET;
 const base = (
@@ -96,14 +103,7 @@ if (!checkOnly)
       allowed_updates: ["message", "callback_query"],
     });
     await call("setMyCommands", {
-      commands: [
-        { command: "app", description: "Открыть Jup" },
-        { command: "menu", description: "Открыть меню" },
-        { command: "lessons", description: "Ближайшие занятия" },
-        { command: "chats", description: "Чаты и новые сообщения" },
-        { command: "settings", description: "Настройки уведомлений" },
-        { command: "help", description: "Помощь с ботом" },
-      ],
+      commands: telegramCommands,
     });
     await call("setChatMenuButton", {
       menu_button: {

@@ -1,5 +1,8 @@
 import test from "node:test";
 import assert from "node:assert/strict";
+import { execFileSync } from "node:child_process";
+import { telegramCommands, telegramCommandsText } from "../app/lib/telegramCommands.mjs";
+import { miniAppDestination, telegramAppLink } from "../app/lib/telegramMiniApp.mjs";
 import {
   handleTelegram,
   telegramLessonTime,
@@ -75,9 +78,11 @@ function fixture() {
 test("Telegram onboarding, lesson links, unread messages and settings", async () => {
   const f = fixture();
   await f.message("/start");
-  assert.match(f.sent.at(-1).text, /Подключить Telegram/);
+  assert.match(f.sent.at(-1).text, /Связать с Telegram/);
   await f.message("/start " + token);
   assert.match(f.sent.at(-1).text, /Аккаунт подключён/);
+  await f.message("/start");
+  assert.match(f.sent.at(-1).text, /Что откроем/);
   assert.equal(
     f.sent.at(-1).buttons.some((b) => b.callback_data === "/lessons"),
     true,
@@ -134,4 +139,73 @@ test("the Mini App command works before an account is linked", async () => {
     f.sent.at(-1).buttons.some((button) => button.url?.endsWith("/telegram")),
   );
   assert.deepEqual(f.actions, []);
+});
+
+test("public shortcuts open the requested Mini App screen for each role without fetching private data", async () => {
+  const f = fixture();
+  const destinations = [
+    ["/schedule", "schedule", "/student#account/calendar", "/teacher#schedule", "/business#schedule"],
+    ["/requests", "requests", "/student#requests", "/teacher#requests", "/business"],
+    ["/profile", "profile", "/student#profile", "/teacher#profile", "/business#page"],
+    ["/catalog", "catalog", "/", "/", "/"],
+  ];
+  for (const [command, screen, ...paths] of destinations) {
+    await f.message(command + "@jup_edu_app");
+    const link = telegramAppLink(f.bot.url(), f.sent.at(-1).buttons[0].url);
+    assert.equal(new URL(link).searchParams.get("screen"), screen);
+    ["student", "teacher", "business"].forEach((role, i) => {
+      assert.equal(miniAppDestination(role, screen), paths[i]);
+    });
+  }
+  assert.deepEqual(f.actions, []);
+});
+
+test("every advertised command responds and public help lists the same command registry", async () => {
+  const f = fixture();
+  await f.message("/help");
+  const help = f.sent.at(-1).text;
+  await f.message("/menu");
+  assert.deepEqual(f.actions, []);
+  for (const { command, description } of telegramCommands) {
+    assert.ok(help.includes(`/${command} — ${description}`));
+    assert.match(command, /^[a-z0-9_]{1,32}$/);
+    assert.ok(description.length >= 1 && description.length <= 256);
+    const count = f.sent.length;
+    await f.message("/" + command);
+    assert.equal(f.sent.length, count + 1);
+    assert.doesNotMatch(f.sent.at(-1).text, /Такой команды нет/);
+  }
+  assert.equal(new Set(telegramCommands.map((c) => c.command)).size, telegramCommands.length);
+});
+
+test("unlinked lesson and message commands preserve their destination without exposing private records", async () => {
+  const f = fixture();
+  for (const [command, suffix] of [["/lessons", "#account"], ["/chats", "#messages"]]) {
+    await f.message(command);
+    assert.match(f.sent.at(-1).text, /Связать с Telegram/);
+    assert.doesNotMatch(f.sent.at(-1).text, /Аружан|География/);
+    assert.equal(f.sent.at(-1).buttons[0].url, f.bot.url(suffix));
+  }
+});
+
+test("message alias supports bot mentions and unlink still needs confirmation", async () => {
+  const f = fixture();
+  await f.message("/start " + token);
+  await f.message("/messages@jup_edu_app");
+  assert.equal(f.actions.at(-1), "inbox");
+  await f.message("/unlink");
+  assert.match(f.sent.at(-1).text, /Отключить Telegram/);
+  assert.ok(f.sent.at(-1).buttons.some((b) => b.callback_data === "unlink_confirm"));
+  assert.ok(!f.actions.includes("unlink"));
+  await f.message("/unknown");
+  assert.match(f.sent.at(-1).text, /Такой команды нет/);
+});
+
+test("BotFather list can be printed without credentials or network setup", () => {
+  const output = execFileSync(process.execPath, ["scripts/setup-telegram.mjs", "--commands"], {
+    cwd: new URL("..", import.meta.url),
+    env: {},
+    encoding: "utf8",
+  });
+  assert.equal(output.trim(), telegramCommandsText());
 });

@@ -13,6 +13,7 @@
     "lint": "eslint app",
     "telegram:check": "node --env-file-if-exists=.env.local scripts/setup-telegram.mjs --check",
     "telegram:setup": "node --env-file-if-exists=.env.local scripts/setup-telegram.mjs",
+    "telegram:commands": "node scripts/setup-telegram.mjs --commands",
     "test": "node --experimental-strip-types --test tests/*.test.mjs"
   },
   "dependencies": {
