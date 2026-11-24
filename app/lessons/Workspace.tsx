@@ -1,4 +1,6 @@
 "use client";
+import { useLocale as useJupLocale } from "../i18n/LocaleProvider";
+
 import { TextEditor } from "../authoring/TextEditor";
 import { FormattedText } from "../ui/FormattedText";
 import dynamic from "next/dynamic";
@@ -30,6 +32,8 @@ const VideoCall = dynamic(() => import("./VideoCall"), {
 });
 type Refresh = () => Promise<void>;
 function useAction(refresh: Refresh) {
+  const { t: tr } = useJupLocale();
+
   const lock = useRef(false);
   const [busy, setBusy] = useState(false),
     [error, setError] = useState(""),
@@ -66,12 +70,12 @@ function useAction(refresh: Refresh) {
       <>
         {error && (
           <p className={st.error} role="alert">
-            {error}
+            {tr(error)}
           </p>
         )}
         {notice && (
           <p className={st.status} role="status">
-            {notice}
+            {tr(notice)}
           </p>
         )}
       </>
@@ -79,9 +83,11 @@ function useAction(refresh: Refresh) {
   };
 }
 function Field({ label, children }: { label: string; children: ReactNode }) {
+  const { t: tr } = useJupLocale();
+
   return (
     <label className={st.field}>
-      <span>{label}</span>
+      <span>{tr(label)}</span>
       {children}
     </label>
   );
@@ -93,13 +99,17 @@ export function StudentName({
   name?: string | null;
   refresh: Refresh;
 }) {
+  const { t: tr } = useJupLocale();
+
   const { run, busy, status } = useAction(refresh);
   return (
     <details className={st.tools}>
       <summary>
-        {name
-          ? "Имя для преподавателя · " + name
-          : "Как вас называть на занятиях?"}
+        {tr(
+          name
+            ? tr("Имя для преподавателя · ") + name
+            : tr("Как вас называть на занятиях?"),
+        )}
       </summary>
       <form
         className={st.form}
@@ -112,7 +122,7 @@ export function StudentName({
           );
         }}
       >
-        <Field label="Имя или псевдоним">
+        <Field label={tr("Имя или псевдоним")}>
           <input
             name="name"
             required
@@ -122,7 +132,7 @@ export function StudentName({
           />
         </Field>
         <button className="secondary" disabled={busy}>
-          Сохранить имя
+          {tr("Сохранить имя")}
         </button>
         {status}
       </form>
@@ -138,6 +148,8 @@ export function RoomEditor({
   target: { id: string } | { slot_id: string };
   refresh: Refresh;
 }) {
+  const { t: tr } = useJupLocale();
+
   const [draft, setDraft] = useState<{ room?: LessonRoom } | null>(null);
   const { run, busy, status } = useAction(refresh);
   return (
@@ -161,8 +173,15 @@ export function RoomEditor({
               setDraft(null);
           }}
         >
-          <TextEditor label="План занятия" name="plan" maxLength={2000} rows={3} defaultValue={draft.room?.plan} disabled={busy} />
-          <Field label="Ссылка на материалы">
+          <TextEditor
+            label={tr("План занятия")}
+            name="plan"
+            maxLength={2000}
+            rows={3}
+            defaultValue={draft.room?.plan}
+            disabled={busy}
+          />
+          <Field label={tr("Ссылка на материалы")}>
             <input
               type="url"
               name="material"
@@ -171,7 +190,7 @@ export function RoomEditor({
               defaultValue={draft.room?.material}
             />
           </Field>
-          <Field label="Ссылка на внешнюю встречу">
+          <Field label={tr("Ссылка на внешнюю встречу")}>
             <input
               type="url"
               name="meeting"
@@ -180,31 +199,45 @@ export function RoomEditor({
               defaultValue={draft.room?.meeting}
             />
           </Field>
-          <Field label="Аудитория или адрес для очной встречи">
+          <Field label={tr("Аудитория или адрес для очной встречи")}>
             <input
               name="location"
               maxLength={240}
               defaultValue={draft.room?.location}
             />
           </Field>
-          <TextEditor label="Домашнее задание" name="homework" maxLength={2000} rows={3} defaultValue={draft.room?.homework} disabled={busy} />
-          <TextEditor label="Что разобрали на занятии" name="recap" maxLength={2000} rows={2} defaultValue={draft.room?.recap} disabled={busy} />
+          <TextEditor
+            label={tr("Домашнее задание")}
+            name="homework"
+            maxLength={2000}
+            rows={3}
+            defaultValue={draft.room?.homework}
+            disabled={busy}
+          />
+          <TextEditor
+            label={tr("Что разобрали на занятии")}
+            name="recap"
+            maxLength={2000}
+            rows={2}
+            defaultValue={draft.room?.recap}
+            disabled={busy}
+          />
           <div className={st.actions}>
             <button className="primary" disabled={busy}>
-              Сохранить материалы
+              {tr("Сохранить материалы")}
             </button>
             <button
               type="button"
               disabled={busy}
               onClick={() => setDraft(null)}
             >
-              Закрыть редактор
+              {tr("Закрыть редактор")}
             </button>
           </div>
         </form>
       ) : (
         <button className="secondary" onClick={() => setDraft({ room })}>
-          Подготовить материалы и встречу
+          {tr("Подготовить материалы и встречу")}
         </button>
       )}
       {status}
@@ -224,6 +257,8 @@ function Homework({
   booking: Booking;
   refresh: Refresh;
 }) {
+  const { t: tr } = useJupLocale();
+
   const work = seat?.work;
   const [edit, setEdit] = useState<{
     revision: number;
@@ -234,21 +269,23 @@ function Homework({
   const old = work && work.task_version !== room?.task_version;
   return (
     <section className={st.panel}>
-      <h3>Домашняя работа</h3>
+      <h3>{tr("Домашняя работа")}</h3>
       <FormattedText value={room?.homework || "Задание пока не добавлено."} />
       {work && (
         <div className={st.answer}>
           <strong>
-            {old
-              ? "Ответ на предыдущую версию задания"
-              : teacher
-                ? "Ответ ученика"
-                : "Ваш ответ"}
+            {tr(
+              old
+                ? tr("Ответ на предыдущую версию задания")
+                : teacher
+                  ? tr("Ответ ученика")
+                  : tr("Ваш ответ"),
+            )}
           </strong>
           <p>{work.answer}</p>
           {work.feedback && (
             <>
-              <strong>Комментарий преподавателя</strong>
+              <strong>{tr("Комментарий преподавателя")}</strong>
               <p>{work.feedback}</p>
             </>
           )}
@@ -268,11 +305,13 @@ function Homework({
               })
             }
           >
-            {teacher
-              ? "Проверить работу"
-              : work
-                ? "Обновить ответ"
-                : "Ответить на задание"}
+            {tr(
+              teacher
+                ? tr("Проверить работу")
+                : work
+                  ? tr("Обновить ответ")
+                  : tr("Ответить на задание"),
+            )}
           </button>
         ) : (
           <form
@@ -297,7 +336,9 @@ function Homework({
                 setEdit(null);
             }}
           >
-            <Field label={teacher ? "Комментарий к работе" : "Ваш ответ"}>
+            <Field
+              label={tr(teacher ? tr("Комментарий к работе") : tr("Ваш ответ"))}
+            >
               <textarea
                 disabled={busy}
                 required
@@ -309,14 +350,18 @@ function Homework({
             </Field>
             <div className={st.actions}>
               <button className="primary" disabled={busy}>
-                {teacher ? "Отправить комментарий" : "Отправить работу"}
+                {tr(
+                  teacher
+                    ? tr("Отправить комментарий")
+                    : tr("Отправить работу"),
+                )}
               </button>
               <button
                 type="button"
                 disabled={busy}
                 onClick={() => setEdit(null)}
               >
-                Отмена
+                {tr("Отмена")}
               </button>
             </div>
           </form>
@@ -336,6 +381,8 @@ function Move({
   seat?: LessonSeat;
   refresh: Refresh;
 }) {
+  const { t: tr, locale: uiLocale } = useJupLocale();
+
   const { run, busy, status } = useAction(refresh),
     move = seat?.move;
   async function propose(e: FormEvent<HTMLFormElement>) {
@@ -365,12 +412,15 @@ function Move({
       {move ? (
         <>
           <strong>
-            Предложен перенос на {lessonDate(move.starts_at)} · UTC+5
+            {tr("Предложен перенос на ")}
+            {tr(lessonDate(move.starts_at, uiLocale))} · UTC+5
           </strong>
           <p>
-            {move.proposed_by === user
-              ? "Ждём подтверждения другой стороны."
-              : "Подтвердите, чтобы изменить запись в обоих календарях."}
+            {tr(
+              move.proposed_by === user
+                ? tr("Ждём подтверждения другой стороны.")
+                : tr("Подтвердите, чтобы изменить запись в обоих календарях."),
+            )}
           </p>
           <div className={st.actions}>
             {move.proposed_by !== user && (
@@ -385,7 +435,7 @@ function Move({
                   )
                 }
               >
-                Подтвердить перенос
+                {tr("Подтвердить перенос")}
               </button>
             )}
             <button
@@ -398,17 +448,19 @@ function Move({
                 )
               }
             >
-              {move.proposed_by === user
-                ? "Отозвать предложение"
-                : "Оставить прежнее время"}
+              {tr(
+                move.proposed_by === user
+                  ? tr("Отозвать предложение")
+                  : tr("Оставить прежнее время"),
+              )}
             </button>
           </div>
         </>
       ) : (
         <details>
-          <summary>Предложить другое время</summary>
+          <summary>{tr("Предложить другое время")}</summary>
           <form className={st.form} onSubmit={propose}>
-            <Field label="Новое время · Казахстан, UTC+5">
+            <Field label={tr("Новое время · Казахстан, UTC+5")}>
               <input
                 name="start"
                 type="datetime-local"
@@ -417,7 +469,7 @@ function Move({
               />
             </Field>
             <button className="secondary" disabled={busy}>
-              Предложить перенос
+              {tr("Предложить перенос")}
             </button>
           </form>
         </details>
@@ -439,19 +491,33 @@ function Chat({
   peer: string;
   refresh: Refresh;
 }) {
+  const { t: tr, locale: uiLocale } = useJupLocale();
+
   const { run, busy, status } = useAction(refresh);
   return (
     <section className={st.panel}>
-      <h3>Переписка</h3>
-      <small>Личный чат · {peer}</small>
-      <div className={st.messages} role="log" aria-label="Сообщения занятия">
+      <h3>{tr("Переписка")}</h3>
+      <small>
+        {tr("Личный чат · ")}
+        {peer}
+      </small>
+      <div
+        className={st.messages}
+        role="log"
+        aria-label={tr("Сообщения занятия")}
+      >
         {!messages.length && (
-          <p>Здесь можно договориться о подготовке и задать вопрос по уроку.</p>
+          <p>
+            {tr(
+              "Здесь можно договориться о подготовке и задать вопрос по уроку.",
+            )}
+          </p>
         )}
         {messages.map((m) => (
           <div key={m.id} data-mine={m.sender_id === user}>
             <small>
-              {m.sender_id === user ? "Вы" : peer} · {lessonDate(m.created_at)}
+              {tr(m.sender_id === user ? tr("Вы") : peer)} ·{" "}
+              {tr(lessonDate(m.created_at, uiLocale))}
             </small>
             <p>{m.body}</p>
           </div>
@@ -473,7 +539,7 @@ function Chat({
             form.reset();
         }}
       >
-        <Field label="Ваше сообщение">
+        <Field label={tr("Ваше сообщение")}>
           <textarea
             required
             disabled={busy}
@@ -483,7 +549,7 @@ function Chat({
           />
         </Field>
         <button className="primary" disabled={busy}>
-          Отправить сообщение
+          {tr("Отправить сообщение")}
         </button>
         {status}
       </form>
@@ -515,6 +581,8 @@ export function Workspace({
   rebook?: () => void;
   initialPane: "lesson" | "chat" | "work";
 }) {
+  const { t: tr, locale: uiLocale } = useJupLocale();
+
   const teacher = booking.tutor_id === user;
   const room = roomForBooking(dashboard.rooms, booking);
   const seat = dashboard.seats?.find((s) => s.id === booking.id);
@@ -563,32 +631,38 @@ export function Workspace({
   return (
     <section className={st.workspace}>
       <button className={st.back} onClick={back}>
-        Все занятия
+        {tr("Все занятия")}
       </button>
       <div className={st.row}>
         <div>
           <small>
-            {booking.lesson_format === "group"
-              ? "Мини-группа"
-              : "Индивидуальный урок"}{" "}
-            · {peer}
+            {tr(
+              booking.lesson_format === "group"
+                ? tr("Мини-группа")
+                : tr("Индивидуальный урок"),
+            )}
+            {tr(" ")}· {peer}
           </small>
           <h2>{booking.lesson_title || booking.subject}</h2>
-          <p>{lessonDate(booking.starts_at)} · 60 минут · UTC+5</p>
+          <p>
+            {tr(lessonDate(booking.starts_at, uiLocale))}
+            {tr(" · 60 минут · UTC+5")}
+          </p>
         </div>
         <button className="secondary" onClick={() => downloadCalendar(booking)}>
-          В календарь
+          {tr("В календарь")}
         </button>
       </div>
       {teacher && (
         <StudentContext key={booking.student_id} id={booking.student_id} />
       )}
       {groupSeats.length > 1 && (
-        <Field label="Ученик для личной переписки и проверки работы">
+        <Field label={tr("Ученик для личной переписки и проверки работы")}>
           <select value={booking.id} onChange={(e) => openSeat(e.target.value)}>
             {groupSeats.map((b) => (
               <option key={b.id} value={b.id}>
-                {dashboard.seats?.find((s) => s.id === b.id)?.name ?? "Ученик"}
+                {dashboard.seats?.find((s) => s.id === b.id)?.name ??
+                  tr("Ученик")}
               </option>
             ))}
           </select>
@@ -603,10 +677,10 @@ export function Workspace({
       )}
       {error && (
         <p className={st.error} role="alert">
-          {error}
+          {tr(error)}
         </p>
       )}
-      <div className={st.panes} aria-label="Разделы занятия">
+      <div className={st.panes} aria-label={tr("Разделы занятия")}>
         {(
           [
             ["lesson", "Занятие"],
@@ -619,8 +693,10 @@ export function Workspace({
             aria-pressed={pane === id}
             onClick={() => setPane(id)}
           >
-            {title}
-            {id === "chat" && messages.length ? " · " + messages.length : ""}
+            {tr(title)}
+            {tr(
+              id === "chat" && messages.length ? " · " + messages.length : "",
+            )}
           </button>
         ))}
       </div>
@@ -638,16 +714,22 @@ export function Workspace({
             />
           )}
           <section className={st.panel}>
-            <h3>Где встречаемся</h3>
-            {room?.location && <p>{room.location}</p>}
+            <h3>{tr("Где встречаемся")}</h3>
+            {room?.location && <p>{tr(room.location)}</p>}
             {video && (
               <>
                 <p>
-                  {now < starts - 900000
-                    ? "Вход в видеокомнату откроется за 15 минут до начала."
-                    : now >= starts + 4500000
-                      ? "Время видеовстречи закончилось."
-                      : "Можно присоединиться. Камера и микрофон при входе выключены."}
+                  {tr(
+                    now < starts - 900000
+                      ? tr(
+                          "Вход в видеокомнату откроется за 15 минут до начала.",
+                        )
+                      : now >= starts + 4500000
+                        ? tr("Время видеовстречи закончилось.")
+                        : tr(
+                            "Можно присоединиться. Камера и микрофон при входе выключены.",
+                          ),
+                  )}
                 </p>
                 {callOpen && !ticket && (
                   <button
@@ -671,7 +753,11 @@ export function Workspace({
                       }
                     }}
                   >
-                    {connecting ? "Подключаемся…" : "Войти в видеокомнату"}
+                    {tr(
+                      connecting
+                        ? tr("Подключаемся…")
+                        : tr("Войти в видеокомнату"),
+                    )}
                   </button>
                 )}
               </>
@@ -683,19 +769,25 @@ export function Workspace({
                 target="_blank"
                 rel="noopener noreferrer"
               >
-                Открыть ссылку на встречу
+                {tr("Открыть ссылку на встречу")}
               </a>
             )}
             {!video && !room?.meeting && !room?.location && (
               <p>
-                {teacher
-                  ? "Добавьте ссылку на видеовстречу или адрес аудитории в материалах ниже."
-                  : "Преподаватель пока не указал место встречи. Уточните его в чате занятия."}
+                {tr(
+                  teacher
+                    ? tr(
+                        "Добавьте ссылку на видеовстречу или адрес аудитории в материалах ниже.",
+                      )
+                    : tr(
+                        "Преподаватель пока не указал место встречи. Уточните его в чате занятия.",
+                      ),
+                )}
               </p>
             )}
           </section>
           <section className={st.panel}>
-            <h3>План и материалы</h3>
+            <h3>{tr("План и материалы")}</h3>
             <FormattedText value={room?.plan || "План пока не добавлен."} />
             {room?.material && (
               <a
@@ -704,12 +796,12 @@ export function Workspace({
                 target="_blank"
                 rel="noopener noreferrer"
               >
-                Открыть материал
+                {tr("Открыть материал")}
               </a>
             )}
             {room?.recap && (
               <>
-                <h4>Итоги урока</h4>
+                <h4>{tr("Итоги урока")}</h4>
                 <FormattedText value={room.recap} />
               </>
             )}
@@ -726,7 +818,7 @@ export function Workspace({
           )}
           {rebook && now >= starts + 3600000 && (
             <button className="secondary" onClick={rebook}>
-              Договориться о следующем уроке
+              {tr("Договориться о следующем уроке")}
             </button>
           )}
         </>

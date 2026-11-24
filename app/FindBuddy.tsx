@@ -1,4 +1,8 @@
 "use client";
+import { dateFormatter } from "./lib/localeFormat.mjs";
+import { LanguageSwitcher } from "./i18n/LocaleProvider";
+import { useLocale as useJupLocale } from "./i18n/LocaleProvider";
+
 import { FormattedText } from "./ui/FormattedText";
 import { lessonTimeSuggestions } from "./lib/authoring";
 import { DraftFields } from "./authoring/DraftFields";
@@ -193,9 +197,11 @@ function openProfile(id: string) {
   window.scrollTo({ top: 0 });
 }
 function Field({ label, children }: { label: string; children: ReactNode }) {
+  const { t: tr } = useJupLocale();
+
   return (
     <label className={styles.field}>
-      <span>{label}</span>
+      <span>{tr(label)}</span>
       {children}
     </label>
   );
@@ -213,6 +219,8 @@ function Select({
   onChange?: (value: string) => void;
   all?: string;
 }) {
+  const { t: tr } = useJupLocale();
+
   return (
     <select
       name={name}
@@ -220,10 +228,10 @@ function Select({
       onChange={onChange ? (e) => onChange(e.target.value) : undefined}
       required={!all}
     >
-      {all && <option value="">{all}</option>}
+      {all && <option value="">{tr(all)}</option>}
       {values.map((v) => (
         <option key={v} value={v}>
-          {v}
+          {tr(v)}
         </option>
       ))}
     </select>
@@ -236,6 +244,8 @@ function LoginPrompt({
   intent?: string;
   filters?: typeof initialFilters;
 }) {
+  const { t: tr } = useJupLocale();
+
   const search = useSyncExternalStore(
     watchCatalogSearch,
     catalogSnapshot,
@@ -243,28 +253,34 @@ function LoginPrompt({
   );
   return (
     <Card
-      title={
+      title={tr(
         intent === "tab/teacher"
-          ? "Откройте кабинет преподавателя"
+          ? tr("Откройте кабинет преподавателя")
           : intent.startsWith("tab/messages")
-            ? "Войдите, чтобы написать"
+            ? tr("Войдите, чтобы написать")
             : intent === "tab/account"
-              ? "Ваши занятия и переписка"
+              ? tr("Ваши занятия и переписка")
               : intent === "tab/requests"
-                ? "Заявки и ответы преподавателей"
-                : "Войдите, чтобы продолжить"
-      }
-      subtitle={
+                ? tr("Заявки и ответы преподавателей")
+                : tr("Войдите, чтобы продолжить"),
+      )}
+      subtitle={tr(
         intent.startsWith("tab/messages")
-          ? "Ваш диалог откроется сразу после входа."
+          ? tr("Ваш диалог откроется сразу после входа.")
           : intent.startsWith("join/")
-            ? "После входа вы вернётесь к подтверждению этой записи."
+            ? tr("После входа вы вернётесь к подтверждению этой записи.")
             : intent === "tab/teacher"
-              ? "Создайте анкету и пройдите проверку личности, чтобы принимать учеников."
+              ? tr(
+                  "Создайте анкету и пройдите проверку личности, чтобы принимать учеников.",
+                )
               : intent === "tab/account"
-                ? "Войдите, чтобы посмотреть свои записи и написать преподавателю."
-                : "Войдите, чтобы отправить заявку и согласовать условия урока."
-      }
+                ? tr(
+                    "Войдите, чтобы посмотреть свои записи и написать преподавателю.",
+                  )
+                : tr(
+                    "Войдите, чтобы отправить заявку и согласовать условия урока.",
+                  ),
+      )}
     >
       <div className="max-w-xs">
         <Link
@@ -282,17 +298,21 @@ function LoginPrompt({
             else forgetSessionValue("fb-request-filters");
           }}
         >
-          Войти или зарегистрироваться
+          {tr("Войти или зарегистрироваться")}
         </Link>
       </div>
     </Card>
   );
 }
 function Empty({ title, children }: { title: string; children: ReactNode }) {
+  const { t: tr } = useJupLocale();
+
   return (
     <div className={styles.empty}>
-      <span className={styles.emptyIcon}><Icon name="search" size={25} /></span>
-      <h3>{title}</h3>
+      <span className={styles.emptyIcon}>
+        <Icon name="search" size={25} />
+      </span>
+      <h3>{tr(title)}</h3>
       <div className={styles.emptyBody}>{children}</div>
     </div>
   );
@@ -305,6 +325,8 @@ export default function FindBuddy({
   teacherMode?: boolean;
   embedded?: boolean;
 }) {
+  const { t: tr, locale: uiLocale } = useJupLocale();
+
   const path = useSyncExternalStore(watchTab, currentPath, () =>
     teacherMode ? "teacher/overview" : "tutors",
   );
@@ -353,7 +375,7 @@ export default function FindBuddy({
   const [cursor, setCursor] = useState(0);
   const [filtersOpen, setFiltersOpen] = useState(false);
   const [publicationOffering, setPublicationOffering] = useState("");
-  const [publicationStarts,setPublicationStarts] = useState("");
+  const [publicationStarts, setPublicationStarts] = useState("");
   const [video, setVideo] = useState(false);
   const [telegramAvailable, setTelegramAvailable] = useState(false);
   const [telegramUrl, setTelegramUrl] = useState("");
@@ -373,7 +395,9 @@ export default function FindBuddy({
       })
       .catch((err) => {
         if (version !== refreshNumber.current) return;
-        setLoadError(err instanceof Error ? err.message : "Каталог недоступен.");
+        setLoadError(
+          err instanceof Error ? err.message : "Каталог недоступен.",
+        );
       });
     const modeRequest = fetchJson<{
       preview: boolean;
@@ -632,7 +656,14 @@ export default function FindBuddy({
     modal?.kind === "join"
       ? shown.groups.find((g) => g.id === modal.group.id)
       : undefined;
-  const existingBooking = modal?.kind === "join" ? dashboard.bookings.find((booking) => booking.group_id === modal.group.id && booking.status !== "cancelled") : undefined;
+  const existingBooking =
+    modal?.kind === "join"
+      ? dashboard.bookings.find(
+          (booking) =>
+            booking.group_id === modal.group.id &&
+            booking.status !== "cancelled",
+        )
+      : undefined;
   const bookingBlocked =
     modal?.kind === "join" &&
     (selectedLesson
@@ -643,12 +674,17 @@ export default function FindBuddy({
     (dashboard.tutor?.id === id
       ? dashboard.tutor.display_name
       : "Преподаватель");
-  const selectedOffering = dashboard.offerings?.find(o => o.id === publicationOffering && o.active) ?? dashboard.offerings?.find(o => o.active);
+  const selectedOffering =
+    dashboard.offerings?.find(
+      (o) => o.id === publicationOffering && o.active,
+    ) ?? dashboard.offerings?.find((o) => o.active);
   function openModal(next: Modal) {
     setError("");
     setNotice("");
     if (next.kind === "group") {
-      setPublicationOffering(dashboard.offerings?.find(o => o.active)?.id ?? "");
+      setPublicationOffering(
+        dashboard.offerings?.find((o) => o.active)?.id ?? "",
+      );
       setPublicationStarts("");
     }
     setModal(next);
@@ -739,7 +775,13 @@ export default function FindBuddy({
           { id: modal.group.id },
           "Вы записаны на урок. Время, чат и материалы — в этой записи.",
           (result) => {
-            if (result && typeof result === "object" && "id" in result && typeof result.id === "string") bookingId = result.id;
+            if (
+              result &&
+              typeof result === "object" &&
+              "id" in result &&
+              typeof result.id === "string"
+            )
+              bookingId = result.id;
           },
         );
         if (ok) {
@@ -776,12 +818,19 @@ export default function FindBuddy({
     { label: filters.subject, clear: () => filter("subject", "") },
     { label: filters.language, clear: () => filter("language", "") },
     { label: filters.city, clear: () => filter("city", "") },
-    { label: filters.maxPrice < initialFilters.maxPrice
-      ? filters.maxPrice === 0
-        ? "Бесплатно"
-        : "до " + money(filters.maxPrice)
-      : "", clear: () => filter("maxPrice", initialFilters.maxPrice) },
-    { label: onlyAvailable ? "Открыта запись" : "", clear: () => updateCatalogSearch({ onlyAvailable: false }) },
+    {
+      label:
+        filters.maxPrice < initialFilters.maxPrice
+          ? filters.maxPrice === 0
+            ? "Бесплатно"
+            : "до " + money(filters.maxPrice, uiLocale)
+          : "",
+      clear: () => filter("maxPrice", initialFilters.maxPrice),
+    },
+    {
+      label: onlyAvailable ? "Открыта запись" : "",
+      clear: () => updateCatalogSearch({ onlyAvailable: false }),
+    },
   ].filter((item) => item.label);
   const profileSlots =
     modal?.kind === "join" && modal.group.capacity === 1
@@ -974,27 +1023,34 @@ export default function FindBuddy({
         <div className={styles.spread}>
           <div>
             <h3>
-              {booking.subject} ·{" "}
-              {booking.lesson_format === "group" ||
-              (!booking.lesson_format && booking.group_id)
-                ? "Группа"
-                : "Индивидуально"}
+              {tr(booking.subject)} ·{tr(" ")}
+              {tr(
+                booking.lesson_format === "group" ||
+                  (!booking.lesson_format && booking.group_id)
+                  ? tr("Группа")
+                  : tr("Индивидуально"),
+              )}
             </h3>
             {booking.lesson_title && <strong>{booking.lesson_title}</strong>}
-            <p>{lessonDate(booking.starts_at)} · 60 минут · Казахстан, UTC+5</p>
             <p>
-              {booking.tutor_id === userId
-                ? "Ученик: " +
-                  (dashboard.seats?.find((s) => s.id === booking.id)?.name ??
-                    "имя не указано")
-                : tutorName(booking.tutor_id)}{" "}
-              · {money(booking.price)}
+              {tr(lessonDate(booking.starts_at, uiLocale))}
+              {tr(" · 60 минут · Казахстан, UTC+5")}
+            </p>
+            <p>
+              {tr(
+                booking.tutor_id === userId
+                  ? tr("Ученик: ") +
+                      (dashboard.seats?.find((s) => s.id === booking.id)
+                        ?.name ?? tr("имя не указано"))
+                  : tutorName(booking.tutor_id),
+              )}
+              {tr(" ")}· {tr(money(booking.price, uiLocale))}
             </p>
           </div>
           <Pill
-            text={
+            text={tr(
               booking.status === "cancelled"
-                ? "Отменено"
+                ? tr("Отменено")
                 : past
                   ? outcomeLabel(
                       dashboard.outcomes?.find(
@@ -1002,26 +1058,28 @@ export default function FindBuddy({
                       ),
                     )
                   : paid
-                    ? "Тестовая оплата прошла"
+                    ? tr("Тестовая оплата прошла")
                     : preview
-                      ? "Демо-бронь"
-                      : "Место забронировано"
-            }
+                      ? tr("Демо-бронь")
+                      : tr("Место забронировано"),
+            )}
           />
         </div>
         {booking.tutor_id === userId && (
           <p className={styles.meta}>
-            Комиссия Jup edu в пилоте: {money(booking.commission)} · После
-            комиссии платформы: {money(booking.tutor_net)}.
+            {tr("Комиссия Jup edu в пилоте: ")}
+            {tr(money(booking.commission, uiLocale))}
+            {tr(" · После комиссии платформы: ")}
+            {tr(money(booking.tutor_net, uiLocale))}.
           </p>
         )}
         {booking.status !== "cancelled" && (
           <>
             <button className="primary" onClick={() => openBooking(booking.id)}>
-              Открыть занятие
+              {tr("Открыть занятие")}
             </button>
             {dashboard.seats?.find((s) => s.id === booking.id)?.move && (
-              <p className={styles.meta}>Предложен перенос времени</p>
+              <p className={styles.meta}>{tr("Предложен перенос времени")}</p>
             )}
             {preview ? (
               booking.price > 0 &&
@@ -1039,24 +1097,30 @@ export default function FindBuddy({
                     )
                   }
                 >
-                  Оплатить в деморежиме · {money(booking.price)}
+                  {tr("Оплатить в деморежиме · ")}
+                  {tr(money(booking.price, uiLocale))}
                 </button>
               )
             ) : (
               <p className={styles.meta}>
-                {booking.price === 0
-                  ? "Бесплатное занятие. Оплата не требуется."
-                  : "Jup edu не принимает оплату уроков в пилоте. Условия расчёта согласуются с преподавателем."}
+                {tr(
+                  booking.price === 0
+                    ? tr("Бесплатное занятие. Оплата не требуется.")
+                    : tr(
+                        "Jup edu не принимает оплату уроков в пилоте. Условия расчёта согласуются с преподавателем.",
+                      ),
+                )}
               </p>
             )}
             <div className={styles.quietActions}>
               {!past && (
                 <button onClick={() => downloadCalendar(booking)}>
-                  В календарь
+                  {tr("В календарь")}
                 </button>
               )}
               <button onClick={() => openBooking(booking.id, "chat")}>
-                Открыть чат ({messages.length})
+                {tr("Открыть чат (")}
+                {messages.length})
               </button>
               <button
                 disabled={busy || paid || Date.parse(booking.starts_at) <= now}
@@ -1071,7 +1135,7 @@ export default function FindBuddy({
                   )
                 }
               >
-                Отменить запись
+                {tr("Отменить запись")}
               </button>
             </div>
             {!teacherMode &&
@@ -1082,7 +1146,7 @@ export default function FindBuddy({
                   className={styles.textAction}
                   onClick={() => openProfile(booking.tutor_id)}
                 >
-                  Оценить преподавателя
+                  {tr("Оценить преподавателя")}
                 </button>
               )}
           </>
@@ -1101,11 +1165,11 @@ export default function FindBuddy({
         <Link
           href="/"
           className={styles.brand}
-          aria-label="Jup edu — главная"
+          aria-label={tr("Jup edu — главная")}
         >
           <Brand />
         </Link>
-        <nav className={styles.tabs} aria-label="Разделы Jup edu">
+        <nav className={styles.tabs} aria-label={tr("Разделы Jup edu")}>
           {teacherMode ? (
             teacherPanels.map(([panel, label, icon]) => (
               <button
@@ -1123,7 +1187,7 @@ export default function FindBuddy({
               >
                 <Icon name={icon} size={18} />
                 <span>
-                  {label}
+                  {tr(label)}
                   {panel === "messages" && !!unread && (
                     <b className={styles.navBadge}>{Math.min(unread, 99)}</b>
                   )}
@@ -1132,20 +1196,37 @@ export default function FindBuddy({
             ))
           ) : (
             <>
-              <Link className={styles.publicNavLink} href="/" aria-current={tab === "tutors" ? "page" : undefined}><Icon name="search" size={19} /><span>Преподаватели</span></Link>
+              <Link
+                className={styles.publicNavLink}
+                href="/"
+                aria-current={tab === "tutors" ? "page" : undefined}
+              >
+                <Icon name="search" size={19} />
+                <span>{tr("Преподаватели")}</span>
+              </Link>
               <button
                 className={styles.publicNavLink}
                 aria-current={tab === "groups" ? "page" : undefined}
                 onClick={() => setTab("groups")}
               >
-                <Icon name="groups" size={19} /><span>Группы</span>
+                <Icon name="groups" size={19} />
+                <span>{tr("Группы")}</span>
               </button>
-              <Link className={styles.publicNavLink} href="/centers"><Icon name="teacher" size={19} /><span>Учебные центры</span></Link>
+              <Link className={styles.publicNavLink} href="/centers">
+                <Icon name="teacher" size={19} />
+                <span>{tr("Учебные центры")}</span>
+              </Link>
             </>
           )}
         </nav>
         <div className={styles.accountLinks}>
-          {!embedded && userId && <NotificationBell role={dashboard.account?.role ?? "student"} state={notifications} />}
+          <LanguageSwitcher />
+          {!embedded && userId && (
+            <NotificationBell
+              role={dashboard.account?.role ?? "student"}
+              state={notifications}
+            />
+          )}
           {!userId ? (
             <>
               <Link
@@ -1157,7 +1238,7 @@ export default function FindBuddy({
                   true,
                 )}
               >
-                Начать
+                {tr("Начать")}
               </Link>
               <Link
                 href={authLoginHref(
@@ -1166,7 +1247,7 @@ export default function FindBuddy({
                   teacherMode,
                 )}
               >
-                Войти
+                {tr("Войти")}
               </Link>
             </>
           ) : (
@@ -1174,13 +1255,15 @@ export default function FindBuddy({
               <summary>
                 {dashboard.student_name ||
                   dashboard.tutor?.display_name ||
-                  "Аккаунт"}
+                  tr("Аккаунт")}
               </summary>
               <div>
                 <a href={roleHome(dashboard.account?.role ?? "student")}>
-                  Мой кабинет
+                  {tr("Мой кабинет")}
                 </a>
-                {preview && <Link href="/login">Войти в другой аккаунт</Link>}
+                {preview && (
+                  <Link href="/login">{tr("Войти в другой аккаунт")}</Link>
+                )}
                 <button
                   disabled={busy}
                   onClick={async () => {
@@ -1194,7 +1277,9 @@ export default function FindBuddy({
                           body: JSON.stringify({ role: "logout" }),
                         });
                       } else {
-                        const { error } = await getSupabase().auth.signOut({ scope: "local" });
+                        const { error } = await getSupabase().auth.signOut({
+                          scope: "local",
+                        });
                         if (error) throw error;
                       }
                       window.location.assign("/findbuddy");
@@ -1207,7 +1292,7 @@ export default function FindBuddy({
                     }
                   }}
                 >
-                  Выйти
+                  {tr("Выйти")}
                 </button>
               </div>
             </details>
@@ -1216,41 +1301,60 @@ export default function FindBuddy({
       </header>
       {notice && (
         <div className={styles.notice} role="status">
-          {notice}
+          {tr(notice)}
         </div>
       )}
       {error && !modal && (
         <div className={styles.error} role="alert">
-          {error}
+          {tr(error)}
         </div>
       )}
       {loadError && (
         <div className={styles.setup}>
-          <strong>Каталог временно недоступен</strong>
-          <p>{loadError}</p>
+          <strong>{tr("Каталог временно недоступен")}</strong>
+          <p>{tr(loadError)}</p>
           <button onClick={() => void refresh()}>
-            Повторить загрузку
-          </button> ·{" "}
+            {tr("Повторить загрузку")}
+          </button>{" "}
+          ·{tr(" ")}
           <button onClick={() => setDemo((v) => !v)}>
-            {demo ? "Закрыть пример" : "Посмотреть пример продукта"}
+            {tr(demo ? tr("Закрыть пример") : tr("Посмотреть пример продукта"))}
           </button>
         </div>
       )}
       {demo && (
         <div className={styles.notice}>
-          <strong>Демонстрация.</strong> Анкеты, дата и группа вымышлены.
-          Записаться и отправить им заявку нельзя.{" "}
+          <strong>{tr("Демонстрация.")}</strong>
+          {tr(
+            " Анкеты, дата и группа вымышлены. Записаться и отправить им заявку нельзя.",
+          )}
+          {tr(" ")}
           <button className={styles.textAction} onClick={() => setDemo(false)}>
-            Вернуться к реальным данным
+            {tr("Вернуться к реальным данным")}
           </button>
         </div>
       )}
-      {(loading || busy) && <div className="requestProgress" role="status"><span className="srOnly">{busy ? "Сохраняем изменения…" : "Загружаем занятия…"}</span></div>}
-      {loading && (teacherMode || (tab !== "tutors" && tab !== "groups") || subpage === "profile") && <LoadingState label="Открываем ваши занятия…" />}
+      {(loading || busy) && (
+        <div className="requestProgress" role="status">
+          <span className="srOnly">
+            {tr(busy ? tr("Сохраняем изменения…") : tr("Загружаем занятия…"))}
+          </span>
+        </div>
+      )}
+      {loading &&
+        (teacherMode ||
+          (tab !== "tutors" && tab !== "groups") ||
+          subpage === "profile") && (
+          <LoadingState label={tr("Открываем ваши занятия…")} />
+        )}
       {!demo && !embedded && (
         <div className={styles.previewBanner} role="note">
-          <strong>Бесплатный пилот</strong>
-          <span>Jup edu объединяет учеников и преподавателей. Комиссия платформы — 0%.</span>
+          <strong>{tr("Бесплатный пилот")}</strong>
+          <span>
+            {tr(
+              "Jup edu объединяет учеников и преподавателей. Комиссия платформы — 0%.",
+            )}
+          </span>
         </div>
       )}
 
@@ -1328,9 +1432,9 @@ export default function FindBuddy({
           />
         ) : (
           !loading && (
-            <Empty title="Анкета недоступна">
+            <Empty title={tr("Анкета недоступна")}>
               <button className="secondary" onClick={() => setTab("tutors")}>
-                Открыть каталог
+                {tr("Открыть каталог")}
               </button>
             </Empty>
           )
@@ -1343,25 +1447,30 @@ export default function FindBuddy({
             >
               <div>
                 <p className={styles.eyebrow}>
-                  Найдите своего человека для учёбы
+                  {tr("Преподаватели в Казахстане")}
                 </p>
                 <h1>
                   {tab === "tutors" ? (
                     <>
-                      Сложное станет
-                      <br />
-                      <em>понятным.</em>
+                      {tr("Найдите своего")} <em>{tr("преподавателя.")}</em>
                     </>
                   ) : (
                     <>
-                      Занятия <em>в мини-группе.</em>
+                      {tr("Занятия ")}
+                      <em>{tr("в мини-группе.")}</em>
                     </>
                   )}
                 </h1>
                 <p className={styles.intro}>
-                  {tab === "tutors"
-                    ? "Выберите преподавателя под вашу цель, язык и бюджет. Знакомство, запись и всё после урока — в одном месте."
-                    : "Выберите тему и дату. Одно место — для одного ученика."}
+                  {tr(
+                    tab === "tutors"
+                      ? tr(
+                          "Сравните предметы, стоимость и свободное время. Напишите преподавателю или выберите урок.",
+                        )
+                      : tr(
+                          "Выберите тему и дату. Одно место — для одного ученика.",
+                        ),
+                  )}
                 </p>
                 {tab === "tutors" && (
                   <div className={styles.heroActions}>
@@ -1372,33 +1481,24 @@ export default function FindBuddy({
                         document
                           .getElementById("fb-search-panel")
                           ?.scrollIntoView({
-                            behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "instant" : "smooth",
+                            behavior: window.matchMedia(
+                              "(prefers-reduced-motion: reduce)",
+                            ).matches
+                              ? "instant"
+                              : "smooth",
                             block: "start",
                           });
                       }}
                     >
-                      Найти преподавателя
+                      {tr("Найти преподавателя")}
                     </button>
-                    <a
-                      href="#how-it-works"
-                      onClick={(e) => {
-                        e.preventDefault();
-                        document
-                          .getElementById("how-it-works")
-                          ?.scrollIntoView({
-                            behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "instant" : "smooth",
-                            block: "center",
-                          });
-                      }}
-                    >
-                      Как это работает
-                    </a>
+                    <a href="/findbuddy/guide">{tr("Как это работает")}</a>
                   </div>
                 )}
                 <div
                   className={styles.examChoices}
                   role="group"
-                  aria-label="Выберите экзамен"
+                  aria-label={tr("Выберите экзамен")}
                 >
                   {["", ...FB_EXAMS].map((exam) => (
                     <button
@@ -1406,83 +1506,62 @@ export default function FindBuddy({
                       aria-pressed={filters.exam === exam}
                       onClick={() => filter("exam", exam)}
                     >
-                      {exam === "Школьная программа" ? "Школа" : exam || "Все"}
+                      {tr(
+                        exam === tr("Школьная программа")
+                          ? tr("Школа")
+                          : exam || tr("Все"),
+                      )}
                     </button>
                   ))}
                 </div>
               </div>
-              {tab === "tutors" && (
-                <aside
-                  className={styles.feature}
-                  id="how-it-works"
-                  aria-label="Как это работает"
-                >
-                  <div className={styles.featureTop}>
-                    <span>
-                      <Icon name="calendar" size={18} /> Твой следующий шаг
-                    </span>
-                  </div>
-                  <ol className={styles.bookingSteps}>
-                    <li>
-                      <strong>Тот, с кем понятно</strong>
-                      <span>Сначала подход и цена. Потом решение.</span>
-                    </li>
-                    <li>
-                      <strong>Время, которое подходит</strong>
-                      <span>
-                        Забронируйте время или напишите преподавателю.
-                      </span>
-                    </li>
-                    <li>
-                      <strong>Дальше — учиться</strong>
-                      <span>
-                        Расписание, переписка, материалы и домашняя работа.
-                      </span>
-                    </li>
-                  </ol>
-                  <div className={styles.featureBottom}>
-                    <small>
-                      Запись без списания денег. Онлайн-оплата пока не
-                      подключена.
-                    </small>
-                  </div>
-                </aside>
-              )}
             </header>
             <section
               id="fb-search-panel"
-              aria-label="Фильтры поиска"
+              aria-label={tr("Фильтры поиска")}
               className={styles.searchPanel}
             >
-              <div className={styles.searchPanelHeader}><span><Icon name="filters" size={20} /></span><div><h2>Какой урок вам нужен?</h2><p>Выберите условия — подходящие анкеты появятся ниже.</p></div></div>
+              <div className={styles.searchPanelHeader}>
+                <span>
+                  <Icon name="filters" size={20} />
+                </span>
+                <div>
+                  <h2>{tr("Какой урок вам нужен?")}</h2>
+                  <p>
+                    {tr("Выберите условия — подходящие анкеты появятся ниже.")}
+                  </p>
+                </div>
+              </div>
               <div className={styles.quickFilters}>
-                <Field label="Что изучаем?">
+                <Field label={tr("Что изучаем?")}>
                   <Select
                     name="subject"
                     values={FB_SUBJECTS}
                     value={filters.subject}
                     onChange={(v) => filter("subject", v)}
-                    all="Все предметы"
+                    all={tr("Все предметы")}
                   />
                 </Field>
-                <Field label="Бюджет за 60 минут">
+                <Field label={tr("Бюджет за 60 минут")}>
                   <select
-                    aria-label="Бюджет за 60 минут"
+                    aria-label={tr("Бюджет за 60 минут")}
                     value={String(filters.maxPrice)}
                     onChange={(e) => filter("maxPrice", Number(e.target.value))}
                   >
-                    <option value="100000">Любой бюджет</option>
-                    <option value="0">Бесплатные занятия</option>
+                    <option value="100000">{tr("Любой бюджет")}</option>
+                    <option value="0">{tr("Бесплатные занятия")}</option>
                     {[3000, 5000, 7000, 10000].map((price) => (
                       <option key={price} value={price}>
-                        До {money(price)}
+                        {tr("До ")}
+                        {tr(money(price, uiLocale))}
                       </option>
                     ))}
                     {![0, 3000, 5000, 7000, 10000, 100000].includes(
                       filters.maxPrice,
                     ) && (
                       <option value={filters.maxPrice}>
-                        До {money(filters.maxPrice)}
+                        {tr("До ")}
+                        {tr(money(filters.maxPrice, uiLocale))}
                       </option>
                     )}
                   </select>
@@ -1493,13 +1572,13 @@ export default function FindBuddy({
                   <Icon name="search" />
                   <input
                     id="fb-search"
-                    aria-label="Поиск"
+                    aria-label={tr("Поиск")}
                     type="search"
-                    placeholder={
+                    placeholder={tr(
                       tab === "tutors"
-                        ? "Предмет, тема или имя"
-                        : "Предмет или тема группы"
-                    }
+                        ? tr("Предмет, тема или имя")
+                        : tr("Предмет или тема группы"),
+                    )}
                     value={filters.query}
                     onChange={(e) => filter("query", e.target.value)}
                   />
@@ -1511,13 +1590,23 @@ export default function FindBuddy({
                   onClick={() => setFiltersOpen(!filtersOpen)}
                 >
                   <Icon name="filters" size={18} />
-                  Фильтры
+                  {tr("Фильтры")}
                   {activeFilters.length > 0 && <b>{activeFilters.length}</b>}
                 </button>
               </div>
               {activeFilters.length > 0 && (
                 <div className={styles.filterSummary}>
-                  {activeFilters.map((item) => <button className={styles.filterChip} key={item.label} aria-label={"Убрать фильтр: " + item.label} onClick={item.clear}>{item.label}<Icon name="close" size={14} /></button>)}
+                  {activeFilters.map((item) => (
+                    <button
+                      className={styles.filterChip}
+                      key={item.label}
+                      aria-label={tr(tr("Убрать фильтр: ") + item.label)}
+                      onClick={item.clear}
+                    >
+                      {tr(item.label)}
+                      <Icon name="close" size={14} />
+                    </button>
+                  ))}
                   <button
                     onClick={() => {
                       setFilters((f) => ({
@@ -1528,38 +1617,38 @@ export default function FindBuddy({
                       updateCatalogSearch({ onlyAvailable: false });
                     }}
                   >
-                    Сбросить
+                    {tr("Сбросить")}
                   </button>
                 </div>
               )}
               <div id="fb-more" hidden={!filtersOpen} className={styles.more}>
                 <div className={styles.formGrid}>
-                  <Field label="Язык">
+                  <Field label={tr("Язык")}>
                     <Select
                       name="language"
                       values={FB_LANGUAGES}
                       value={filters.language}
                       onChange={(v) => filter("language", v)}
-                      all="Любой язык"
+                      all={tr("Любой язык")}
                     />
                   </Field>
-                  <Field label="Формат / город">
+                  <Field label={tr("Формат / город")}>
                     <Select
                       name="city"
                       values={FB_CITIES}
                       value={filters.city}
                       onChange={(v) => filter("city", v)}
-                      all="Все города"
+                      all={tr("Все города")}
                     />
                   </Field>
-                  <Field label="До, ₸ за занятие">
+                  <Field label={tr("До, ₸ за занятие")}>
                     <input
                       key={filters.maxPrice}
                       type="number"
                       min={0}
                       max={100000}
                       step={1}
-                      placeholder="Без ограничения"
+                      placeholder={tr("Без ограничения")}
                       defaultValue={
                         filters.maxPrice === initialFilters.maxPrice
                           ? ""
@@ -1591,24 +1680,29 @@ export default function FindBuddy({
                       updateCatalogSearch({ onlyAvailable: e.target.checked })
                     }
                   />
-                  Только со свободными местами
+                  {tr("Только со свободными местами")}
                 </label>
               </div>
             </section>
             <div className={styles.resultsHeader}>
               <div>
                 <h2>
-                  {tab === "tutors"
-                    ? view === "saved"
-                      ? "Избранные преподаватели"
-                      : "Преподаватели"
-                    : "Расписание групп"}{" "}
+                  {tr(
+                    tab === "tutors"
+                      ? view === "saved"
+                        ? tr("Избранные преподаватели")
+                        : tr("Преподаватели")
+                      : tr("Расписание групп"),
+                  )}
+                  {tr(" ")}
                   <small aria-live="polite">
-                    {loading
-                      ? "…"
-                      : tab === "tutors"
-                        ? tutors.length
-                        : groups.length}
+                    {tr(
+                      loading
+                        ? "…"
+                        : tab === "tutors"
+                          ? tutors.length
+                          : groups.length,
+                    )}
                   </small>
                 </h2>
                 {tab === "tutors" &&
@@ -1621,14 +1715,15 @@ export default function FindBuddy({
                         setCompare(true);
                       }}
                     >
-                      Сравнить избранных · {savedTutors.length}
+                      {tr("Сравнить избранных · ")}
+                      {savedTutors.length}
                     </button>
                   )}
               </div>
               {tab === "tutors" && (
                 <div className={styles.resultTools}>
                   <select
-                    aria-label="Сортировка преподавателей"
+                    aria-label={tr("Сортировка преподавателей")}
                     value={sortBy}
                     onChange={(e) =>
                       updateCatalogSearch({
@@ -1636,11 +1731,33 @@ export default function FindBuddy({
                       })
                     }
                   >
-                    <option value="price">По цене</option>
-                    <option value="time">По времени</option>
+                    <option value="price">{tr("По цене")}</option>
+                    <option value="time">{tr("По времени")}</option>
                   </select>
-                  <div className={styles.viewSwitch} role="group" aria-label="Отображение анкет">
-                    {([["list", "Все анкеты"], ["focus", "По одной"], ["saved", "Избранное"]] as const).map(([value, label]) => <button type="button" key={value} aria-pressed={view === value} onClick={() => updateCatalogSearch({ view: value })}>{label}{value === "saved" && saved.length > 0 && <span>{saved.length}</span>}</button>)}
+                  <div
+                    className={styles.viewSwitch}
+                    role="group"
+                    aria-label={tr("Отображение анкет")}
+                  >
+                    {(
+                      [
+                        ["list", "Все анкеты"],
+                        ["focus", "По одной"],
+                        ["saved", "Избранное"],
+                      ] as const
+                    ).map(([value, label]) => (
+                      <button
+                        type="button"
+                        key={value}
+                        aria-pressed={view === value}
+                        onClick={() => updateCatalogSearch({ view: value })}
+                      >
+                        {tr(label)}
+                        {value === "saved" && saved.length > 0 && (
+                          <span>{saved.length}</span>
+                        )}
+                      </button>
+                    ))}
                   </div>
                 </div>
               )}
@@ -1650,10 +1767,14 @@ export default function FindBuddy({
                 className={
                   view === "focus" ? styles.focusList : styles.tutorGrid
                 }
-                aria-label="Преподаватели"
+                aria-label={tr("Преподаватели")}
                 aria-busy={loading}
               >
-                {loading && <span className="srOnly" role="status">Подбираем преподавателей…</span>}
+                {loading && (
+                  <span className="srOnly" role="status">
+                    {tr("Подбираем преподавателей…")}
+                  </span>
+                )}
                 {loading &&
                   (view === "focus" ? [0] : [0, 1]).map((id) => (
                     <div
@@ -1674,7 +1795,11 @@ export default function FindBuddy({
                       aria-expanded={compare}
                       onClick={() => setCompare(!compare)}
                     >
-                      {compare ? "Скрыть сравнение" : "Сравнить избранных"}
+                      {tr(
+                        compare
+                          ? tr("Скрыть сравнение")
+                          : tr("Сравнить избранных"),
+                      )}
                     </button>
                     {compare && (
                       <SavedComparison
@@ -1687,139 +1812,157 @@ export default function FindBuddy({
                     )}
                   </div>
                 )}
-                {!loading && (view !== "focus"
-                  ? tutors.map(tutorRow)
-                  : focusTutor && (
-                      <div
-                        className={styles.deck}
-                        onTouchStart={(e) => {
-                          const touch = e.touches[0];
-                          studentSwipe.current =
-                            e.touches.length === 1
-                              ? { x: touch.clientX, y: touch.clientY }
-                              : null;
-                        }}
-                        onTouchEnd={(e) => {
-                          const start = studentSwipe.current;
-                          studentSwipe.current = null;
-                          if (!start || tutors.length < 2) return;
-                          const point = e.changedTouches[0];
-                          const dx = point.clientX - start.x,
-                            dy = point.clientY - start.y;
-                          if (
-                            Math.abs(dx) > 65 &&
-                            Math.abs(dx) > Math.abs(dy) * 1.5
-                          )
-                            setCursor(
-                              (i) =>
-                                (i + (dx < 0 ? 1 : tutors.length - 1)) %
-                                tutors.length,
-                            );
-                        }}
-                      >
-                        {tutorRow(focusTutor)}
-                        <div className={styles.focusActions}>
-                          <button
-                            disabled={tutors.length < 2}
-                            onClick={() =>
+                {!loading &&
+                  (view !== "focus"
+                    ? tutors.map(tutorRow)
+                    : focusTutor && (
+                        <div
+                          className={styles.deck}
+                          onTouchStart={(e) => {
+                            const touch = e.touches[0];
+                            studentSwipe.current =
+                              e.touches.length === 1
+                                ? { x: touch.clientX, y: touch.clientY }
+                                : null;
+                          }}
+                          onTouchEnd={(e) => {
+                            const start = studentSwipe.current;
+                            studentSwipe.current = null;
+                            if (!start || tutors.length < 2) return;
+                            const point = e.changedTouches[0];
+                            const dx = point.clientX - start.x,
+                              dy = point.clientY - start.y;
+                            if (
+                              Math.abs(dx) > 65 &&
+                              Math.abs(dx) > Math.abs(dy) * 1.5
+                            )
                               setCursor(
-                                (c) => (c + tutors.length - 1) % tutors.length,
-                              )
-                            }
-                          >
-                            Назад
-                          </button>
-                          <span role="status">
-                            {(cursor % tutors.length) + 1} из {tutors.length}
-                          </span>
-                          <button
-                            disabled={tutors.length < 2}
-                            onClick={() =>
-                              setCursor((c) => (c + 1) % tutors.length)
-                            }
-                          >
-                            Дальше
-                          </button>
+                                (i) =>
+                                  (i + (dx < 0 ? 1 : tutors.length - 1)) %
+                                  tutors.length,
+                              );
+                          }}
+                        >
+                          {tutorRow(focusTutor)}
+                          <div className={styles.focusActions}>
+                            <button
+                              disabled={tutors.length < 2}
+                              onClick={() =>
+                                setCursor(
+                                  (c) =>
+                                    (c + tutors.length - 1) % tutors.length,
+                                )
+                              }
+                            >
+                              {tr("Назад")}
+                            </button>
+                            <span role="status">
+                              {(cursor % tutors.length) + 1}
+                              {tr(" из ")}
+                              {tutors.length}
+                            </span>
+                            <button
+                              disabled={tutors.length < 2}
+                              onClick={() =>
+                                setCursor((c) => (c + 1) % tutors.length)
+                              }
+                            >
+                              {tr("Дальше")}
+                            </button>
+                          </div>
+                          {!demo && !saved.includes(focusTutor.id) && (
+                            <button
+                              className="secondary"
+                              onClick={() => {
+                                toggleSaved(focusTutor.id);
+                                if (tutors.length > 1)
+                                  setCursor((c) => (c + 1) % tutors.length);
+                              }}
+                            >
+                              {tr("Сохранить и дальше")}
+                            </button>
+                          )}
                         </div>
-                        {!demo && !saved.includes(focusTutor.id) && (
-                          <button
-                            className="secondary"
-                            onClick={() => {
-                              toggleSaved(focusTutor.id);
-                              if (tutors.length > 1)
-                                setCursor((c) => (c + 1) % tutors.length);
-                            }}
-                          >
-                            Сохранить и дальше
-                          </button>
-                        )}
-                      </div>
-                    ))}
+                      ))}
                 {!loading && !loadError && tutors.length === 0 && (
                   <Empty
-                    title={
+                    title={tr(
                       view === "saved"
                         ? saved.length
-                          ? "Избранные не подходят под эти фильтры"
-                          : "Сохраните тех, кто вам подходит"
+                          ? tr("Избранные не подходят под эти фильтры")
+                          : tr("Сохраните тех, кто вам подходит")
                         : shown.tutors.length
-                          ? "По этим фильтрам никого нет"
-                          : "Здесь будет ваш преподаватель"
-                    }
+                          ? tr("По этим фильтрам никого нет")
+                          : tr("Здесь будет ваш преподаватель"),
+                    )}
                   >
                     {view === "saved" ? (
                       <>
                         <span>
-                          {saved.length
-                            ? "Сбросьте условия поиска или вернитесь ко всем преподавателям. "
-                            : "Нажмите на закладку в анкете. Сохранённых преподавателей можно сравнить по цене, опыту и времени. "}
+                          {tr(
+                            saved.length
+                              ? tr(
+                                  "Сбросьте условия поиска или вернитесь ко всем преподавателям. ",
+                                )
+                              : tr(
+                                  "Нажмите на закладку в анкете. Сохранённых преподавателей можно сравнить по цене, опыту и времени. ",
+                                ),
+                          )}
                         </span>
                         {saved.length > 0 && (
                           <button
                             className={styles.textAction}
                             onClick={clearFilters}
                           >
-                            Сбросить фильтры
+                            {tr("Сбросить фильтры")}
                           </button>
-                        )}{" "}
+                        )}
+                        {tr(" ")}
                         <button
                           className={styles.textAction}
                           onClick={() => updateCatalogSearch({ view: "list" })}
                         >
-                          Открыть список
+                          {tr("Открыть список")}
                         </button>
                       </>
                     ) : shown.tutors.length ? (
                       <>
                         <p>
-                          Попробуйте другой бюджет или язык. Если условия важны
-                          — оставьте заявку преподавателям.
+                          {tr(
+                            "Попробуйте другой бюджет или язык. Если условия важны — оставьте заявку преподавателям.",
+                          )}
                         </p>
                         <button className="secondary" onClick={clearFilters}>
-                          Сбросить фильтры
-                        </button>{" "}
+                          {tr("Сбросить фильтры")}
+                        </button>
+                        {tr(" ")}
                         <button
                           className={styles.textAction}
                           disabled={demo}
                           onClick={() => openModal({ kind: "request" })}
                         >
-                          Оставить заявку
+                          {tr("Оставить заявку")}
                         </button>
                       </>
                     ) : (
                       <>
-                        <p>Первые анкеты появятся после проверки. Пока расскажите, с чем нужна помощь: цель и бюджет сохранятся в вашей заявке.</p>
+                        <p>
+                          {tr(
+                            "Первые анкеты появятся после проверки. Пока расскажите, с чем нужна помощь: цель и бюджет сохранятся в вашей заявке.",
+                          )}
+                        </p>
                         <button
                           className="primary"
                           onClick={() => openModal({ kind: "request" })}
                         >
-                          Оставить заявку
-                        </button>{" "}
+                          {tr("Оставить заявку")}
+                        </button>
+                        {tr(" ")}
                         <button
                           className={styles.textAction}
                           onClick={() => setDemo(true)}
                         >
-                          Посмотреть пример продукта
+                          {tr("Посмотреть пример продукта")}
                         </button>
                       </>
                     )}
@@ -1828,86 +1971,110 @@ export default function FindBuddy({
               </section>
             )}
             {tab === "groups" && (
-              <section className={styles.groupList} aria-label="Учебные группы" aria-busy={loading}>
-                {loading && <LoadingState label="Подбираем занятия в группе…" />}
-                {!loading && groups.map((g) => (
-                  <article key={g.id} className={styles.group}>
-                    <time className={styles.dateTile} dateTime={g.starts_at}>
-                      <strong>
-                        {new Intl.DateTimeFormat("ru", {
-                          day: "numeric",
-                          timeZone: "Asia/Almaty",
-                        }).format(new Date(g.starts_at))}
-                      </strong>
-                      <span>
-                        {new Intl.DateTimeFormat("ru", {
-                          month: "short",
-                          timeZone: "Asia/Almaty",
-                        }).format(new Date(g.starts_at))}
-                      </span>
-                    </time>
-                    <div>
-                      <Pill
-                        text={
-                          g.capacity === g.reserved
-                            ? "Набор заполнен"
-                            : `Свободно мест: ${g.capacity - g.reserved} из ${g.capacity}`
-                        }
-                      />
-                      <h3>{g.title}</h3>
-                      <FormattedText value={g.description} />
-                      <div className={styles.meta}>
-                        {g.exam} · {g.language} · {g.city}
-                        <br />
-                        {lessonDate(g.starts_at)} · Казахстан, UTC+5 · 60 минут
-                      </div>
-                      <div className={styles.groupContact}>
-                        <button
-                          className={styles.textAction}
-                          onClick={() => openProfile(g.tutor_id)}
-                        >
-                          {shown.tutors.find((t) => t.id === g.tutor_id)
-                            ?.display_name ?? "Анкета преподавателя"}
-                        </button>
-                        {!demo && userId !== g.tutor_id && (
+              <section
+                className={styles.groupList}
+                aria-label={tr("Учебные группы")}
+                aria-busy={loading}
+              >
+                {loading && (
+                  <LoadingState label={tr("Подбираем занятия в группе…")} />
+                )}
+                {!loading &&
+                  groups.map((g) => (
+                    <article key={g.id} className={styles.group}>
+                      <time className={styles.dateTile} dateTime={g.starts_at}>
+                        <strong>
+                          {tr(
+                            dateFormatter(uiLocale, {
+                              day: "numeric",
+                              timeZone: "Asia/Almaty",
+                            }).format(new Date(g.starts_at)),
+                          )}
+                        </strong>
+                        <span>
+                          {tr(
+                            dateFormatter(uiLocale, {
+                              month: "short",
+                              timeZone: "Asia/Almaty",
+                            }).format(new Date(g.starts_at)),
+                          )}
+                        </span>
+                      </time>
+                      <div>
+                        <Pill
+                          text={tr(
+                            g.capacity === g.reserved
+                              ? tr("Набор заполнен")
+                              : tr("Свободно мест: {0} из {1}", [
+                                  g.capacity - g.reserved,
+                                  g.capacity,
+                                ]),
+                          )}
+                        />
+                        <h3>{g.title}</h3>
+                        <FormattedText value={g.description} />
+                        <div className={styles.meta}>
+                          {tr(g.exam)} · {tr(g.language)} · {tr(g.city)}
+                          <br />
+                          {tr(lessonDate(g.starts_at, uiLocale))}
+                          {tr(" · Казахстан, UTC+5 · 60 минут")}
+                        </div>
+                        <div className={styles.groupContact}>
                           <button
                             className={styles.textAction}
-                            onClick={() => openConversation(g.tutor_id, "new")}
+                            onClick={() => openProfile(g.tutor_id)}
                           >
-                            Задать вопрос
+                            {shown.tutors.find((t) => t.id === g.tutor_id)
+                              ?.display_name ?? tr("Анкета преподавателя")}
                           </button>
-                        )}
+                          {!demo && userId !== g.tutor_id && (
+                            <button
+                              className={styles.textAction}
+                              onClick={() =>
+                                openConversation(g.tutor_id, "new")
+                              }
+                            >
+                              {tr("Задать вопрос")}
+                            </button>
+                          )}
+                        </div>
                       </div>
-                    </div>
-                    <div className={styles.tutorAction}>
-                      <strong>
-                        {g.price === 0 ? "Бесплатно" : money(g.price)}
-                      </strong>
-                      <span>за участника</span>
-                      <button
-                        className="primary"
-                        disabled={
-                          demo ||
-                          !!enrollment(g, userId, dashboard.bookings, now)
-                        }
-                        onClick={() => openModal({ kind: "join", group: g })}
-                      >
-                        {enrollment(g, userId, dashboard.bookings, now) ??
-                          "Занять место"}
-                      </button>
-                    </div>
-                  </article>
-                ))}
+                      <div className={styles.tutorAction}>
+                        <strong>
+                          {tr(
+                            g.price === 0
+                              ? tr("Бесплатно")
+                              : money(g.price, uiLocale),
+                          )}
+                        </strong>
+                        <span>{tr("за участника")}</span>
+                        <button
+                          className="primary"
+                          disabled={
+                            demo ||
+                            !!enrollment(g, userId, dashboard.bookings, now)
+                          }
+                          onClick={() => openModal({ kind: "join", group: g })}
+                        >
+                          {tr(
+                            enrollment(g, userId, dashboard.bookings, now) ??
+                              tr("Занять место"),
+                          )}
+                        </button>
+                      </div>
+                    </article>
+                  ))}
                 {!loading && !loadError && groups.length === 0 && (
-                  <Empty title="Групп по этим условиям пока нет">
+                  <Empty title={tr("Групп по этим условиям пока нет")}>
                     <button className="secondary" onClick={clearFilters}>
-                      Сбросить фильтры
-                    </button>{" "}
+                      {tr("Сбросить фильтры")}
+                    </button>
+                    {tr(" ")}
                     <button
                       className={styles.textAction}
                       onClick={() => openModal({ kind: "request" })}
                     >
-                      Оставить заявку по своей теме
+                      {tr("Оставить заявку по своей теме")}
                     </button>
                   </Empty>
                 )}
@@ -1915,14 +2082,18 @@ export default function FindBuddy({
             )}
             <aside className={styles.requestAside}>
               <div>
-                <h3>Хотите предложить свой бюджет?</h3>
-                <p>Опишите задачу один раз и сравните ответы преподавателей.</p>
+                <h3>{tr("Хотите предложить свой бюджет?")}</h3>
+                <p>
+                  {tr(
+                    "Опишите задачу один раз и сравните ответы преподавателей.",
+                  )}
+                </p>
               </div>
               <button
                 className="secondary"
                 onClick={() => openModal({ kind: "request" })}
               >
-                Оставить заявку
+                {tr("Оставить заявку")}
               </button>
             </aside>
           </div>
@@ -1978,19 +2149,29 @@ export default function FindBuddy({
         ) : (
           <section className={styles.list}>
             <div className={styles.sectionHead}>
-              <h2>{teacherMode ? "Заявки учеников" : "Заявки на занятия"}</h2>
+              <h2>
+                {tr(
+                  teacherMode ? tr("Заявки учеников") : tr("Заявки на занятия"),
+                )}
+              </h2>
               {!teacherMode && (
                 <button
                   className="primary"
                   onClick={() => openModal({ kind: "request" })}
                 >
-                  Новая заявка
+                  {tr("Новая заявка")}
                 </button>
               )}
               <p>
-                {teacherMode
-                  ? "Отправьте ученику цену, время и короткий план занятия."
-                  : "Заявку видят подтверждённые преподаватели. Пишите учебную задачу без телефона и адреса."}
+                {tr(
+                  teacherMode
+                    ? tr(
+                        "Отправьте ученику цену, время и короткий план занятия.",
+                      )
+                    : tr(
+                        "Заявку видят подтверждённые преподаватели. Пишите учебную задачу без телефона и адреса.",
+                      ),
+                )}
               </p>
             </div>
             {(teacherMode ? teacherRequests : dashboard.requests).map((r) => {
@@ -2002,31 +2183,39 @@ export default function FindBuddy({
                 <article className={styles.request} key={r.id}>
                   <div className={styles.spread}>
                     <h3>
-                      {r.subject} · {r.exam}
+                      {tr(r.subject)} · {tr(r.exam)}
                     </h3>
                     <Pill
-                      text={
+                      text={tr(
                         r.status === "open"
-                          ? "Открыта"
+                          ? tr("Открыта")
                           : r.status === "matched"
-                            ? "Преподаватель выбран"
-                            : "Закрыта"
-                      }
+                            ? tr("Преподаватель выбран")
+                            : tr("Закрыта"),
+                      )}
                     />
                   </div>
                   <div className={styles.meta}>
-                    {mine ? "Ваша заявка" : "Запрос ученика"}
-                    {mine &&
-                      r.status === "open" &&
-                      (offers.length
-                        ? " · Предложений: " + offers.length
-                        : " · Ожидаем ответ преподавателя")}
+                    {tr(mine ? tr("Ваша заявка") : tr("Запрос ученика"))}
+                    {tr(
+                      mine &&
+                        r.status === "open" &&
+                        (offers.length
+                          ? tr(" · Предложений: ") + offers.length
+                          : tr(" · Ожидаем ответ преподавателя")),
+                    )}
                   </div>
                   <p className={styles.goal}>{r.goal}</p>
                   <div className={styles.meta}>
-                    Бюджет: {money(r.budget)} за 60 минут · {r.language} ·{" "}
-                    {r.city}
-                    {r.tutor_id && ` · Для: ${tutorName(r.tutor_id)}`}
+                    {tr("Бюджет: ")}
+                    {tr(money(r.budget, uiLocale))}
+                    {tr(" за 60 минут · ")}
+                    {tr(r.language)} ·{tr(" ")}
+                    {tr(r.city)}
+                    {tr(
+                      r.tutor_id &&
+                        tr(" \u00B7 Для: {0}", [tutorName(r.tutor_id)]),
+                    )}
                   </div>
                   {mine && r.status === "open" && (
                     <button
@@ -2040,7 +2229,7 @@ export default function FindBuddy({
                         )
                       }
                     >
-                      Закрыть заявку
+                      {tr("Закрыть заявку")}
                     </button>
                   )}
                   {!mine &&
@@ -2050,25 +2239,28 @@ export default function FindBuddy({
                         className={styles.textAction}
                         onClick={() => openModal({ kind: "offer", request: r })}
                       >
-                        Предложить занятие
+                        {tr("Предложить занятие")}
                       </button>
                     )}
                   {offers.map((o) => (
                     <div className={styles.offer} key={o.id}>
                       <strong>
-                        {tutorName(o.tutor_id)} · {money(o.price)}
+                        {tutorName(o.tutor_id)} · {tr(money(o.price, uiLocale))}
                       </strong>
                       <p>{o.note}</p>
                       <small>
-                        {o.price === r.budget
-                          ? "В пределах указанного бюджета"
-                          : money(Math.abs(o.price - r.budget)) +
-                            (o.price > r.budget
-                              ? " выше бюджета"
-                              : " ниже бюджета")}
+                        {tr(
+                          o.price === r.budget
+                            ? tr("В пределах указанного бюджета")
+                            : money(Math.abs(o.price - r.budget), uiLocale) +
+                                (o.price > r.budget
+                                  ? tr(" выше бюджета")
+                                  : tr(" ниже бюджета")),
+                        )}
                       </small>
                       <p>
-                        {lessonDate(o.starts_at)} · Казахстан, UTC+5 · 60 минут
+                        {tr(lessonDate(o.starts_at, uiLocale))}
+                        {tr(" · Казахстан, UTC+5 · 60 минут")}
                       </p>
                       {mine && r.status === "open" && o.status === "pending" ? (
                         <button
@@ -2095,19 +2287,23 @@ export default function FindBuddy({
                             }
                           }}
                         >
-                          {Date.parse(o.starts_at) < now + 1800000
-                            ? "Время предложения истекло"
-                            : o.price === 0
-                              ? "Записаться бесплатно"
-                              : "Принять за " + money(o.price)}
+                          {tr(
+                            Date.parse(o.starts_at) < now + 1800000
+                              ? tr("Время предложения истекло")
+                              : o.price === 0
+                                ? tr("Записаться бесплатно")
+                                : tr("Принять за ") + money(o.price, uiLocale),
+                          )}
                         </button>
                       ) : (
                         <span className={styles.meta}>
-                          {o.status === "accepted"
-                            ? "Принято"
-                            : o.status === "declined"
-                              ? "Не выбрано"
-                              : "Ожидает ответа"}
+                          {tr(
+                            o.status === "accepted"
+                              ? tr("Принято")
+                              : o.status === "declined"
+                                ? tr("Не выбрано")
+                                : tr("Ожидает ответа"),
+                          )}
                         </span>
                       )}
                     </div>
@@ -2117,10 +2313,16 @@ export default function FindBuddy({
             })}
             {(teacherMode ? teacherRequests : dashboard.requests).length ===
               0 && (
-              <Empty title="Пока нет заявок">
-                {teacherMode
-                  ? "Здесь появятся заявки, подходящие по предмету, экзамену, языку и формату."
-                  : "Опишите свою цель и бюджет, чтобы получить предложения."}
+              <Empty title={tr("Пока нет заявок")}>
+                {tr(
+                  teacherMode
+                    ? tr(
+                        "Здесь появятся заявки, подходящие по предмету, экзамену, языку и формату.",
+                      )
+                    : tr(
+                        "Опишите свою цель и бюджет, чтобы получить предложения.",
+                      ),
+                )}
               </Empty>
             )}
           </section>
@@ -2158,9 +2360,9 @@ export default function FindBuddy({
               }
             />
           ) : (
-            <Empty title="Занятие недоступно">
+            <Empty title={tr("Занятие недоступно")}>
               <button className="secondary" onClick={() => setTab("account")}>
-                Вернуться к своим записям
+                {tr("Вернуться к своим записям")}
               </button>
             </Empty>
           )
@@ -2168,15 +2370,16 @@ export default function FindBuddy({
           <section>
             <div className={styles.accountHead}>
               <div>
-                <h2>Ваши занятия</h2>
+                <h2>{tr("Ваши занятия")}</h2>
                 <p>
-                  Записи и чат с преподавателем.{" "}
+                  {tr("Записи и чат с преподавателем.")}
+                  {tr(" ")}
                   <button
                     className={styles.textAction}
                     disabled={loading}
                     onClick={() => void refresh()}
                   >
-                    Обновить
+                    {tr("Обновить")}
                   </button>
                 </p>
               </div>
@@ -2187,9 +2390,11 @@ export default function FindBuddy({
                   hidden={!telegramAvailable}
                   onClick={() => void connectTelegram()}
                 >
-                  {dashboard.telegram_connected
-                    ? "Переподключить Telegram"
-                    : "Подключить Telegram"}
+                  {tr(
+                    dashboard.telegram_connected
+                      ? tr("Переподключить Telegram")
+                      : tr("Подключить Telegram"),
+                  )}
                 </button>
                 {dashboard.telegram_connected && (
                   <button
@@ -2206,7 +2411,7 @@ export default function FindBuddy({
                         setTelegramUrl("");
                     }}
                   >
-                    Отключить
+                    {tr("Отключить")}
                   </button>
                 )}
               </div>
@@ -2214,55 +2419,60 @@ export default function FindBuddy({
             {nextStudentLesson && !showHistory && (
               <section
                 className={styles.nextLesson}
-                aria-label="Ближайшее занятие"
+                aria-label={tr("Ближайшее занятие")}
               >
                 <div>
                   <p className={styles.eyebrow}>
-                    {Date.parse(nextStudentLesson.starts_at) <= now
-                      ? "Занятие уже идёт"
-                      : "Ваш следующий урок"}
+                    {tr(
+                      Date.parse(nextStudentLesson.starts_at) <= now
+                        ? tr("Занятие уже идёт")
+                        : tr("Ваш следующий урок"),
+                    )}
                   </p>
                   <h2>
                     {nextStudentLesson.lesson_title ||
                       nextStudentLesson.subject}
                   </h2>
                   <p>
-                    {tutorName(nextStudentLesson.tutor_id)} ·{" "}
-                    {lessonDate(nextStudentLesson.starts_at)} · UTC+5
+                    {tutorName(nextStudentLesson.tutor_id)} ·{tr(" ")}
+                    {tr(lessonDate(nextStudentLesson.starts_at, uiLocale))} ·
+                    UTC+5
                   </p>
                   <small>
-                    Материалы, связь с преподавателем и домашняя работа — в
-                    комнате занятия.
+                    {tr(
+                      "Материалы, связь с преподавателем и домашняя работа — в комнате занятия.",
+                    )}
                   </small>
                 </div>
                 <button
                   className="primary"
                   onClick={() => openBooking(nextStudentLesson.id)}
                 >
-                  Открыть занятие
+                  {tr("Открыть занятие")}
                 </button>
               </section>
             )}
             {telegramUrl && (
               <div className={styles.notice}>
                 <a href={telegramUrl} target="_blank" rel="noopener noreferrer">
-                  Открыть Telegram и нажать Start
+                  {tr("Открыть Telegram и нажать Start")}
                 </a>
                 <p>
-                  Личная ссылка действует 10 минут. Не передавайте её другим.
-                  После подключения: /lessons — занятия, /chats — переписка. Чат
-                  также доступен в записи.
+                  {tr(
+                    "Личная ссылка действует 10 минут. Не передавайте её другим. После подключения: /lessons — занятия, /chats — переписка. Чат также доступен в записи.",
+                  )}
                 </p>
               </div>
             )}
             {attention.length > 0 && (
               <section className={styles.attention}>
-                <h3>Ждут вашего ответа</h3>
+                <h3>{tr("Ждут вашего ответа")}</h3>
                 <ul>
                   {attention.map((item) => (
                     <li key={item.id + item.pane}>
                       <button onClick={() => openBooking(item.id, item.pane)}>
-                        {item.label} · {item.peer} · {lessonDate(item.starts)}
+                        {tr(item.label)} · {item.peer} ·{" "}
+                        {tr(lessonDate(item.starts, uiLocale))}
                       </button>
                     </li>
                   ))}
@@ -2278,7 +2488,7 @@ export default function FindBuddy({
                       aria-pressed={showHistory === Boolean(i)}
                       onClick={() => setShowHistory(Boolean(i))}
                     >
-                      {label}
+                      {tr(label)}
                     </button>
                   ))}
                 </div>
@@ -2286,38 +2496,40 @@ export default function FindBuddy({
               {visibleBookings.map(bookingRow)}
               {!!dashboard.bookings.length && !visibleBookings.length && (
                 <Empty
-                  title={
+                  title={tr(
                     showHistory
-                      ? "История пока пуста"
-                      : "Нет предстоящих занятий"
-                  }
+                      ? tr("История пока пуста")
+                      : tr("Нет предстоящих занятий"),
+                  )}
                 >
                   {showHistory ? (
-                    "Здесь появятся прошедшие и отменённые записи."
+                    tr("Здесь появятся прошедшие и отменённые записи.")
                   ) : (
                     <button
                       className={styles.textAction}
                       onClick={() => setTab("tutors")}
                     >
-                      Выбрать преподавателя
+                      {tr("Выбрать преподавателя")}
                     </button>
                   )}
                 </Empty>
               )}
               {dashboard.bookings.length === 0 && (
-                <Empty title="У вас пока нет записей">
+                <Empty title={tr("У вас пока нет записей")}>
                   <button
                     className={styles.textAction}
                     onClick={() => setTab("tutors")}
                   >
-                    Найти преподавателя
-                  </button>{" "}
-                  или{" "}
+                    {tr("Найти преподавателя")}
+                  </button>
+                  {tr(" ")}
+                  {tr("или")}
+                  {tr(" ")}
                   <button
                     className={styles.textAction}
                     onClick={() => setTab("groups")}
                   >
-                    выбрать мини-группу
+                    {tr("выбрать мини-группу")}
                   </button>
                   .
                 </Empty>
@@ -2328,7 +2540,7 @@ export default function FindBuddy({
               key={subpage}
               open={subpage === "calendar" || undefined}
             >
-              <summary>Календарь и настройки</summary>
+              <summary>{tr("Календарь и настройки")}</summary>
               <Calendar
                 now={now}
                 bookings={dashboard.bookings}
@@ -2356,14 +2568,15 @@ export default function FindBuddy({
             {!dashboard.tutor ? (
               <div className={desk.next}>
                 <div>
-                  <h1>Кабинет преподавателя</h1>
+                  <h1>{tr("Кабинет преподавателя")}</h1>
                   <p>
-                    Создайте анкету с фото, чтобы открыть расписание и принимать
-                    записи.
+                    {tr(
+                      "Создайте анкету с фото, чтобы открыть расписание и принимать записи.",
+                    )}
                   </p>
                 </div>
                 <a className="primary" href="#profile">
-                  Создать анкету преподавателя
+                  {tr("Создать анкету преподавателя")}
                 </a>
               </div>
             ) : (
@@ -2386,13 +2599,18 @@ export default function FindBuddy({
                         teacherRequests.filter((r) => r.status === "open")
                           .length
                       }
-                      unread={directThreads.reduce((total, thread) => total + thread.unread, 0)}
+                      unread={directThreads.reduce(
+                        (total, thread) => total + thread.unread,
+                        0,
+                      )}
                       tasks={
                         attention.filter((x) =>
                           teaching.some((b) => b.id === x.id),
                         ).length
                       }
-                      attention={attention.filter(item => teaching.some(booking => booking.id === item.id))}
+                      attention={attention.filter((item) =>
+                        teaching.some((booking) => booking.id === item.id),
+                      )}
                       openAttention={openBooking}
                       openNext={openBooking}
                       openPanel={openTeacher}
@@ -2416,15 +2634,15 @@ export default function FindBuddy({
                       }
                     />
                     <Pill
-                      text={
+                      text={tr(
                         dashboard.tutor.verification === "verified"
                           ? preview
-                            ? "Опубликовано в локальном режиме"
-                            : "Личность подтверждена"
+                            ? tr("Опубликовано в локальном режиме")
+                            : tr("Личность подтверждена")
                           : dashboard.tutor.verification === "rejected"
-                            ? "Требуется повторная проверка"
-                            : "Ожидает проверки личности"
-                      }
+                            ? tr("Требуется повторная проверка")
+                            : tr("Ожидает проверки личности"),
+                      )}
                       tone={
                         dashboard.tutor.verification === "verified"
                           ? "success"
@@ -2432,9 +2650,15 @@ export default function FindBuddy({
                       }
                     />
                     <p className="mt-4">
-                      {dashboard.tutor.verification === "verified"
-                        ? "Анкета опубликована. Отвечайте на заявки или соберите мини-группу."
-                        : "Анкета скрыта из каталога. Оператор должен отдельно подтвердить личность; не отправляйте удостоверение в публичную анкету или чат."}
+                      {tr(
+                        dashboard.tutor.verification === "verified"
+                          ? tr(
+                              "Анкета опубликована. Отвечайте на заявки или соберите мини-группу.",
+                            )
+                          : tr(
+                              "Анкета скрыта из каталога. Оператор должен отдельно подтвердить личность; не отправляйте удостоверение в публичную анкету или чат.",
+                            ),
+                      )}
                     </p>
                     <button
                       className={styles.textAction}
@@ -2443,14 +2667,14 @@ export default function FindBuddy({
                           openModal({ kind: "edit", tutor: dashboard.tutor });
                       }}
                     >
-                      Редактировать анкету
+                      {tr("Редактировать анкету")}
                     </button>
                     {dashboard.tutor.verification === "verified" && (
                       <button
                         className={styles.textAction}
                         onClick={() => openProfile(dashboard.tutor!.id)}
                       >
-                        Посмотреть публичную анкету
+                        {tr("Посмотреть публичную анкету")}
                       </button>
                     )}
                   </Card>
@@ -2461,17 +2685,18 @@ export default function FindBuddy({
               dashboard.tutor?.verification === "verified" && (
                 <>
                   <div>
-                    <h1>Ученики</h1>
+                    <h1>{tr("Ученики")}</h1>
                     <p>
-                      Откройте занятие, чтобы написать ученику, провести встречу
-                      или проверить работу.
+                      {tr(
+                        "Откройте занятие, чтобы написать ученику, провести встречу или проверить работу.",
+                      )}
                     </p>
                   </div>
                   {attention.filter((item) =>
                     teaching.some((b) => b.id === item.id),
                   ).length > 0 && (
                     <section className={styles.attention}>
-                      <h3>Ждут вашего ответа</h3>
+                      <h3>{tr("Ждут вашего ответа")}</h3>
                       <ul>
                         {attention
                           .filter((item) =>
@@ -2482,7 +2707,7 @@ export default function FindBuddy({
                               <button
                                 onClick={() => openBooking(item.id, item.pane)}
                               >
-                                {item.label} · {item.peer}
+                                {tr(item.label)} · {item.peer}
                               </button>
                             </li>
                           ))}
@@ -2506,7 +2731,8 @@ export default function FindBuddy({
                           <div>
                             <strong>{peer}</strong>
                             <small>
-                              {lessonDate(next.starts_at)} ·{" "}
+                              {tr(lessonDate(next.starts_at, uiLocale))} ·
+                              {tr(" ")}
                               {next.lesson_title || next.subject}
                             </small>
                           </div>
@@ -2522,28 +2748,31 @@ export default function FindBuddy({
                                 else openBooking(next.id, "chat");
                               }}
                             >
-                              Чат
+                              {tr("Чат")}
                             </button>
                             <button
                               className="secondary"
                               onClick={() => openBooking(next.id)}
                             >
-                              Занятие
+                              {tr("Занятие")}
                             </button>
                           </div>
                         </article>
                       );
                     })}
                     {!teachingStudents.length && (
-                      <Empty title="Пока нет учеников">
-                        Записи появятся здесь, когда ученик забронирует время.
+                      <Empty title={tr("Пока нет учеников")}>
+                        {tr(
+                          "Записи появятся здесь, когда ученик забронирует время.",
+                        )}
                       </Empty>
                     )}
                   </div>
                   {teaching.length > 0 && (
                     <details className={styles.lessonTools}>
                       <summary>
-                        Все занятия с учениками · {teaching.length}
+                        {tr("Все занятия с учениками · ")}
+                        {teaching.length}
                       </summary>
                       {teaching.map(bookingRow)}
                     </details>
@@ -2553,7 +2782,7 @@ export default function FindBuddy({
                       className={styles.textAction}
                       onClick={() => void connectTelegram()}
                     >
-                      Подключить Telegram
+                      {tr("Подключить Telegram")}
                     </button>
                   )}
                   {telegramUrl && (
@@ -2563,7 +2792,7 @@ export default function FindBuddy({
                       target="_blank"
                       rel="noopener noreferrer"
                     >
-                      Открыть Telegram и нажать Start
+                      {tr("Открыть Telegram и нажать Start")}
                     </a>
                   )}
                 </>
@@ -2572,7 +2801,7 @@ export default function FindBuddy({
               dashboard.tutor?.verification === "verified" && (
                 <section>
                   <div className={desk.top}>
-                    <h1>Расписание</h1>
+                    <h1>{tr("Расписание")}</h1>
                     <div className={desk.buttons}>
                       <button
                         className="primary"
@@ -2580,13 +2809,13 @@ export default function FindBuddy({
                           openModal({ kind: "group", individual: true })
                         }
                       >
-                        Добавить индивидуальный урок
+                        {tr("Добавить индивидуальный урок")}
                       </button>
                       <button
                         className="secondary"
                         onClick={() => openModal({ kind: "group" })}
                       >
-                        Создать мини-группу
+                        {tr("Создать мини-группу")}
                       </button>
                     </div>
                   </div>
@@ -2602,12 +2831,13 @@ export default function FindBuddy({
                     enabled={!!dashboard.calendar_enabled}
                     refresh={refresh}
                   />
-                  <h3>Опубликованное расписание</h3>
+                  <h3>{tr("Опубликованное расписание")}</h3>
                   {catalog.groups.filter((g) => g.tutor_id === userId)
                     .length === 0 && (
                     <p>
-                      Добавьте дату и цену, чтобы ученики могли записаться
-                      сразу.
+                      {tr(
+                        "Добавьте дату и цену, чтобы ученики могли записаться сразу.",
+                      )}
                     </p>
                   )}
                   {catalog.groups
@@ -2621,10 +2851,20 @@ export default function FindBuddy({
                         <div>
                           <strong>{g.title}</strong>
                           <p>
-                            {lessonDate(g.starts_at)} ·{" "}
-                            {g.price === 0 ? "Бесплатно" : money(g.price)} ·{" "}
-                            {g.capacity === 1 ? "Индивидуально" : "Группа"} ·
-                            Записались: {g.reserved}/{g.capacity}
+                            {tr(lessonDate(g.starts_at, uiLocale))} ·{tr(" ")}
+                            {tr(
+                              g.price === 0
+                                ? tr("Бесплатно")
+                                : money(g.price, uiLocale),
+                            )}{" "}
+                            ·{tr(" ")}
+                            {tr(
+                              g.capacity === 1
+                                ? tr("Индивидуально")
+                                : tr("Группа"),
+                            )}
+                            {tr(" · Записались: ")}
+                            {g.reserved}/{g.capacity}
                           </p>
                         </div>
                         <details
@@ -2643,7 +2883,7 @@ export default function FindBuddy({
                             }
                           }}
                         >
-                          <summary>Материалы занятия</summary>
+                          <summary>{tr("Материалы занятия")}</summary>
                           {g.capacity === 1 &&
                           dashboard.bookings.some(
                             (b) =>
@@ -2661,7 +2901,7 @@ export default function FindBuddy({
                                   className={styles.textAction}
                                   onClick={() => openBooking(b.id)}
                                 >
-                                  Открыть индивидуальное занятие
+                                  {tr("Открыть индивидуальное занятие")}
                                 </button>
                               ))
                           ) : (
@@ -2673,7 +2913,7 @@ export default function FindBuddy({
                           )}
                         </details>
                         {g.enrollment_closed ? (
-                          <Pill text="Набор закрыт" />
+                          <Pill text={tr("Набор закрыт")} />
                         ) : (
                           <button
                             className={styles.textAction}
@@ -2691,7 +2931,7 @@ export default function FindBuddy({
                                 );
                             }}
                           >
-                            Закрыть набор
+                            {tr("Закрыть набор")}
                           </button>
                         )}
                       </article>
@@ -2710,11 +2950,15 @@ export default function FindBuddy({
             {preview &&
               (currentPanel === "profile" || currentPanel === "wallet") &&
               dashboard.tutor?.verification === "verified" && (
-                <Card title="Тестовые выплаты">
-                  <strong>Тестовый остаток · {money(balance)}</strong>
+                <Card title={tr("Тестовые выплаты")}>
+                  <strong>
+                    {tr("Тестовый остаток · ")}
+                    {tr(money(balance, uiLocale))}
+                  </strong>
                   <p>
-                    Демооперации используют условные тенге. В бесплатном пилоте
-                    комиссия платформы — 0%.
+                    {tr(
+                      "Демооперации используют условные тенге. В бесплатном пилоте комиссия платформы — 0%.",
+                    )}
                   </p>
                   <button
                     className="secondary"
@@ -2727,22 +2971,50 @@ export default function FindBuddy({
                       )
                     }
                   >
-                    Тестовый вывод
+                    {tr("Тестовый вывод")}
                   </button>
                 </Card>
               )}
           </section>
         ))}
 
-      {!embedded && !teacherMode && tab === "tutors" && subpage !== "profile" && (
-        <section className="landingFaq" aria-labelledby="fb-faq-title">
-          <p className={styles.eyebrow}>Без лишних вопросов</p>
-          <h2 id="fb-faq-title">Сначала понятно. Потом — первый урок.</h2>
-          <details><summary>С чего начать, если не знаю, кого выбрать?</summary><p>Выберите предмет и бюджет. В анкете преподавателя посмотрите подход и опыт. Можно написать ему до записи и коротко рассказать о своей цели.</p></details>
-          <details><summary>За что нужно платить?</summary><p>В пилоте Jup edu бесплатен. Стоимость занятия указана в анкете. Онлайн-оплата не подключена: способ оплаты обсудите с преподавателем.</p></details>
-          <details><summary>Где будут занятия и домашняя работа?</summary><p>После записи откройте «Мои занятия»: там расписание, чат, материалы и домашняя работа. Формат и место урока согласуйте с преподавателем.</p></details>
-        </section>
-      )}
+      {!embedded &&
+        !teacherMode &&
+        tab === "tutors" &&
+        subpage !== "profile" && (
+          <section className="landingFaq" aria-labelledby="fb-faq-title">
+            <p className={styles.eyebrow}>{tr("Без лишних вопросов")}</p>
+            <h2 id="fb-faq-title">
+              {tr("Сначала понятно. Потом — первый урок.")}
+            </h2>
+            <details>
+              <summary>
+                {tr("С чего начать, если не знаю, кого выбрать?")}
+              </summary>
+              <p>
+                {tr(
+                  "Выберите предмет и бюджет. В анкете преподавателя посмотрите подход и опыт. Можно написать ему до записи и коротко рассказать о своей цели.",
+                )}
+              </p>
+            </details>
+            <details>
+              <summary>{tr("За что нужно платить?")}</summary>
+              <p>
+                {tr(
+                  "В пилоте Jup edu бесплатен. Стоимость занятия указана в анкете. Онлайн-оплата не подключена: способ оплаты обсудите с преподавателем.",
+                )}
+              </p>
+            </details>
+            <details>
+              <summary>{tr("Где будут занятия и домашняя работа?")}</summary>
+              <p>
+                {tr(
+                  "После записи откройте «Мои занятия»: там расписание, чат, материалы и домашняя работа. Формат и место урока согласуйте с преподавателем.",
+                )}
+              </p>
+            </details>
+          </section>
+        )}
       {!embedded && !teacherMode && <SiteFooter />}
       <dialog
         ref={dialog}
@@ -2762,48 +3034,63 @@ export default function FindBuddy({
               <h2 id="fb-dialog-title">
                 {modal.kind === "request"
                   ? modal.tutor
-                    ? `Заявка: ${modal.tutor.display_name}`
-                    : "Какое занятие вы ищете?"
+                    ? tr("Заявка: {0}", [modal.tutor.display_name])
+                    : tr("Какое занятие вы ищете?")
                   : modal.kind === "edit"
-                    ? "Редактирование анкеты"
+                    ? tr("Редактирование анкеты")
                     : modal.kind === "apply"
-                      ? "Анкета преподавателя"
+                      ? tr("Анкета преподавателя")
                       : modal.kind === "offer"
-                        ? "Предложить занятие"
+                        ? tr("Предложить занятие")
                         : modal.kind === "group"
                           ? modal.individual
-                            ? "Новый индивидуальный урок"
-                            : "Новая мини-группа"
+                            ? tr("Новый индивидуальный урок")
+                            : tr("Новая мини-группа")
                           : modal.group.capacity === 1
-                            ? "Запись на индивидуальный урок"
-                            : "Место в мини-группе"}
+                            ? tr("Запись на индивидуальный урок")
+                            : tr("Место в мини-группе")}
               </h2>
               <button
                 type="button"
                 className={styles.textAction}
                 disabled={busy}
                 onClick={() => setModal(null)}
-                aria-label="Закрыть окно"
+                aria-label={tr("Закрыть окно")}
               >
                 <Icon name="close" />
               </button>
             </div>
             {error && (
               <div className={styles.error} role="alert">
-                {error}
+                {tr(error)}
               </div>
             )}
-            {modal.kind === "join" && <BookingSummary
-              lesson={selectedLesson ?? modal.group}
-              slots={profileSlots}
-              tutor={shown.tutors.find((tutor) => tutor.id === modal.group.tutor_id)}
-              tutorName={tutorName(modal.group.tutor_id)}
-              local={preview}
-              busy={busy}
-              blocked={bookingBlocked || null}
-              choose={(group) => { setError(""); setModal({ kind: "join", group }); }}
-              booked={existingBooking ? () => { setModal(null); setError(""); openBooking(existingBooking.id); } : undefined}
-            />}
+            {modal.kind === "join" && (
+              <BookingSummary
+                lesson={selectedLesson ?? modal.group}
+                slots={profileSlots}
+                tutor={shown.tutors.find(
+                  (tutor) => tutor.id === modal.group.tutor_id,
+                )}
+                tutorName={tutorName(modal.group.tutor_id)}
+                local={preview}
+                busy={busy}
+                blocked={bookingBlocked || null}
+                choose={(group) => {
+                  setError("");
+                  setModal({ kind: "join", group });
+                }}
+                booked={
+                  existingBooking
+                    ? () => {
+                        setModal(null);
+                        setError("");
+                        openBooking(existingBooking.id);
+                      }
+                    : undefined
+                }
+              />
+            )}
             {!userId ? (
               <LoginPrompt
                 filters={filters}
@@ -2818,14 +3105,16 @@ export default function FindBuddy({
             ) : modal.kind === "join" &&
               dashboard.account?.role !== "student" ? (
               <Card
-                title="Для записи нужен аккаунт ученика"
-                subtitle="Тип аккаунта определяется при регистрации. Ваш преподавательский или рабочий кабинет остаётся отдельным."
+                title={tr("Для записи нужен аккаунт ученика")}
+                subtitle={tr(
+                  "Тип аккаунта определяется при регистрации. Ваш преподавательский или рабочий кабинет остаётся отдельным.",
+                )}
               >
                 <Link
                   className="primary"
                   href="/login?role=student&mode=signup"
                 >
-                  Регистрация ученика
+                  {tr("Регистрация ученика")}
                 </Link>
               </Card>
             ) : modal.kind === "join" &&
@@ -2869,48 +3158,57 @@ export default function FindBuddy({
                     <div className={styles.formGrid}>
                       {modal.tutor ? (
                         <p>
-                          {modal.tutor.subject} · {modal.tutor.exam} ·{" "}
-                          {modal.tutor.city}
+                          {tr(modal.tutor.subject)} · {tr(modal.tutor.exam)} ·
+                          {tr(" ")}
+                          {tr(modal.tutor.city)}
                         </p>
                       ) : (
                         <>
-                          <Field label="Предмет">
+                          <Field label={tr("Предмет")}>
                             <select
                               name="subject"
                               defaultValue={filters.subject || "География"}
                             >
                               {FB_SUBJECTS.map((v) => (
-                                <option key={v}>{v}</option>
+                                <option key={v} value={v}>
+                                  {tr(v)}
+                                </option>
                               ))}
                             </select>
                           </Field>
-                          <Field label="Экзамен">
+                          <Field label={tr("Экзамен")}>
                             <select
                               name="exam"
                               defaultValue={filters.exam || "ЕНТ"}
                             >
                               {FB_EXAMS.map((v) => (
-                                <option key={v}>{v}</option>
+                                <option key={v} value={v}>
+                                  {tr(v)}
+                                </option>
                               ))}
                             </select>
                           </Field>
-                          <Field label="Язык">
+                          <Field label={tr("Язык")}>
                             <select
                               name="language"
                               defaultValue={filters.language || "Русский"}
                             >
                               {FB_LANGUAGES.map((v) => (
-                                <option key={v}>{v}</option>
+                                <option key={v} value={v}>
+                                  {tr(v)}
+                                </option>
                               ))}
                             </select>
                           </Field>
-                          <Field label="Формат / город">
+                          <Field label={tr("Формат / город")}>
                             <select
                               name="city"
                               defaultValue={filters.city || "Онлайн"}
                             >
                               {FB_CITIES.map((v) => (
-                                <option key={v}>{v}</option>
+                                <option key={v} value={v}>
+                                  {tr(v)}
+                                </option>
                               ))}
                             </select>
                           </Field>
@@ -2918,7 +3216,7 @@ export default function FindBuddy({
                       )}
                     </div>
                     {modal.tutor && (
-                      <Field label="Язык занятия">
+                      <Field label={tr("Язык занятия")}>
                         <select
                           name="language"
                           defaultValue={modal.tutor.language}
@@ -2926,12 +3224,14 @@ export default function FindBuddy({
                           {(
                             modal.offering?.languages ?? [modal.tutor.language]
                           ).map((l) => (
-                            <option key={l}>{l}</option>
+                            <option key={l} value={l}>
+                              {tr(l)}
+                            </option>
                           ))}
                         </select>
                       </Field>
                     )}
-                    <Field label="Бюджет за 60 минут, ₸">
+                    <Field label={tr("Бюджет за 60 минут, ₸")}>
                       <input
                         type="number"
                         name="budget"
@@ -2948,14 +3248,16 @@ export default function FindBuddy({
                         }
                       />
                     </Field>
-                    <Field label="Цель и удобное время">
+                    <Field label={tr("Цель и удобное время")}>
                       <textarea
                         name="goal"
                         required
                         minLength={10}
                         maxLength={1000}
                         rows={4}
-                        placeholder="Готовлюсь к ЕНТ. Нужно разобрать карты и климат. Удобно в будни вечером."
+                        placeholder={tr(
+                          "Готовлюсь к ЕНТ. Нужно разобрать карты и климат. Удобно в будни вечером.",
+                        )}
                       />
                     </Field>
                   </>
@@ -2963,7 +3265,7 @@ export default function FindBuddy({
                 {modal.kind === "offer" && (
                   <>
                     <p>{modal.request.goal}</p>
-                    <Field label="Направление">
+                    <Field label={tr("Направление")}>
                       <select name="offering_id" required>
                         {dashboard.offerings
                           ?.filter(
@@ -2980,7 +3282,7 @@ export default function FindBuddy({
                           ))}
                       </select>
                     </Field>
-                    <Field label="Цена за 60 минут, ₸">
+                    <Field label={tr("Цена за 60 минут, ₸")}>
                       <input
                         type="number"
                         name="price"
@@ -2991,10 +3293,10 @@ export default function FindBuddy({
                         defaultValue={modal.request.budget}
                       />
                     </Field>
-                    <Field label="Дата и время · Казахстан, UTC+5">
+                    <Field label={tr("Дата и время · Казахстан, UTC+5")}>
                       <input type="datetime-local" name="starts_at" required />
                     </Field>
-                    <Field label="Как вы поможете">
+                    <Field label={tr("Как вы поможете")}>
                       <textarea
                         name="note"
                         required
@@ -3004,14 +3306,15 @@ export default function FindBuddy({
                       />
                     </Field>
                     <p className={styles.meta}>
-                      В пилоте комиссия Jup edu — 0%. Ученик увидит вашу цену
-                      и сможет принять предложение.
+                      {tr(
+                        "В пилоте комиссия Jup edu — 0%. Ученик увидит вашу цену и сможет принять предложение.",
+                      )}
                     </p>
                   </>
                 )}
                 {modal.kind === "group" && (
                   <>
-                    <Field label="Направление">
+                    <Field label={tr("Направление")}>
                       <select
                         name="offering_id"
                         required
@@ -3022,20 +3325,73 @@ export default function FindBuddy({
                           ?.filter((o) => o.active)
                           .map((o) => (
                             <option key={o.id} value={o.id}>
-                              {o.title} · {o.languages.join(", ")}
+                              {o.title} · {tr(o.languages.join(", "))}
                             </option>
                           ))}
                       </select>
                     </Field>
-                    <p className={styles.meta}>60 минут · начало минимум через 30 минут.</p>
-                    {(selectedOffering?.languages.length ?? 0) > 1 ? <Field label="Язык занятия"><select name="language" key={publicationOffering}>{selectedOffering?.languages.map(language => <option key={language}>{language}</option>)}</select></Field> : <input type="hidden" name="language" value={selectedOffering?.languages[0] ?? dashboard.tutor?.language ?? "Русский"} />}
-                    <DraftFields kind="lesson" subject={selectedOffering?.subject ?? dashboard.tutor?.subject ?? ""} exam={selectedOffering?.exam ?? dashboard.tutor?.exam ?? ""} disabled={busy} />
-                    <Field label="Дата и время · Казахстан, UTC+5">
-                      <input name="starts_at" type="datetime-local" required value={publicationStarts} onChange={e=>setPublicationStarts(e.target.value)} />
+                    <p className={styles.meta}>
+                      {tr("60 минут · начало минимум через 30 минут.")}
+                    </p>
+                    {(selectedOffering?.languages.length ?? 0) > 1 ? (
+                      <Field label={tr("Язык занятия")}>
+                        <select name="language" key={publicationOffering}>
+                          {selectedOffering?.languages.map((language) => (
+                            <option key={language} value={language}>
+                              {tr(language)}
+                            </option>
+                          ))}
+                        </select>
+                      </Field>
+                    ) : (
+                      <input
+                        type="hidden"
+                        name="language"
+                        value={
+                          selectedOffering?.languages[0] ??
+                          dashboard.tutor?.language ??
+                          "Русский"
+                        }
+                      />
+                    )}
+                    <DraftFields
+                      kind="lesson"
+                      subject={
+                        selectedOffering?.subject ??
+                        dashboard.tutor?.subject ??
+                        ""
+                      }
+                      exam={
+                        selectedOffering?.exam ?? dashboard.tutor?.exam ?? ""
+                      }
+                      disabled={busy}
+                    />
+                    <Field label={tr("Дата и время · Казахстан, UTC+5")}>
+                      <input
+                        name="starts_at"
+                        type="datetime-local"
+                        required
+                        value={publicationStarts}
+                        onChange={(e) => setPublicationStarts(e.target.value)}
+                      />
                     </Field>
-                    <div className="quickTimes" role="group" aria-label="Быстрый выбор времени">{lessonTimeSuggestions(now).map(time=><button type="button" key={time.value} onClick={()=>setPublicationStarts(time.value)}>{time.label}</button>)}</div>
+                    <div
+                      className="quickTimes"
+                      role="group"
+                      aria-label={tr("Быстрый выбор времени")}
+                    >
+                      {lessonTimeSuggestions(now, uiLocale).map((time) => (
+                        <button
+                          type="button"
+                          key={time.value}
+                          onClick={() => setPublicationStarts(time.value)}
+                        >
+                          {tr(time.label)}
+                        </button>
+                      ))}
+                    </div>
                     <div className={styles.formGrid}>
-                      <Field label="Цена за участника, ₸">
+                      <Field label={tr("Цена за участника, ₸")}>
                         <input
                           key={publicationOffering}
                           name="price"
@@ -3044,58 +3400,68 @@ export default function FindBuddy({
                           min={0}
                           max={100000}
                           step={1}
-                          defaultValue={selectedOffering?.price ?? dashboard.tutor?.price ?? 1500}
+                          defaultValue={
+                            selectedOffering?.price ??
+                            dashboard.tutor?.price ??
+                            1500
+                          }
                         />
                       </Field>
                     </div>
                     <details className="lessonAdvanced">
-                      <summary>Повторение{!modal.individual && " и размер группы"}</summary>
+                      <summary>
+                        {tr("Повторение")}
+                        {tr(!modal.individual && tr(" и размер группы"))}
+                      </summary>
                       <div>
-                    <Field label="Повторение">
-                      <select name="weeks" defaultValue="1">
-                        {[1, 2, 3, 4, 5, 6, 7, 8].map((n) => (
-                          <option key={n} value={n}>
-                            {n === 1
-                              ? "Одно занятие"
-                              : "Каждую неделю · занятий: " + n}
-                          </option>
-                        ))}
-                      </select>
-                    </Field>
-                      {modal.individual ? (
-                        <input type="hidden" name="capacity" value="1" />
-                      ) : (
-                        <Field label="Размер группы, 2–12">
-                          <input
-                            name="capacity"
-                            type="number"
-                            required
-                            min={2}
-                            max={12}
-                            step={1}
-                            defaultValue={6}
-                          />
+                        <Field label={tr("Повторение")}>
+                          <select name="weeks" defaultValue="1">
+                            {[1, 2, 3, 4, 5, 6, 7, 8].map((n) => (
+                              <option key={n} value={n}>
+                                {tr(
+                                  n === 1
+                                    ? tr("Одно занятие")
+                                    : tr("Каждую неделю · занятий: ") + n,
+                                )}
+                              </option>
+                            ))}
+                          </select>
                         </Field>
-                      )}
+                        {modal.individual ? (
+                          <input type="hidden" name="capacity" value="1" />
+                        ) : (
+                          <Field label={tr("Размер группы, 2–12")}>
+                            <input
+                              name="capacity"
+                              type="number"
+                              required
+                              min={2}
+                              max={12}
+                              step={1}
+                              defaultValue={6}
+                            />
+                          </Field>
+                        )}
                       </div>
                     </details>
-
                   </>
                 )}
                 <PrimaryButton
                   disabled={busy || loading || !!loadError || !!bookingBlocked}
                 >
-                  {busy
-                    ? "Сохраняем…"
-                    : modal.kind === "request"
-                      ? "Отправить заявку"
-                      : modal.kind === "offer"
-                        ? "Отправить предложение"
-                        : modal.kind === "group"
-                          ? modal.individual
-                            ? "Опубликовать урок"
-                            : "Опубликовать группу"
-                          : bookingBlocked || "Подтвердить запись"}
+                  {tr(
+                    busy
+                      ? tr("Сохраняем…")
+                      : modal.kind === "request"
+                        ? tr("Отправить заявку")
+                        : modal.kind === "offer"
+                          ? tr("Отправить предложение")
+                          : modal.kind === "group"
+                            ? modal.individual
+                              ? tr("Опубликовать урок")
+                              : tr("Опубликовать группу")
+                            : bookingBlocked || tr("Подтвердить запись"),
+                  )}
                 </PrimaryButton>
               </form>
             )}

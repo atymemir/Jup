@@ -1,4 +1,5 @@
 "use client";
+import { useLocale as useJupLocale } from "../i18n/LocaleProvider";
 
 import { useState } from "react";
 import { lessonDate, money, type Group, type Tutor } from "../lib/findbuddy";
@@ -39,6 +40,8 @@ export function TutorCard({
   book?: () => void;
   contact?: () => void;
 }) {
+  const { t: tr, locale: uiLocale } = useJupLocale();
+
   const [failed, setFailed] = useState(false);
   const source = tutorPortrait(tutor, local);
   return (
@@ -48,7 +51,7 @@ export function TutorCard({
           type="button"
           className={st.portrait}
           onClick={open}
-          aria-label={"Анкета преподавателя " + tutor.display_name}
+          aria-label={tr("Анкета преподавателя ") + tutor.display_name}
         >
           {source && !failed ? (
             // Uploaded portraits are normalized on the server.
@@ -67,7 +70,7 @@ export function TutorCard({
         </button>
         <div className={st.person}>
           <p className={st.subject}>
-            {tutor.exam} · {tutor.subject}
+            {tr(tutor.exam)} · {tr(tutor.subject)}
           </p>
           <h3>
             <button type="button" onClick={open}>
@@ -75,18 +78,22 @@ export function TutorCard({
             </button>
           </h3>
           <p className={st.muted}>
-            {local
-              ? "Демоанкета"
-              : tutor.verification === "verified"
-                ? "Личность подтверждена"
-                : "Анкета на проверке"}
+            {tr(
+              local
+                ? tr("Демоанкета")
+                : tutor.verification === "verified"
+                  ? tr("Личность подтверждена")
+                  : tr("Анкета на проверке"),
+            )}
           </p>
         </div>
         {save && (
           <button
             type="button"
             className={st.save}
-            aria-label={saved ? "Убрать из избранного" : "Сохранить анкету"}
+            aria-label={tr(
+              saved ? tr("Убрать из избранного") : tr("Сохранить анкету"),
+            )}
             aria-pressed={saved}
             onClick={save}
           >
@@ -98,55 +105,69 @@ export function TutorCard({
       <p className={st.bio}>{tutor.bio}</p>
       <dl className={st.facts}>
         <div>
-          <dt>Язык</dt>
-          <dd>{tutor.language}</dd>
+          <dt>{tr("Язык")}</dt>
+          <dd>{tr(tutor.language)}</dd>
         </div>
         <div>
-          <dt>Формат</dt>
-          <dd>{tutor.city}</dd>
+          <dt>{tr("Формат")}</dt>
+          <dd>{tr(tutor.city)}</dd>
         </div>
         <div>
-          <dt>Опыт</dt>
-          <dd>{tutor.experience} г.</dd>
+          <dt>{tr("Опыт")}</dt>
+          <dd>
+            {tutor.experience}
+            {tr(" г.")}
+          </dd>
         </div>
       </dl>
       <p className={st.rating}>
         {!!tutor.review_count && tutor.rating != null ? (
           <>
-            <Icon name="star" size={15} />{" "}
-            {tutor.rating.toLocaleString("ru-KZ")} · оценок {tutor.review_count}
+            <Icon name="star" size={15} />
+            {tr(" ")}
+            {tr(
+              tutor.rating.toLocaleString(
+                uiLocale === "en" ? "en-GB" : "ru-KZ",
+              ),
+            )}
+            {tr(" · оценок ")}
+            {tutor.review_count}
           </>
         ) : (
-          "Пока без отзывов"
+          tr("Пока без отзывов")
         )}
       </p>
       <div className={st.booking}>
         <div className={st.rate}>
           <strong>
-            {(next?.price ?? tutor.price) === 0
-              ? "Бесплатно"
-              : money(next?.price ?? tutor.price)}
+            {tr(
+              (next?.price ?? tutor.price) === 0
+                ? tr("Бесплатно")
+                : money(next?.price ?? tutor.price, uiLocale),
+            )}
           </strong>
-          <span>за урок · 60 минут</span>
+          <span>{tr("за урок · 60 минут")}</span>
         </div>
         <p className={st.availability}>
           <Icon name="calendar" size={16} />
-          {next
-            ? lessonDate(next.starts_at) + " · UTC+5"
-            : "Время по договорённости"}
+          {tr(
+            next
+              ? lessonDate(next.starts_at, uiLocale) + " · UTC+5"
+              : tr("Время по договорённости"),
+          )}
         </p>
         <button type="button" className="primary" onClick={book ?? open}>
-          {book ? "Записаться на урок" : "Открыть анкету"}
+          {tr(book ? tr("Записаться на урок") : tr("Открыть анкету"))}
         </button>
         <div className={st.links}>
           {book && (
             <button type="button" onClick={open}>
-              Об уроках и преподавателе
+              {tr("Об уроках и преподавателе")}
             </button>
           )}
           {contact && (
             <button type="button" onClick={contact}>
-              Задать вопрос
+              {tr("Задать вопрос")}
             </button>
           )}
         </div>

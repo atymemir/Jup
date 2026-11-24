@@ -1,14 +1,19 @@
 "use client";
+import { useLocale as useJupLocale } from "../i18n/LocaleProvider";
+
 import { LoadingState } from "../ui/LoadingState";
 import { Brand } from "../ui/Brand";
 
 import { useEffect, useState, useSyncExternalStore } from "react";
 import Link from "next/link";
+import { LanguageSwitcher } from "../i18n/LocaleProvider";
 import { api } from "../lib/api";
 import { roleHome, type Account } from "../lib/platform";
 import { usePlatformAction } from "./usePlatformAction";
 import st from "./platform.module.css";
 export function Invite() {
+  const { t: tr } = useJupLocale();
+
   const [account, setAccount] = useState<Account | null>(null);
   const search = useSyncExternalStore(
     watchSearch,
@@ -36,22 +41,26 @@ export function Invite() {
         <Link className={st.brand} href="/">
           <Brand />
         </Link>
+        <LanguageSwitcher />
       </header>
       <section className={st.hero}>
         <div>
-          <p className={st.eyebrow}>Личное приглашение</p>
-          <h1>{accepted ? "Вы в команде" : "Присоединиться к команде"}</h1>
+          <p className={st.eyebrow}>{tr("Личное приглашение")}</p>
+          <h1>
+            {tr(accepted ? tr("Вы в команде") : tr("Присоединиться к команде"))}
+          </h1>
           <p>
-            Ссылка действует 7 дней и только для указанной отправителем почты.
-            Приглашение в учебный центр принимается аккаунтом преподавателя с
-            сохранённой анкетой. Для модерации используется отдельный новый
-            аккаунт.
+            {tr(
+              "Ссылка действует 7 дней и только для указанной отправителем почты. Приглашение в учебный центр принимается аккаунтом преподавателя с сохранённой анкетой. Для модерации используется отдельный новый аккаунт.",
+            )}
           </p>
           {loading ? (
-            <LoadingState label="Проверяем приглашение…" />
+            <LoadingState label={tr("Проверяем приглашение…")} />
           ) : !token ? (
             <p className={st.error}>
-              В ссылке нет приглашения. Попросите отправителя создать новую.
+              {tr(
+                "В ссылке нет приглашения. Попросите отправителя создать новую.",
+              )}
             </p>
           ) : !account ? (
             <div className={st.actions}>
@@ -59,7 +68,7 @@ export function Invite() {
                 className="primary"
                 href={"/login?invite=" + encodeURIComponent(token)}
               >
-                Войти по указанной почте
+                {tr("Войти по указанной почте")}
               </Link>
               <Link
                 className={st.textButton}
@@ -68,18 +77,18 @@ export function Invite() {
                   encodeURIComponent(token)
                 }
               >
-                Регистрация преподавателя
+                {tr("Регистрация преподавателя")}
               </Link>
               <Link
                 className={st.textButton}
                 href={"/login?mode=signup&invite=" + encodeURIComponent(token)}
               >
-                Регистрация модератора
+                {tr("Регистрация модератора")}
               </Link>
             </div>
           ) : accepted ? (
             <a className="primary" href={roleHome(account.role)}>
-              Открыть кабинет
+              {tr("Открыть кабинет")}
             </a>
           ) : (
             <div className={st.actions}>
@@ -97,14 +106,14 @@ export function Invite() {
                     setAccepted(true);
                 }}
               >
-                Принять приглашение
+                {tr("Принять приглашение")}
               </button>
               <a className={st.textButton} href={roleHome(account.role)}>
-                Сначала открыть свой кабинет
+                {tr("Сначала открыть свой кабинет")}
               </a>
             </div>
           )}
-          {error && <p className={st.error}>{error}</p>}
+          {error && <p className={st.error}>{tr(error)}</p>}
           {status}
         </div>
       </section>

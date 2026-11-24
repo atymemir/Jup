@@ -1,4 +1,6 @@
 "use client";
+import { useLocale as useJupLocale } from "../i18n/LocaleProvider";
+
 import { useId, useRef, useState } from "react";
 import { editText } from "../lib/authoring";
 import { FormattedText } from "../ui/FormattedText";
@@ -27,6 +29,8 @@ export function TextEditor({
   rows?: number;
   placeholder?: string;
 }) {
+  const { t: tr } = useJupLocale();
+
   const [internal, setInternal] = useState(defaultValue);
   const [preview, setPreview] = useState(false);
   const [error, setError] = useState("");
@@ -61,18 +65,18 @@ export function TextEditor({
   }
   return (
     <div className="textEditor">
-      <label htmlFor={id}>{label}</label>
+      <label htmlFor={id}>{tr(label)}</label>
       <div
         className="textEditorToolbar"
         role="group"
-        aria-label={`Редактор: ${label}`}
+        aria-label={tr(tr("Редактор: {0}", [label]))}
       >
         <button
           type="button"
           disabled={disabled}
           onMouseDown={(e) => e.preventDefault()}
           onClick={() => format("bold")}
-          aria-label="Полужирный"
+          aria-label={tr("Полужирный")}
         >
           <strong>B</strong>
         </button>
@@ -82,7 +86,7 @@ export function TextEditor({
           onMouseDown={(e) => e.preventDefault()}
           onClick={() => format("bullet")}
         >
-          • Список
+          {tr("• Список")}
         </button>
         <button
           type="button"
@@ -90,7 +94,7 @@ export function TextEditor({
           onMouseDown={(e) => e.preventDefault()}
           onClick={() => format("number")}
         >
-          1. Шаги
+          {tr("1. Шаги")}
         </button>
         <button
           type="button"
@@ -100,7 +104,7 @@ export function TextEditor({
             if (previous !== undefined) (onChange ?? setInternal)(previous);
           }}
         >
-          Отменить
+          {tr("Отменить")}
         </button>
         <button
           type="button"
@@ -108,7 +112,7 @@ export function TextEditor({
           aria-pressed={preview}
           onClick={() => setPreview(!preview)}
         >
-          Предпросмотр
+          {tr("Предпросмотр")}
         </button>
       </div>
       <textarea
@@ -122,7 +126,7 @@ export function TextEditor({
         maxLength={maxLength}
         disabled={disabled}
         rows={rows}
-        placeholder={placeholder}
+        placeholder={tr(placeholder)}
         aria-describedby={`${id}-count`}
         onKeyDown={(e) => {
           if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "b") {
@@ -135,11 +139,11 @@ export function TextEditor({
         <span id={`${id}-count`}>
           {text.length} / {maxLength}
         </span>
-        {error && <span role="alert">{error}</span>}
+        {error && <span role="alert">{tr(error)}</span>}
       </div>
       {preview && (
         <div className="textEditorPreview">
-          <FormattedText value={text || "Ваш текст появится здесь."} />
+          <FormattedText value={text || tr("Ваш текст появится здесь.")} />
         </div>
       )}
     </div>

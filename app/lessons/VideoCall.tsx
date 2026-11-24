@@ -1,4 +1,6 @@
 "use client";
+import { useLocale as useJupLocale } from "../i18n/LocaleProvider";
+
 import {
   LiveKitRoom,
   RoomAudioRenderer,
@@ -12,6 +14,8 @@ import { Track } from "livekit-client";
 import "@livekit/components-styles";
 import st from "./lessons.module.css";
 function Stage({ leave }: { leave: () => void }) {
+  const { t: tr } = useJupLocale();
+
   const tracks = useTracks([
     { source: Track.Source.Camera, withPlaceholder: true },
     { source: Track.Source.ScreenShare, withPlaceholder: false },
@@ -20,8 +24,11 @@ function Stage({ leave }: { leave: () => void }) {
   return (
     <>
       <div className={st.row}>
-        <strong>На встрече · {participants.length}</strong>
-        <button onClick={leave}>Выйти из звонка</button>
+        <strong>
+          {tr("На встрече · ")}
+          {participants.length}
+        </strong>
+        <button onClick={leave}>{tr("Выйти из звонка")}</button>
       </div>
       <div className={st.videoGrid}>
         {tracks.map((t) => (
@@ -32,14 +39,16 @@ function Stage({ leave }: { leave: () => void }) {
         ))}
       </div>
       <div className={st.actions}>
-        <TrackToggle source={Track.Source.Microphone}>Микрофон</TrackToggle>
-        <TrackToggle source={Track.Source.Camera}>Камера</TrackToggle>
+        <TrackToggle source={Track.Source.Microphone}>
+          {tr("Микрофон")}
+        </TrackToggle>
+        <TrackToggle source={Track.Source.Camera}>{tr("Камера")}</TrackToggle>
         {typeof navigator.mediaDevices?.getDisplayMedia === "function" && (
           <TrackToggle source={Track.Source.ScreenShare}>
-            Показ экрана
+            {tr("Показ экрана")}
           </TrackToggle>
         )}
-        <StartAudio label="Включить звук участников" />
+        <StartAudio label={tr("Включить звук участников")} />
       </div>
       <RoomAudioRenderer />
     </>

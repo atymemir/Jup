@@ -1,3 +1,5 @@
+"use client";
+import { useLocale as useJupLocale } from "../i18n/LocaleProvider";
 import Link from "next/link";
 import type { ReactNode } from "react";
 type ButtonProps = {
@@ -38,10 +40,12 @@ export function Card({
   subtitle?: string;
   children: ReactNode;
 }) {
+  const { t: tr } = useJupLocale();
+
   return (
     <section className="panel">
-      <h3>{title}</h3>
-      {subtitle && <p>{subtitle}</p>}
+      <h3>{tr(title)}</h3>
+      {subtitle && <p>{tr(subtitle)}</p>}
       {children}
     </section>
   );

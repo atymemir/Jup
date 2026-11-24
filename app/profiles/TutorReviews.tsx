@@ -1,4 +1,6 @@
 "use client";
+import { useLocale as useJupLocale } from "../i18n/LocaleProvider";
+
 import {
   useCallback,
   useEffect,
@@ -6,6 +8,7 @@ import {
   useState,
   type FormEvent,
 } from "react";
+import { dateFormatter } from "../lib/localeFormat.mjs";
 import { api } from "../lib/api";
 import { Icon } from "../ui/Icon";
 import st from "./profile.module.css";
@@ -23,6 +26,8 @@ export function TutorReviews({
   rating?: number | null;
   changed: () => Promise<void>;
 }) {
+  const { t: tr, locale: uiLocale } = useJupLocale();
+
   const [feedback, setFeedback] = useState<Feedback[] | null>(null);
   const [mine, setMine] = useState<{ score: number; body: string } | null>(
     null,
@@ -73,13 +78,18 @@ export function TutorReviews({
     }
   }
   return (
-    <section className={st.info} aria-label="Отзывы об уроках">
-      <h2>Отзывы об уроках</h2>
+    <section className={st.info} aria-label={tr("Отзывы об уроках")}>
+      <h2>{tr("Отзывы об уроках")}</h2>
       {!!count && rating != null && (
         <p className={st.rating}>
           <Icon name="star" size={17} />
-          <strong>{rating.toLocaleString("ru-KZ")}</strong>
-          <span>· оценок {count}</span>
+          <strong>
+            {tr(rating.toLocaleString(uiLocale === "en" ? "en-GB" : "ru-KZ"))}
+          </strong>
+          <span>
+            {tr("· оценок ")}
+            {count}
+          </span>
         </p>
       )}
       {editable &&
@@ -93,7 +103,9 @@ export function TutorReviews({
               setEditing(true);
             }}
           >
-            {mine ? "Изменить свой отзыв" : "Оценить прошедший урок"}
+            {tr(
+              mine ? tr("Изменить свой отзыв") : tr("Оценить прошедший урок"),
+            )}
           </button>
         ) : (
           <form
@@ -106,14 +118,14 @@ export function TutorReviews({
             <div
               className={st.score}
               role="group"
-              aria-label="Оценка от 1 до 5"
+              aria-label={tr("Оценка от 1 до 5")}
             >
               {[1, 2, 3, 4, 5].map((n) => (
                 <button
                   key={n}
                   type="button"
                   disabled={busy}
-                  aria-label={n + " из 5"}
+                  aria-label={tr(n + tr(" из 5"))}
                   aria-pressed={score === n}
                   data-filled={n <= score}
                   onClick={() => setScore(n)}
@@ -123,7 +135,7 @@ export function TutorReviews({
               ))}
             </div>
             <label className={st.field}>
-              Что помогло вам на занятии?
+              {tr("Что помогло вам на занятии?")}
               <textarea
                 disabled={busy}
                 rows={3}
@@ -134,7 +146,7 @@ export function TutorReviews({
             </label>
             <div className={st.reviewActions}>
               <button className="primary" disabled={!score || busy}>
-                Опубликовать отзыв
+                {tr("Опубликовать отзыв")}
               </button>
               <button
                 type="button"
@@ -142,7 +154,7 @@ export function TutorReviews({
                 disabled={busy}
                 onClick={() => setEditing(false)}
               >
-                Отмена
+                {tr("Отмена")}
               </button>
               {mine && (
                 <button
@@ -153,7 +165,7 @@ export function TutorReviews({
                     if (confirm("Удалить ваш отзыв?")) void submit("remove");
                   }}
                 >
-                  Удалить отзыв
+                  {tr("Удалить отзыв")}
                 </button>
               )}
             </div>
@@ -161,21 +173,27 @@ export function TutorReviews({
         ))}
       {error && (
         <p className={st.error} role="alert">
-          {error}
+          {tr(error)}
         </p>
       )}
-      {feedback?.length === 0 && <p className={st.muted}>Отзывов пока нет.</p>}
+      {feedback?.length === 0 && (
+        <p className={st.muted}>{tr("Отзывов пока нет.")}</p>
+      )}
       {feedback?.map((r, i) => (
         <article className={st.review} key={r.updated_at + i}>
-          <strong>Ученик Jup edu</strong>
+          <strong>{tr("Ученик Jup edu")}</strong>
           <span>
-            {r.score} из 5 ·{" "}
-            {new Date(r.updated_at).toLocaleDateString("ru-KZ", {
-              timeZone: "Asia/Almaty",
-              day: "numeric",
-              month: "short",
-              year: "numeric",
-            })}
+            {r.score}
+            {tr(" из 5 ·")}
+            {tr(" ")}
+            {tr(
+              dateFormatter(uiLocale, {
+                timeZone: "Asia/Almaty",
+                day: "numeric",
+                month: "short",
+                year: "numeric",
+              }).format(new Date(r.updated_at)),
+            )}
           </span>
           {r.body && <p>{r.body}</p>}
         </article>

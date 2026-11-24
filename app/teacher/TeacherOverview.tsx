@@ -1,3 +1,5 @@
+"use client";
+import { useLocale as useJupLocale } from "../i18n/LocaleProvider";
 import { type Booking, lessonDate } from "../lib/findbuddy";
 import { Icon } from "../ui/Icon";
 import st from "./teacher.module.css";
@@ -36,19 +38,21 @@ export function TeacherOverview({
   add: () => void;
   addGroup: () => void;
 }) {
+  const { t: tr, locale: uiLocale } = useJupLocale();
+
   return (
     <section className={st.overview}>
       <div className={st.top}>
         <div>
-          <p>Кабинет преподавателя</p>
+          <p>{tr("Кабинет преподавателя")}</p>
           <h1>{name}</h1>
         </div>
         <div className={st.buttons}>
           <button className="primary" onClick={add}>
-            Добавить урок
+            {tr("Добавить урок")}
           </button>
           <button className="secondary" onClick={addGroup}>
-            Мини-группа
+            {tr("Мини-группа")}
           </button>
         </div>
       </div>
@@ -62,43 +66,48 @@ export function TeacherOverview({
         ).map(([panel, label, count]) => (
           <button key={panel} onClick={() => openPanel(panel)}>
             <strong>{count}</strong>
-            <span>{label}</span>
+            <span>{tr(label)}</span>
           </button>
         ))}
       </div>
       <div className={st.next}>
         <div>
           <p>
-            <Icon name="calendar" size={17} /> Ближайшее занятие
+            <Icon name="calendar" size={17} />
+            {tr(" Ближайшее занятие")}
           </p>
           <h2>
             {next
-              ? next.lesson_title || next.subject
-              : "Ближайших записей пока нет"}
+              ? next.lesson_title || tr(next.subject)
+              : tr("Ближайших записей пока нет")}
           </h2>
           <p>
-            {next
-              ? lessonDate(next.starts_at) + " · время Казахстана"
-              : slots > 0
-                ? "Время опубликовано. Первые записи появятся здесь."
-                : "Добавьте урок и выберите время для записи."}
+            {tr(
+              next
+                ? lessonDate(next.starts_at, uiLocale) +
+                    tr(" · время Казахстана")
+                : slots > 0
+                  ? tr("Время опубликовано. Первые записи появятся здесь.")
+                  : tr("Добавьте урок и выберите время для записи."),
+            )}
           </p>
         </div>
         {next && (
           <button className="primary" onClick={() => openNext(next.id)}>
-            Открыть занятие
+            {tr("Открыть занятие")}
           </button>
         )}
         {!next && slots > 0 && (
           <button className="secondary" onClick={() => openPanel("schedule")}>
-            Открыть расписание
+            {tr("Открыть расписание")}
           </button>
         )}
       </div>
       {!!attention?.length && (
         <section className={st.attention}>
           <h2>
-            Что требует внимания <span>{tasks}</span>
+            {tr("Что требует внимания ")}
+            <span>{tasks}</span>
           </h2>
           {attention.slice(0, 3).map((item) => (
             <button
@@ -118,7 +127,7 @@ export function TeacherOverview({
                 />
               </span>
               <span>
-                <strong>{item.label}</strong>
+                <strong>{tr(item.label)}</strong>
                 <small>{item.peer}</small>
               </span>
               <Icon name="arrow" size={17} />
@@ -128,7 +137,8 @@ export function TeacherOverview({
       )}
       {!!unread && (
         <button className={st.task} onClick={() => openPanel("messages")}>
-          Личные сообщения · {unread}
+          {tr("Личные сообщения · ")}
+          {unread}
         </button>
       )}
     </section>

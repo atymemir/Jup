@@ -1,4 +1,6 @@
 "use client";
+import { useLocale as useJupLocale } from "../i18n/LocaleProvider";
+
 import { useEffect, useId, useState } from "react";
 import Link from "next/link";
 import { lessonDate, money, kazakhstanDate } from "../lib/findbuddy";
@@ -22,6 +24,8 @@ export function OrganizationDesk({
   panel: string;
   refresh: () => Promise<void>;
 }) {
+  const { t: tr, locale: uiLocale } = useJupLocale();
+
   const [now, setNow] = useState(Date.now);
   useEffect(() => {
     const timer = setInterval(() => setNow(Date.now()), 30000);
@@ -50,19 +54,24 @@ export function OrganizationDesk({
     return (
       <section className={st.stack}>
         <header>
-          <p className={st.eyebrow}>Публичная страница центра</p>
+          <p className={st.eyebrow}>{tr("Публичная страница центра")}</p>
           <h1>
-            {g ? "Расскажите о вашем центре" : "Знакомство с учебным центром"}
+            {tr(
+              g
+                ? tr("Расскажите о вашем центре")
+                : tr("Знакомство с учебным центром"),
+            )}
           </h1>
           <p>
-            Сохраните страницу, пригласите команду и отправьте данные на ручную
-            проверку.
+            {tr(
+              "Сохраните страницу, пригласите команду и отправьте данные на ручную проверку.",
+            )}
           </p>
         </header>
         {g && (
           <p className={st.notice}>
-            {statusLabels[g.status ?? "draft"]}
-            {g.review_note ? " · " + g.review_note : ""}
+            {tr(statusLabels[g.status ?? "draft"])}
+            {tr(g.review_note ? " · " + g.review_note : "")}
           </p>
         )}
         <form
@@ -82,74 +91,129 @@ export function OrganizationDesk({
           }}
         >
           <fieldset disabled={busy} className={st.fields}>
-            <section className={st.formSection}><header><span><Icon name="teacher" size={21} /></span><div><h2>Для учеников</h2><p>Так будет выглядеть знакомство с вашим центром.</p></div></header>
-            <label>
-              Название
-              <input
-                name="name"
-                required
-                minLength={2}
-                maxLength={100}
-                defaultValue={g?.name}
-                placeholder="Название вашего центра"
-              />
-            </label>
-            <label>
-              О центре
-              <textarea
-                name="description"
-                rows={4}
-                maxLength={2000}
-                defaultValue={g?.description}
-                placeholder="Кому помогаете, какие направления ведёте и что важно знать о ваших занятиях"
-              />
-            </label>
-            <fieldset className={st.formatChoices}><legend>Как проходят занятия?</legend>
-              {[["online", "Онлайн", "Из любого места", "calendar"], ["in_person", "Очно", "В вашем центре", "pin"], ["both", "Оба формата", "Онлайн и в центре", "groups"]].map(([value, title, description, icon]) => <ChoiceCard key={value} name="format" value={value} title={title} description={description} icon={icon as IconName} selected={format === value} onChange={setFormat} />)}
-            </fieldset>
-            <div className={st.formGrid}>
+            <section className={st.formSection}>
+              <header>
+                <span>
+                  <Icon name="teacher" size={21} />
+                </span>
+                <div>
+                  <h2>{tr("Для учеников")}</h2>
+                  <p>{tr("Так будет выглядеть знакомство с вашим центром.")}</p>
+                </div>
+              </header>
               <label>
-                Город
-                <input name="city" maxLength={80} defaultValue={g?.city} placeholder="Например, Алматы" />
+                {tr("Название")}
+                <input
+                  name="name"
+                  required
+                  minLength={2}
+                  maxLength={100}
+                  defaultValue={g?.name}
+                  placeholder={tr("Название вашего центра")}
+                />
               </label>
               <label>
-                Сайт · необязательно
-                <input type="url" name="website" placeholder="https://" defaultValue={g?.website} />
+                {tr("О центре")}
+                <textarea
+                  name="description"
+                  rows={4}
+                  maxLength={2000}
+                  defaultValue={g?.description}
+                  placeholder={tr(
+                    "Кому помогаете, какие направления ведёте и что важно знать о ваших занятиях",
+                  )}
+                />
               </label>
-            </div>
-            <LogoInput current={g?.logo ?? ""} onProcessing={setLogoBusy} />
+              <fieldset className={st.formatChoices}>
+                <legend>{tr("Как проходят занятия?")}</legend>
+                {[
+                  ["online", "Онлайн", "Из любого места", "calendar"],
+                  ["in_person", "Очно", "В вашем центре", "pin"],
+                  ["both", "Оба формата", "Онлайн и в центре", "groups"],
+                ].map(([value, title, description, icon]) => (
+                  <ChoiceCard
+                    key={value}
+                    name="format"
+                    value={value}
+                    title={tr(title)}
+                    description={tr(description)}
+                    icon={icon as IconName}
+                    selected={format === value}
+                    onChange={setFormat}
+                  />
+                ))}
+              </fieldset>
+              <div className={st.formGrid}>
+                <label>
+                  {tr("Город")}
+                  <input
+                    name="city"
+                    maxLength={80}
+                    defaultValue={g?.city}
+                    placeholder={tr("Например, Алматы")}
+                  />
+                </label>
+                <label>
+                  {tr("Сайт · необязательно")}
+                  <input
+                    type="url"
+                    name="website"
+                    placeholder="https://"
+                    defaultValue={g?.website}
+                  />
+                </label>
+              </div>
+              <LogoInput current={g?.logo ?? ""} onProcessing={setLogoBusy} />
             </section>
-            <section className={st.formSection}><header><span><Icon name="check" size={21} /></span><div><h2>Для проверки</h2><p>Эти сведения видны только вам и модератору.</p></div></header>
+            <section className={st.formSection}>
+              <header>
+                <span>
+                  <Icon name="check" size={21} />
+                </span>
+                <div>
+                  <h2>{tr("Для проверки")}</h2>
+                  <p>{tr("Эти сведения видны только вам и модератору.")}</p>
+                </div>
+              </header>
               <label>
-                Контакт для модератора
+                {tr("Контакт для модератора")}
                 <input
                   name="contact"
                   maxLength={300}
                   defaultValue={g?.contact}
-                  placeholder="Рабочая почта или телефон представителя"
+                  placeholder={tr("Рабочая почта или телефон представителя")}
                 />
               </label>
-            <label>
-              Как подтвердить центр
-              <textarea
-                name="evidence"
-                maxLength={1500}
-                rows={3}
-                defaultValue={g?.evidence}
-                placeholder="Ссылки на официальный сайт, публичную страницу, сведения о представителе."
-              />
-              <small>
-                Контакт и сведения для проверки видны только вам и модераторам.
-                Документы не загружаются.
-              </small>
-            </label>
+              <label>
+                {tr("Как подтвердить центр")}
+                <textarea
+                  name="evidence"
+                  maxLength={1500}
+                  rows={3}
+                  defaultValue={g?.evidence}
+                  placeholder={tr(
+                    "Ссылки на официальный сайт, публичную страницу, сведения о представителе.",
+                  )}
+                />
+                <small>
+                  {tr(
+                    "Контакт и сведения для проверки видны только вам и модераторам. Документы не загружаются.",
+                  )}
+                </small>
+              </label>
             </section>
             <div className={st.actions}>
               <button className="primary" value="submit" disabled={logoBusy}>
-                {busy ? "Сохраняем…" : logoBusy ? "Подготавливаем логотип…" : "Отправить на проверку"}
+                {tr(
+                  busy
+                    ? tr("Сохраняем…")
+                    : logoBusy
+                      ? tr("Подготавливаем логотип…")
+                      : tr("Отправить на проверку"),
+                )}
               </button>
               <button className="secondary" value="draft" disabled={logoBusy}>
-                Сохранить черновик
+                {tr("Сохранить черновик")}
               </button>
             </div>
           </fieldset>
@@ -162,10 +226,11 @@ export function OrganizationDesk({
       <section className={st.stack}>
         <header>
           <p className={st.eyebrow}>{g.name}</p>
-          <h1>Команда преподавателей</h1>
+          <h1>{tr("Команда преподавателей")}</h1>
           <p>
-            У каждого преподавателя свой аккаунт. Приглашение даёт центру право
-            управлять его занятиями от имени центра.
+            {tr(
+              "У каждого преподавателя свой аккаунт. Приглашение даёт центру право управлять его занятиями от имени центра.",
+            )}
           </p>
         </header>
         <form
@@ -186,7 +251,7 @@ export function OrganizationDesk({
         >
           <div className={st.formGrid}>
             <label>
-              Почта преподавателя
+              {tr("Почта преподавателя")}
               <input
                 name="email"
                 type="email"
@@ -197,7 +262,7 @@ export function OrganizationDesk({
             </label>
           </div>
           <button className="primary" disabled={busy}>
-            Создать приглашение
+            {tr("Создать приглашение")}
           </button>
         </form>
         {link && <InviteLink url={link} />} {status}
@@ -208,7 +273,7 @@ export function OrganizationDesk({
               <article key={m.teacher_id} className={st.listRow}>
                 <div>
                   <strong>{m.name}</strong>
-                  <p>{statusLabels[m.verification]}</p>
+                  <p>{tr(statusLabels[m.verification])}</p>
                 </div>
                 <button
                   className={st.textButton}
@@ -226,24 +291,26 @@ export function OrganizationDesk({
                       );
                   }}
                 >
-                  Исключить из команды
+                  {tr("Исключить из команды")}
                 </button>
               </article>
             ))}
         </div>
-        <h2>Приглашения</h2>
+        <h2>{tr("Приглашения")}</h2>
         {data.invitations.map((i) => (
           <div key={i.id} className={st.listRow}>
             <div>
               <strong>{i.email}</strong>
               <p>
-                {i.accepted_by
-                  ? "Принято"
-                  : i.revoked
-                    ? "Отозвано"
-                    : Date.parse(i.expires_at) < now
-                      ? "Истекло"
-                      : "До " + lessonDate(i.expires_at)}
+                {tr(
+                  i.accepted_by
+                    ? tr("Принято")
+                    : i.revoked
+                      ? tr("Отозвано")
+                      : Date.parse(i.expires_at) < now
+                        ? tr("Истекло")
+                        : tr("До ") + lessonDate(i.expires_at, uiLocale),
+                )}
               </p>
             </div>
             {!i.accepted_by && !i.revoked && (
@@ -252,7 +319,7 @@ export function OrganizationDesk({
                 disabled={busy}
                 onClick={() => void run("revoke_invite", { id: i.id })}
               >
-                Отозвать
+                {tr("Отозвать")}
               </button>
             )}
           </div>
@@ -263,32 +330,44 @@ export function OrganizationDesk({
     return (
       <section className={st.stack}>
         <header>
-          <h1>Ученики центра</h1>
+          <h1>{tr("Ученики центра")}</h1>
           <p>
-            Только записи вашего центра. Личные переписки и работы
-            преподавателей сюда не передаются.
+            {tr(
+              "Только записи вашего центра. Личные переписки и работы преподавателей сюда не передаются.",
+            )}
           </p>
         </header>
         {!data.bookings.length && (
-          <div className={st.empty}>Ученики появятся после первой записи.</div>
+          <div className={st.empty}>
+            {tr("Ученики появятся после первой записи.")}
+          </div>
         )}
         {data.bookings.map((b) => (
           <article key={b.id} className={st.listRow}>
             <div>
-              <strong>{b.student?.name ?? "Ученик"}</strong>
+              <strong>{b.student?.name ?? tr("Ученик")}</strong>
               <p>
-                {stageLabels[b.student?.stage ?? ""] ?? ""}
-                {b.student?.study_year
-                  ? " · " + b.student.study_year + " класс/курс"
-                  : ""}
+                {tr(stageLabels[b.student?.stage ?? ""] ?? "")}
+                {tr(
+                  b.student?.study_year
+                    ? " · " + b.student.study_year + tr(" класс/курс")
+                    : "",
+                )}
               </p>
               <p>{b.student?.goal}</p>
               <small>
-                {b.teacher_name} · {lessonDate(b.starts_at)} ·{" "}
-                {b.status === "cancelled" ? "Отменено" : "Запись сохранена"}
+                {b.teacher_name} · {tr(lessonDate(b.starts_at, uiLocale))} ·
+                {tr(" ")}
+                {tr(
+                  b.status === "cancelled"
+                    ? tr("Отменено")
+                    : tr("Запись сохранена"),
+                )}
               </small>
             </div>
-            <strong>{b.price === 0 ? "Бесплатно" : money(b.price)}</strong>
+            <strong>
+              {tr(b.price === 0 ? tr("Бесплатно") : money(b.price, uiLocale))}
+            </strong>
           </article>
         ))}
       </section>
@@ -297,24 +376,27 @@ export function OrganizationDesk({
     return (
       <section className={st.stack}>
         <header>
-          <h1>Расписание центра</h1>
+          <h1>{tr("Расписание центра")}</h1>
           <p>
-            Одна дата — одно занятие. Занятость преподавателя проверяется также
-            в других центрах и в его личном расписании.
+            {tr(
+              "Одна дата — одно занятие. Занятость преподавателя проверяется также в других центрах и в его личном расписании.",
+            )}
           </p>
         </header>
         {g.status !== "verified" && (
           <p className={st.notice}>
-            Публикация откроется после проверки центра.
+            {tr("Публикация откроется после проверки центра.")}
           </p>
         )}
         {!data.offerings.length ? (
           <p>
-            Сначала{" "}
+            {tr("Сначала")}
+            {tr(" ")}
             <a className={st.textButton} href="#offerings">
-              добавьте направление
-            </a>{" "}
-            и назначьте преподавателя команды.
+              {tr("добавьте направление")}
+            </a>
+            {tr(" ")}
+            {tr("и назначьте преподавателя команды.")}
           </p>
         ) : (
           <form
@@ -345,9 +427,9 @@ export function OrganizationDesk({
               disabled={busy || g.status !== "verified"}
               className={st.fields}
             >
-              <h2>Новое занятие</h2>
+              <h2>{tr("Новое занятие")}</h2>
               <label>
-                Направление
+                {tr("Направление")}
                 <select
                   value={selected?.id ?? ""}
                   onChange={(e) => setOffering(e.target.value)}
@@ -362,7 +444,7 @@ export function OrganizationDesk({
                 </select>
               </label>
               <label>
-                Тема
+                {tr("Тема")}
                 <input
                   name="title"
                   required
@@ -373,7 +455,7 @@ export function OrganizationDesk({
                 />
               </label>
               <label>
-                Описание
+                {tr("Описание")}
                 <textarea
                   name="description"
                   required
@@ -385,19 +467,21 @@ export function OrganizationDesk({
               </label>
               <div className={st.formGrid}>
                 <label>
-                  Дата и время · UTC+5
+                  {tr("Дата и время · UTC+5")}
                   <input name="starts_at" type="datetime-local" required />
                 </label>
                 <label>
-                  Язык
+                  {tr("Язык")}
                   <select name="language" key={selected?.id}>
                     {selected?.languages.map((x) => (
-                      <option key={x}>{x}</option>
+                      <option key={x} value={x}>
+                        {tr(x)}
+                      </option>
                     ))}
                   </select>
                 </label>
                 <label>
-                  Цена, ₸
+                  {tr("Цена, ₸")}
                   <input
                     key={selected?.id}
                     name="price"
@@ -407,10 +491,10 @@ export function OrganizationDesk({
                     max={100000}
                     defaultValue={selected?.price}
                   />
-                  <small>0 — бесплатное занятие.</small>
+                  <small>{tr("0 — бесплатное занятие.")}</small>
                 </label>
                 <label>
-                  Мест
+                  {tr("Мест")}
                   <input
                     name="capacity"
                     type="number"
@@ -419,12 +503,12 @@ export function OrganizationDesk({
                     max={12}
                     defaultValue={1}
                   />
-                  <small>1 — индивидуально, 2–12 — группа.</small>
+                  <small>{tr("1 — индивидуально, 2–12 — группа.")}</small>
                 </label>
               </div>
-              <button className="primary">Опубликовать занятие</button>
+              <button className="primary">{tr("Опубликовать занятие")}</button>
             </fieldset>
-            {error && <p className={st.error}>{error}</p>}
+            {error && <p className={st.error}>{tr(error)}</p>}
           </form>
         )}
         {status}
@@ -433,14 +517,21 @@ export function OrganizationDesk({
             <div>
               <strong>{slot.title}</strong>
               <p>
-                {lessonDate(slot.starts_at)} ·{" "}
+                {tr(lessonDate(slot.starts_at, uiLocale))} ·{tr(" ")}
                 {data.members.find((m) => m.teacher_id === slot.tutor_id)?.name}
               </p>
               <small>
-                {slot.enrollment_closed
-                  ? "Набор закрыт"
-                  : `Записались: ${slot.reserved}/${slot.capacity}`}{" "}
-                · {slot.price === 0 ? "Бесплатно" : money(slot.price)}
+                {tr(
+                  slot.enrollment_closed
+                    ? tr("Набор закрыт")
+                    : tr("Записались: {0}/{1}", [slot.reserved, slot.capacity]),
+                )}
+                {tr(" ")}·{" "}
+                {tr(
+                  slot.price === 0
+                    ? tr("Бесплатно")
+                    : money(slot.price, uiLocale),
+                )}
               </small>
             </div>
             {!slot.enrollment_closed && Date.parse(slot.starts_at) > now && (
@@ -455,7 +546,7 @@ export function OrganizationDesk({
                   )
                 }
               >
-                Закрыть запись
+                {tr("Закрыть запись")}
               </button>
             )}
           </article>
@@ -471,11 +562,11 @@ export function OrganizationDesk({
   return (
     <section className={st.stack}>
       <header>
-        <p className={st.eyebrow}>Кабинет учебного центра</p>
+        <p className={st.eyebrow}>{tr("Кабинет учебного центра")}</p>
         <h1>{g.name}</h1>
         <p>
-          {statusLabels[g.status ?? "draft"]}
-          {g.review_note ? " · " + g.review_note : ""}
+          {tr(statusLabels[g.status ?? "draft"])}
+          {tr(g.review_note ? " · " + g.review_note : "")}
         </p>
       </header>
       <div className={st.stats}>
@@ -483,7 +574,7 @@ export function OrganizationDesk({
           <strong>
             {data.members.filter((m) => m.state === "active").length}
           </strong>
-          <span>Преподавателей в команде</span>
+          <span>{tr("Преподавателей в команде")}</span>
         </div>
         <div>
           <strong>
@@ -493,7 +584,7 @@ export function OrganizationDesk({
               ).length
             }
           </strong>
-          <span>Будущих занятий</span>
+          <span>{tr("Будущих занятий")}</span>
         </div>
         <div>
           <strong>
@@ -505,138 +596,173 @@ export function OrganizationDesk({
               ).size
             }
           </strong>
-          <span>Учеников центра</span>
+          <span>{tr("Учеников центра")}</span>
         </div>
       </div>
       {g.status === "verified" ? (
         <div className={st.editor}>
-          <h2>{next ? "Ближайшее занятие" : "Откройте запись ученикам"}</h2>
+          <h2>
+            {tr(
+              next ? tr("Ближайшее занятие") : tr("Откройте запись ученикам"),
+            )}
+          </h2>
           <p>
             {next
-              ? `${next.lesson_title} · ${lessonDate(next.starts_at)} · ${next.teacher_name}`
-              : "Опубликуйте время проверенного преподавателя команды."}
+              ? `${next.lesson_title} · ${lessonDate(next.starts_at, uiLocale)} · ${next.teacher_name}`
+              : tr("Опубликуйте время проверенного преподавателя команды.")}
           </p>
           <a href="#schedule" className="primary">
-            Открыть расписание
+            {tr("Открыть расписание")}
           </a>
         </div>
       ) : (
         <div className={st.editor}>
-          <h2>Подготовьте центр к публикации</h2>
+          <h2>{tr("Подготовьте центр к публикации")}</h2>
           <p>
-            Заполните страницу и отправьте данные на проверку. Команду можно
-            пригласить уже сейчас.
+            {tr(
+              "Заполните страницу и отправьте данные на проверку. Команду можно пригласить уже сейчас.",
+            )}
           </p>
           <a className="primary" href="#page">
-            Открыть страницу центра
+            {tr("Открыть страницу центра")}
           </a>
         </div>
       )}
       <div className={st.actions}>
         <a href="#team" className={st.textButton}>
-          Пригласить преподавателя
+          {tr("Пригласить преподавателя")}
         </a>
         <a href="#offerings" className={st.textButton}>
-          Направления центра
+          {tr("Направления центра")}
         </a>
         <a href="#students" className={st.textButton}>
-          Ученики и записи
+          {tr("Ученики и записи")}
         </a>
         <a href="#page" className={st.textButton}>
-          Редактировать страницу
+          {tr("Редактировать страницу")}
         </a>
         {g.status === "verified" && (
           <Link className={st.textButton} href={"/centers/" + g.id}>
-            Публичная страница
+            {tr("Публичная страница")}
           </Link>
         )}
       </div>
     </section>
   );
 }
-function LogoInput({ current, onProcessing }: { current: string; onProcessing: (value: boolean) => void }) {
+function LogoInput({
+  current,
+  onProcessing,
+}: {
+  current: string;
+  onProcessing: (value: boolean) => void;
+}) {
+  const { t: tr } = useJupLocale();
+
   const id = useId();
   const [logo, setLogo] = useState(current);
   const [error, setError] = useState("");
   const [processing, setProcessing] = useState(false);
   return (
     <div className={st.logoUpload}>
-      <div className={st.logoPreview}>{logo ? (
-        // Small, locally normalized preview; no external image request.
-        // eslint-disable-next-line @next/next/no-img-element
-        <img src={"data:image/jpeg;base64," + logo} alt="Логотип центра" />
-      ) : <Icon name="groups" size={28} />}</div>
-      <div><strong>Логотип центра <small>Необязательно</small></strong><p>Квадратное изображение · JPG, PNG или WebP</p>
-      <label className="secondary" htmlFor={id}>{processing ? "Подготавливаем…" : logo ? "Заменить логотип" : "Выбрать логотип"}</label>
-      <input type="hidden" name="logo" value={logo} />
-      <input
-        id={id}
-        className="srOnly"
-        disabled={processing}
-        type="file"
-        accept="image/jpeg,image/png,image/webp"
-        onChange={async (e) => {
-          const file = e.target.files?.[0];
-          e.target.value = "";
-          if (!file) return;
-          setError("");
-          if (file.size > 12000000) {
-            setError("Выберите изображение до 12 МБ.");
-            return;
-          }
-          const url = URL.createObjectURL(file);
-          setProcessing(true);
-          onProcessing(true);
-          try {
-            const img = new Image();
-            img.src = url;
-            await img.decode();
-            const canvas = document.createElement("canvas");
-            canvas.width = canvas.height = 256;
-            const ctx = canvas.getContext("2d");
-            if (!ctx) throw Error();
-            ctx.fillStyle = "white";
-            ctx.fillRect(0, 0, 256, 256);
-            const scale = Math.min(256 / img.width, 256 / img.height);
-            ctx.drawImage(
-              img,
-              (256 - img.width * scale) / 2,
-              (256 - img.height * scale) / 2,
-              img.width * scale,
-              img.height * scale,
-            );
-            setLogo(canvas.toDataURL("image/jpeg", 0.85).split(",")[1]);
-          } catch {
-            setError("Не удалось прочитать изображение.");
-          } finally {
-            URL.revokeObjectURL(url);
-            setProcessing(false);
-            onProcessing(false);
-          }
-        }}
-      />
-      {logo && (
-        <>
-          <button
-            type="button"
-            className={st.textButton}
-            onClick={() => setLogo("")}
-          >
-            Удалить логотип
-          </button>
-        </>
-      )}
-      {error && <small role="alert">{error}</small>}
+      <div className={st.logoPreview}>
+        {logo ? (
+          // Small, locally normalized preview; no external image request.
+          // eslint-disable-next-line @next/next/no-img-element
+          <img
+            src={"data:image/jpeg;base64," + logo}
+            alt={tr("Логотип центра")}
+          />
+        ) : (
+          <Icon name="groups" size={28} />
+        )}
+      </div>
+      <div>
+        <strong>
+          {tr("Логотип центра ")}
+          <small>{tr("Необязательно")}</small>
+        </strong>
+        <p>{tr("Квадратное изображение · JPG, PNG или WebP")}</p>
+        <label className="secondary" htmlFor={id}>
+          {tr(
+            processing
+              ? tr("Подготавливаем…")
+              : logo
+                ? tr("Заменить логотип")
+                : tr("Выбрать логотип"),
+          )}
+        </label>
+        <input type="hidden" name="logo" value={logo} />
+        <input
+          id={id}
+          className="srOnly"
+          disabled={processing}
+          type="file"
+          accept="image/jpeg,image/png,image/webp"
+          onChange={async (e) => {
+            const file = e.target.files?.[0];
+            e.target.value = "";
+            if (!file) return;
+            setError("");
+            if (file.size > 12000000) {
+              setError("Выберите изображение до 12 МБ.");
+              return;
+            }
+            const url = URL.createObjectURL(file);
+            setProcessing(true);
+            onProcessing(true);
+            try {
+              const img = new Image();
+              img.src = url;
+              await img.decode();
+              const canvas = document.createElement("canvas");
+              canvas.width = canvas.height = 256;
+              const ctx = canvas.getContext("2d");
+              if (!ctx) throw Error();
+              ctx.fillStyle = "white";
+              ctx.fillRect(0, 0, 256, 256);
+              const scale = Math.min(256 / img.width, 256 / img.height);
+              ctx.drawImage(
+                img,
+                (256 - img.width * scale) / 2,
+                (256 - img.height * scale) / 2,
+                img.width * scale,
+                img.height * scale,
+              );
+              setLogo(canvas.toDataURL("image/jpeg", 0.85).split(",")[1]);
+            } catch {
+              setError("Не удалось прочитать изображение.");
+            } finally {
+              URL.revokeObjectURL(url);
+              setProcessing(false);
+              onProcessing(false);
+            }
+          }}
+        />
+        {logo && (
+          <>
+            <button
+              type="button"
+              className={st.textButton}
+              onClick={() => setLogo("")}
+            >
+              {tr("Удалить логотип")}
+            </button>
+          </>
+        )}
+        {error && <small role="alert">{tr(error)}</small>}
       </div>
     </div>
   );
 }
 export function InviteLink({ url }: { url: string }) {
+  const { t: tr } = useJupLocale();
+
   const [message, setMessage] = useState("");
   return (
     <div className={st.notice}>
-      <strong>Личное приглашение · 7 дней</strong>
-      <p className={st.inviteUrl}>{url}</p>
+      <strong>{tr("Личное приглашение · 7 дней")}</strong>
+      <p className={st.inviteUrl}>{tr(url)}</p>
       <button
         className={st.textButton}
         onClick={async () => {
@@ -648,10 +774,10 @@ export function InviteLink({ url }: { url: string }) {
           }
         }}
       >
-        Скопировать ссылку
+        {tr("Скопировать ссылку")}
       </button>
-      <p role="status">{message}</p>
-      <small>Передайте только указанному получателю.</small>
+      <p role="status">{tr(message)}</p>
+      <small>{tr("Передайте только указанному получателю.")}</small>
     </div>
   );
 }

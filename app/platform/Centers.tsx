@@ -1,8 +1,11 @@
 "use client";
+import { useLocale as useJupLocale } from "../i18n/LocaleProvider";
+
 import { LoadingState } from "../ui/LoadingState";
 import { Brand } from "../ui/Brand";
 
 import Link from "next/link";
+import { LanguageSwitcher } from "../i18n/LocaleProvider";
 import { useCallback, useEffect, useState } from "react";
 import { api } from "../lib/api";
 import { lessonDate, money, type Catalog } from "../lib/findbuddy";
@@ -11,6 +14,8 @@ import { OrganizationChat } from "./OrganizationChat";
 import { ReportProfile } from "./ReportProfile";
 import st from "./platform.module.css";
 export function Centers({ id }: { id?: string }) {
+  const { t: tr, locale: uiLocale } = useJupLocale();
+
   const [catalog, setCatalog] = useState<Catalog>({ tutors: [], groups: [] });
   const [data, setData] = useState<PlatformDashboard | null>(null);
   const [loading, setLoading] = useState(true);
@@ -59,45 +64,54 @@ export function Centers({ id }: { id?: string }) {
         <Link className={st.brand} href="/">
           <Brand />
         </Link>
+        <LanguageSwitcher />
         <nav>
-          <Link href="/">Преподаватели и занятия</Link>
-          <Link href="/for-centers">Для центров</Link>
+          <Link href="/">{tr("Преподаватели и занятия")}</Link>
+          <Link href="/for-centers">{tr("Для центров")}</Link>
           <Link href={data ? "/student" : "/login"}>
-            {data ? "Мои занятия" : "Войти"}
+            {tr(data ? tr("Мои занятия") : tr("Войти"))}
           </Link>
         </nav>
       </header>
       {loading ? (
-        <LoadingState label="Загружаем учебные центры…" />
+        <LoadingState label={tr("Загружаем учебные центры…")} />
       ) : error ? (
         <p className={st.error} role="alert">
-          {error}
-          <button onClick={() => void refresh()}>Повторить</button>
+          {tr(error)}
+          <button onClick={() => void refresh()}>{tr("Повторить")}</button>
         </p>
       ) : id && !g ? (
         <section className={st.empty}>
-          <h1>Страница пока недоступна</h1>
-          <p>Центр может проходить проверку или временно скрыть публикацию.</p>
+          <h1>{tr("Страница пока недоступна")}</h1>
+          <p>
+            {tr(
+              "Центр может проходить проверку или временно скрыть публикацию.",
+            )}
+          </p>
           <Link className="secondary" href="/centers">
-            Другие центры
+            {tr("Другие центры")}
           </Link>
         </section>
       ) : g ? (
         <section className={st.stack} style={{ padding: "32px 0" }}>
           <Link className={st.textButton} href="/centers">
-            Все учебные центры
+            {tr("Все учебные центры")}
           </Link>
           <header>
             <Logo name={g.name} image={g.logo} />
-            <p className={st.eyebrow}>Учебный центр · профиль проверен</p>
+            <p className={st.eyebrow}>
+              {tr("Учебный центр · профиль проверен")}
+            </p>
             <h1>{g.name}</h1>
             <p>
-              {g.city} ·{" "}
-              {g.format === "online"
-                ? "Онлайн"
-                : g.format === "both"
-                  ? "Онлайн и очно"
-                  : "Очно"}
+              {tr(g.city)} ·{tr(" ")}
+              {tr(
+                g.format === "online"
+                  ? tr("Онлайн")
+                  : g.format === "both"
+                    ? tr("Онлайн и очно")
+                    : tr("Очно"),
+              )}
             </p>
           </header>
           <p style={{ whiteSpace: "pre-wrap" }}>{g.description}</p>
@@ -108,15 +122,15 @@ export function Centers({ id }: { id?: string }) {
               target="_blank"
               rel="noopener noreferrer"
             >
-              Сайт центра
+              {tr("Сайт центра")}
             </a>
           )}
           <div className={st.actions}>
             <button className="primary" onClick={() => setChat(!chat)}>
-              {chat ? "Скрыть переписку" : "Задать вопрос центру"}
+              {tr(chat ? tr("Скрыть переписку") : tr("Задать вопрос центру"))}
             </button>
             <a className={st.textButton} href="#center-slots">
-              Выбрать занятие
+              {tr("Выбрать занятие")}
             </a>
           </div>
           {chat &&
@@ -128,12 +142,13 @@ export function Centers({ id }: { id?: string }) {
               />
             ) : (
               <p className={st.notice}>
-                Для переписки нужен аккаунт ученика.{" "}
-                <Link href="/login?role=student">Войти</Link>
+                {tr("Для переписки нужен аккаунт ученика.")}
+                {tr(" ")}
+                <Link href="/login?role=student">{tr("Войти")}</Link>
               </p>
             ))}
           <section className={st.stack}>
-            <h2>Преподаватели команды</h2>
+            <h2>{tr("Преподаватели команды")}</h2>
             <div className={st.tileGrid}>
               {catalog.tutors
                 .filter((t) => g.teachers?.includes(t.id))
@@ -145,58 +160,76 @@ export function Centers({ id }: { id?: string }) {
                       className={st.textButton}
                       href={"/#tutors/profile/" + t.id}
                     >
-                      Открыть анкету
+                      {tr("Открыть анкету")}
                     </Link>
                   </article>
                 ))}
             </div>
-            {!g.teachers?.length && <p>Команда готовится к публикации.</p>}
+            {!g.teachers?.length && (
+              <p>{tr("Команда готовится к публикации.")}</p>
+            )}
           </section>
           <section className={st.stack}>
-            <h2>Направления</h2>
+            <h2>{tr("Направления")}</h2>
             {offerings.map((o) => (
               <article className={st.listRow} key={o.id}>
                 <div>
                   <strong>{o.title}</strong>
                   <p>
-                    {o.subject} · {o.exam} · {o.languages.join(", ")}
+                    {tr(o.subject)} · {tr(o.exam)} ·{" "}
+                    {tr(o.languages.join(", "))}
                   </p>
                 </div>
-                <strong>{o.price === 0 ? "Бесплатно" : money(o.price)}</strong>
+                <strong>
+                  {tr(
+                    o.price === 0 ? tr("Бесплатно") : money(o.price, uiLocale),
+                  )}
+                </strong>
               </article>
             ))}
           </section>
           <section id="center-slots" className={st.stack}>
-            <h2>Ближайшие занятия</h2>
+            <h2>{tr("Ближайшие занятия")}</h2>
             {slots.length ? (
               slots.map((s) => (
                 <article key={s.id} className={st.listRow}>
                   <div>
                     <strong>{s.title}</strong>
                     <p>
-                      {lessonDate(s.starts_at)} · UTC+5 · {s.language}
+                      {tr(lessonDate(s.starts_at, uiLocale))} · UTC+5 ·{" "}
+                      {tr(s.language)}
                     </p>
                     <small>
-                      {s.capacity === 1
-                        ? "Индивидуально"
-                        : `В группе · мест ${s.capacity - s.reserved}`}
+                      {tr(
+                        s.capacity === 1
+                          ? tr("Индивидуально")
+                          : tr("В группе \u00B7 мест {0}", [
+                              s.capacity - s.reserved,
+                            ]),
+                      )}
                     </small>
                   </div>
                   <div>
                     <strong>
-                      {s.price === 0 ? "Бесплатно" : money(s.price)}
+                      {tr(
+                        s.price === 0
+                          ? tr("Бесплатно")
+                          : money(s.price, uiLocale),
+                      )}
                     </strong>
                     <Link
                       className="primary"
                       href={"/?continue=" + encodeURIComponent("join/" + s.id)}
                     >
-                      Записаться
+                      {tr("Записаться")}
                     </Link>
                   </div>
                 </article>
               ))
             ) : (
-              <p>Открытых дат пока нет. Уточните расписание у центра.</p>
+              <p>
+                {tr("Открытых дат пока нет. Уточните расписание у центра.")}
+              </p>
             )}
           </section>
           <ReportProfile kind="organization" id={g.id} />
@@ -204,19 +237,21 @@ export function Centers({ id }: { id?: string }) {
       ) : (
         <section className={st.stack} style={{ padding: "40px 0" }}>
           <header>
-            <p className={st.eyebrow}>Проверенные учебные центры</p>
-            <h1>Занимайтесь с целой командой</h1>
+            <p className={st.eyebrow}>{tr("Проверенные учебные центры")}</p>
+            <h1>{tr("Занимайтесь с целой командой")}</h1>
             <p>
-              Посмотрите направления, преподавателей и открытые даты центра.
+              {tr(
+                "Посмотрите направления, преподавателей и открытые даты центра.",
+              )}
             </p>
           </header>
           <label className={st.fields}>
-            Поиск центра
+            {tr("Поиск центра")}
             <input
               type="search"
               value={query}
               onChange={(e) => setQuery(e.target.value)}
-              placeholder="Название, город или направление"
+              placeholder={tr("Название, город или направление")}
             />
           </label>
           <div className={st.tileGrid}>
@@ -229,23 +264,23 @@ export function Centers({ id }: { id?: string }) {
               .map((g) => (
                 <article className={st.tile} key={g.id}>
                   <Logo name={g.name} image={g.logo} />
-                  <span className={st.pill}>Профиль проверен</span>
+                  <span className={st.pill}>{tr("Профиль проверен")}</span>
                   <h2>{g.name}</h2>
                   <p>
-                    {g.city} · {g.description.slice(0, 180)}
+                    {tr(g.city)} · {g.description.slice(0, 180)}
                   </p>
                   <Link className="primary" href={"/centers/" + g.id}>
-                    Страница центра
+                    {tr("Страница центра")}
                   </Link>
                 </article>
               ))}
           </div>
           {!catalog.organizations?.length && (
             <div className={st.empty}>
-              <h2>Первые центры проходят проверку</h2>
-              <p>Пока можно выбрать личного преподавателя.</p>
+              <h2>{tr("Первые центры проходят проверку")}</h2>
+              <p>{tr("Пока можно выбрать личного преподавателя.")}</p>
               <Link href="/" className="secondary">
-                Найти преподавателя
+                {tr("Найти преподавателя")}
               </Link>
             </div>
           )}
@@ -255,12 +290,14 @@ export function Centers({ id }: { id?: string }) {
   );
 }
 function Logo({ name, image }: { name: string; image: string }) {
+  const { t: tr } = useJupLocale();
+
   return image ? (
     // eslint-disable-next-line @next/next/no-img-element
     <img
       className={st.logo}
       src={"data:image/jpeg;base64," + image}
-      alt={"Логотип " + name}
+      alt={tr(tr("Логотип ") + name)}
       width={72}
       height={72}
     />

@@ -1,4 +1,6 @@
 "use client";
+import { useLocale as useJupLocale } from "../i18n/LocaleProvider";
+
 import { useEffect, useState } from "react";
 import { api } from "../lib/api";
 import { TutorPhoto } from "../profiles/TutorProfile";
@@ -19,6 +21,8 @@ export function Moderation({
   panel: string;
   refresh: () => Promise<void>;
 }) {
+  const { t: tr, locale: uiLocale } = useJupLocale();
+
   const { run, busy, status } = usePlatformAction(refresh);
   const [filter, setFilter] = useState("pending");
   const [selected, setSelected] = useState<{
@@ -28,12 +32,15 @@ export function Moderation({
   if (panel === "staff")
     return (
       <section className={st.stack}>
-        <h1>Владелец и модерация</h1>
-        <p>Проверкой анкет и обращений управляет владелец платформы.</p>
+        <h1>{tr("Владелец и модерация")}</h1>
+        <p>{tr("Проверкой анкет и обращений управляет владелец платформы.")}</p>
         <div className={st.list}>
           {data.staff?.map((staff) => (
             <div className={st.listRow} key={staff.id}>
-              <div><strong>{staff.email}</strong><p>Владелец · модератор</p></div>
+              <div>
+                <strong>{staff.email}</strong>
+                <p>{tr("Владелец · модератор")}</p>
+              </div>
             </div>
           ))}
         </div>
@@ -43,48 +50,59 @@ export function Moderation({
     return (
       <section className={st.stack}>
         <header>
-          <h1>История решений</h1>
+          <h1>{tr("История решений")}</h1>
           <p>
-            Последние 200 действий. История доступна только команде модерации.
+            {tr(
+              "Последние 200 действий. История доступна только команде модерации.",
+            )}
           </p>
         </header>
         {data.audit?.map((a) => (
           <article className={st.listRow} key={a.id}>
             <div>
               <strong>
-                {a.kind} · {statusLabels[a.decision] ?? a.decision}
+                {tr(a.kind)} · {tr(statusLabels[a.decision] ?? a.decision)}
               </strong>
-              <p>{a.reason}</p>
+              <p>{tr(a.reason)}</p>
               <small>
-                {lessonDate(a.created_at)} · Сотрудник {a.actor.slice(0, 8)} ·
-                Объект {a.target?.slice(0, 8)}
+                {tr(lessonDate(a.created_at, uiLocale))}
+                {tr(" · Сотрудник ")}
+                {tr(a.actor.slice(0, 8))}
+                {tr(" · Объект ")}
+                {tr(a.target?.slice(0, 8))}
               </small>
             </div>
           </article>
         ))}
-        {!data.audit?.length && <p>Решений пока нет.</p>}
+        {!data.audit?.length && <p>{tr("Решений пока нет.")}</p>}
       </section>
     );
   if (panel === "reports")
     return (
       <section className={st.stack}>
         <header>
-          <h1>Обращения</h1>
+          <h1>{tr("Обращения")}</h1>
           <p>
-            Только сведения, которые пользователь передал в обращении. Личные
-            чаты не открываются.
+            {tr(
+              "Только сведения, которые пользователь передал в обращении. Личные чаты не открываются.",
+            )}
           </p>
         </header>
         {data.reports?.map((report) => (
           <article className={st.editor} key={report.id}>
             <strong>
-              {report.kind === "teacher" ? "Преподаватель" : "Центр"} ·{" "}
-              {report.target.slice(0, 8)}
+              {tr(
+                report.kind === "teacher" ? tr("Преподаватель") : tr("Центр"),
+              )}{" "}
+              ·{tr(" ")}
+              {tr(report.target.slice(0, 8))}
             </strong>
-            <p>{report.reason}</p>
+            <p>{tr(report.reason)}</p>
             <small>
-              {lessonDate(report.created_at)} ·{" "}
-              {report.resolved ? "Рассмотрено" : "Ждёт рассмотрения"}
+              {tr(lessonDate(report.created_at, uiLocale))} ·{tr(" ")}
+              {tr(
+                report.resolved ? tr("Рассмотрено") : tr("Ждёт рассмотрения"),
+              )}
             </small>
             {!report.resolved && (
               <form
@@ -102,7 +120,7 @@ export function Moderation({
                 }}
               >
                 <label>
-                  Результат рассмотрения
+                  {tr("Результат рассмотрения")}
                   <input
                     name="reason"
                     required
@@ -112,13 +130,13 @@ export function Moderation({
                   />
                 </label>
                 <button className="secondary" disabled={busy}>
-                  Завершить рассмотрение
+                  {tr("Завершить рассмотрение")}
                 </button>
               </form>
             )}
           </article>
         ))}
-        {!data.reports?.length && <p>Обращений пока нет.</p>}
+        {!data.reports?.length && <p>{tr("Обращений пока нет.")}</p>}
         {status}
       </section>
     );
@@ -131,17 +149,20 @@ export function Moderation({
   return (
     <section className={st.stack}>
       <header>
-        <p className={st.eyebrow}>Ручная проверка</p>
+        <p className={st.eyebrow}>{tr("Ручная проверка")}</p>
         <h1>
-          {panel === "teachers"
-            ? "Преподаватели"
-            : panel === "organizations"
-              ? "Учебные центры"
-              : "Очередь проверки"}
+          {tr(
+            panel === "teachers"
+              ? tr("Преподаватели")
+              : panel === "organizations"
+                ? tr("Учебные центры")
+                : tr("Очередь проверки"),
+          )}
         </h1>
         <p>
-          Сверьте данные и ссылки перед решением. Одного описания анкеты
-          недостаточно для подтверждения личности или центра.
+          {tr(
+            "Сверьте данные и ссылки перед решением. Одного описания анкеты недостаточно для подтверждения личности или центра.",
+          )}
         </p>
       </header>
       <div className={st.tabs}>
@@ -156,7 +177,7 @@ export function Moderation({
             aria-pressed={filter === k}
             onClick={() => setFilter(k)}
           >
-            {l}
+            {tr(l)}
           </button>
         ))}
       </div>
@@ -168,13 +189,16 @@ export function Moderation({
                 <div>
                   <strong>{t.display_name}</strong>
                   <p>{t.headline}</p>
-                  <small>Преподаватель · {statusLabels[t.verification]}</small>
+                  <small>
+                    {tr("Преподаватель · ")}
+                    {tr(statusLabels[t.verification])}
+                  </small>
                 </div>
                 <button
                   className="secondary"
                   onClick={() => setSelected({ kind: "teacher", profile: t })}
                 >
-                  Открыть проверку
+                  {tr("Открыть проверку")}
                 </button>
               </article>
             ))}
@@ -184,10 +208,11 @@ export function Moderation({
                 <div>
                   <strong>{g.name}</strong>
                   <p>
-                    {g.city} · {g.website}
+                    {tr(g.city)} · {tr(g.website)}
                   </p>
                   <small>
-                    Учебный центр · {statusLabels[g.status ?? "draft"]}
+                    {tr("Учебный центр · ")}
+                    {tr(statusLabels[g.status ?? "draft"])}
                   </small>
                 </div>
                 <button
@@ -196,16 +221,17 @@ export function Moderation({
                     setSelected({ kind: "organization", profile: g })
                   }
                 >
-                  Открыть проверку
+                  {tr("Открыть проверку")}
                 </button>
               </article>
             ))}
           {!teachers.length && !orgs.length && (
             <div className={st.empty}>
-              <h2>Очередь разобрана</h2>
+              <h2>{tr("Очередь разобрана")}</h2>
               <p>
-                Новые заявки появятся после отправки анкеты преподавателем или
-                центром.
+                {tr(
+                  "Новые заявки появятся после отправки анкеты преподавателем или центром.",
+                )}
               </p>
             </div>
           )}
@@ -214,7 +240,7 @@ export function Moderation({
       {selected && (
         <div className={st.editor}>
           <button className={st.textButton} onClick={() => setSelected(null)}>
-            К списку
+            {tr("К списку")}
           </button>
           {selected.kind === "teacher" && (
             <ReviewPhoto id={selected.profile.id} />
@@ -227,7 +253,7 @@ export function Moderation({
           {selected.kind === "teacher" ? (
             <>
               <p>{(selected.profile as Tutor).bio}</p>
-              <h3>Образование</h3>
+              <h3>{tr("Образование")}</h3>
               <p>{(selected.profile as Tutor).education}</p>
               {(selected.profile as Tutor).education_entries?.map((e, i) => (
                 <p key={i}>
@@ -236,7 +262,7 @@ export function Moderation({
                     .join(" · ")}
                 </p>
               ))}
-              <h3>Сертификаты</h3>
+              <h3>{tr("Сертификаты")}</h3>
               {(selected.profile as Tutor).certificates?.map((c, i) => (
                 <p key={i}>
                   {[c.name, c.issuer, c.result, c.year]
@@ -244,21 +270,26 @@ export function Moderation({
                     .join(" · ")}
                 </p>
               ))}
-              <h3>Основания для проверки</h3>
+              <h3>{tr("Основания для проверки")}</h3>
               <p>
-                {(selected.profile as Tutor).verification_links ||
-                  "Ссылки не указаны. Запросите подтверждение до одобрения."}
+                {tr(
+                  (selected.profile as Tutor).verification_links ||
+                    tr(
+                      "Ссылки не указаны. Запросите подтверждение до одобрения.",
+                    ),
+                )}
               </p>
             </>
           ) : (
             <>
               <p>{(selected.profile as Organization).description}</p>
               <p>
-                Контакт представителя:{" "}
-                {(selected.profile as Organization).contact}
+                {tr("Контакт представителя:")}
+                {tr(" ")}
+                {tr((selected.profile as Organization).contact)}
               </p>
-              <p>{(selected.profile as Organization).website}</p>
-              <p>{(selected.profile as Organization).evidence}</p>
+              <p>{tr((selected.profile as Organization).website)}</p>
+              <p>{tr((selected.profile as Organization).evidence)}</p>
             </>
           )}
           <form
@@ -282,26 +313,30 @@ export function Moderation({
           >
             <fieldset className={st.fields} disabled={busy}>
               <label>
-                Решение
+                {tr("Решение")}
                 <select name="decision">
-                  <option value="pending">Запросить уточнение</option>
-                  <option value="verified">Одобрить после проверки</option>
-                  <option value="rejected">Вернуть на доработку</option>
-                  <option value="hidden">Скрыть публикацию</option>
+                  <option value="pending">{tr("Запросить уточнение")}</option>
+                  <option value="verified">
+                    {tr("Одобрить после проверки")}
+                  </option>
+                  <option value="rejected">{tr("Вернуть на доработку")}</option>
+                  <option value="hidden">{tr("Скрыть публикацию")}</option>
                 </select>
               </label>
               <label>
-                Основание решения
+                {tr("Основание решения")}
                 <textarea
                   name="reason"
                   required
                   minLength={5}
                   maxLength={1500}
                   rows={3}
-                  placeholder="Что проверено, источник и что требуется исправить."
+                  placeholder={tr(
+                    "Что проверено, источник и что требуется исправить.",
+                  )}
                 />
               </label>
-              <button className="primary">Сохранить решение</button>
+              <button className="primary">{tr("Сохранить решение")}</button>
             </fieldset>
           </form>
         </div>
