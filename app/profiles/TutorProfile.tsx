@@ -27,6 +27,7 @@ import st from "./profile.module.css";
 import { Qualifications } from "../platform/Qualifications";
 import { ReportProfile } from "../platform/ReportProfile";
 import { SetupProgress } from "../ui/SetupControls";
+import { portraitBounds } from "../lib/portrait.mjs";
 
 function photoUrl(tutor?: Tutor) {
   return tutor?.photo_version
@@ -66,24 +67,14 @@ async function normalizePhoto(file: File) {
     img.src = url;
     await img.decode();
     if (!img.naturalWidth || !img.naturalHeight) throw Error();
-    const size = Math.min(img.naturalWidth, img.naturalHeight);
+    const bounds = portraitBounds(img.naturalWidth, img.naturalHeight);
     const canvas = document.createElement("canvas");
     canvas.width = canvas.height = 384;
     const context = canvas.getContext("2d");
     if (!context) throw Error();
-    context.fillStyle = "#fff";
+    context.fillStyle = "#edf1f7";
     context.fillRect(0, 0, 384, 384);
-    context.drawImage(
-      img,
-      (img.naturalWidth - size) / 2,
-      (img.naturalHeight - size) / 2,
-      size,
-      size,
-      0,
-      0,
-      384,
-      384,
-    );
+    context.drawImage(img, bounds.x, bounds.y, bounds.width, bounds.height);
     const output = canvas.toDataURL("image/jpeg", 0.82);
     if (!output.startsWith("data:image/jpeg;base64,") || output.length > 213350)
       throw Error();
@@ -131,11 +122,11 @@ export function TutorForm({
   busy: boolean;
   save: (data: Record<string, unknown>) => void;
 }) {
-  const { t: tr } = useJupLocale();
+  const { t: tr, locale } = useJupLocale();
 
   const [stage, setStage] = useState(1);
   const [subject, setSubject] = useState(tutor?.subject ?? "");
-  const [exam, setExam] = useState(tutor?.exam ?? "");
+  const [exam, setExam] = useState(tutor?.exam ?? "Школьная программа");
   const photoInput = useId();
   const basics = useRef<HTMLDivElement>(null);
   const detailsHeading = useRef<HTMLHeadingElement>(null);
@@ -181,6 +172,20 @@ export function TutorForm({
   function submit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
     if (busy || processing) return;
+    if (!tutor && stage === 1) {
+      next();
+      return;
+    }
+    const form = e.currentTarget;
+    const invalid = form.querySelector<
+      HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
+    >(":invalid");
+    if (invalid) {
+      if (basics.current?.contains(invalid)) setStage(1);
+      invalid.closest("details")?.setAttribute("open", "");
+      requestAnimationFrame(() => invalid.reportValidity());
+      return;
+    }
     if (!tutor && !photo) {
       setError("Добавьте фото, которое будет видно в анкете.");
       return;
@@ -199,7 +204,12 @@ export function TutorForm({
     });
   }
   return (
-    <form className={st.form} onSubmit={submit}>
+    <form
+      className={st.form}
+      onSubmit={submit}
+      noValidate
+      aria-busy={busy || processing}
+    >
       {!tutor && (
         <SetupProgress
           labels={[tr("Основное"), tr("Ваш подход")]}
@@ -217,9 +227,7 @@ export function TutorForm({
           <TutorPhoto tutor={tutor} source={source} />
           <div>
             <strong>{tr("Ваше фото")}</strong>
-            <p className={st.photoHint}>
-              {tr("Помогите ученику узнать вас до первого урока.")}
-            </p>
+            <p className={st.photoHint}>{tr("Квадратное фото без обрезки.")}</p>
             <label
               className={st.photoButton + " secondary"}
               htmlFor={photoInput}
@@ -274,6 +282,26 @@ export function TutorForm({
             autoComplete="name"
           />
         </Field>
+        {!tutor && (
+          <div
+            className={st.quickSubjects}
+            role="group"
+            aria-label={tr("Быстрый выбор предмета")}
+          >
+            {(["Математика", "Английский", "Физика", "География"] as const).map(
+              (item) => (
+                <button
+                  type="button"
+                  key={item}
+                  aria-pressed={subject === item}
+                  onClick={() => setSubject(item)}
+                >
+                  {tr(item)}
+                </button>
+              ),
+            )}
+          </div>
+        )}
         <div hidden={!!tutor} className={st.formGrid}>
           {(
             [
@@ -285,7 +313,23 @@ export function TutorForm({
             <Field key={key} label={tr(label)}>
               <select
                 name={key}
-                defaultValue={tutor?.[key] ?? ""}
+                value={
+                  key === "subject"
+                    ? subject
+                    : key === "exam"
+                      ? exam
+                      : undefined
+                }
+                defaultValue={
+                  key === "language"
+                    ? (tutor?.language ??
+                      (locale === "kk"
+                        ? "Қазақша"
+                        : locale === "en"
+                          ? "English"
+                          : "Русский"))
+                    : undefined
+                }
                 required
                 onChange={(e) => {
                   if (key === "subject") setSubject(e.target.value);
@@ -339,7 +383,7 @@ export function TutorForm({
               min={0}
               max={100000}
               required
-              defaultValue={tutor?.price}
+              defaultValue={tutor?.price ?? 4000}
               placeholder="4 000"
             />
           </Field>
@@ -369,16 +413,23 @@ export function TutorForm({
           initialBody={tutor?.bio}
           initialPlan={tutor?.lesson_plan}
           disabled={busy}
+          initiallyOpen={!tutor}
         />
-        <Field label={tr("Образование или квалификация")}>
-          <input
-            name="education"
-            maxLength={180}
-            defaultValue={tutor?.education}
-            placeholder={tr("Например, КазНУ, география")}
-          />
-        </Field>
-        <Qualifications tutor={tutor} />
+        <details className={st.extraDetails}>
+          <summary>
+            {tr("Образование и подтверждения")}
+            <small>{tr("Можно дополнить позже")}</small>
+          </summary>
+          <Field label={tr("Образование или квалификация")}>
+            <input
+              name="education"
+              maxLength={180}
+              defaultValue={tutor?.education}
+              placeholder={tr("Например, КазНУ, география")}
+            />
+          </Field>
+          <Qualifications tutor={tutor} />
+        </details>
         {!tutor && (
           <label className={st.consent}>
             <input type="checkbox" name="adult_consent" required />
@@ -389,12 +440,7 @@ export function TutorForm({
         )}
       </div>
       {!tutor && stage === 1 ? (
-        <button
-          type="button"
-          className="primary"
-          disabled={processing}
-          onClick={next}
-        >
+        <button type="submit" className="primary" disabled={busy || processing}>
           {tr("Продолжить")}
         </button>
       ) : (

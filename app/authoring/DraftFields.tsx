@@ -21,6 +21,7 @@ export function DraftFields({
   initialBody = "",
   initialPlan = "",
   disabled = false,
+  initiallyOpen = false,
 }: {
   kind: DraftKind;
   subject: string;
@@ -29,6 +30,7 @@ export function DraftFields({
   initialBody?: string;
   initialPlan?: string;
   disabled?: boolean;
+  initiallyOpen?: boolean;
 }) {
   const { t: tr, locale: uiLocale } = useJupLocale();
 
@@ -142,7 +144,40 @@ export function DraftFields({
   }
   return (
     <div className="draftFields">
-      <details ref={details} className="draftAssistant">
+      {!title.trim() && !body.trim() && subject && (
+        <button
+          type="button"
+          className="secondary draftQuickFill"
+          disabled={disabled || busy}
+          onClick={() => {
+            const next = makeTemplate(
+              {
+                kind,
+                subject,
+                exam,
+                topics: selected,
+                notes,
+                locale: uiLocale,
+              },
+              tr,
+            );
+            setPrevious({ title, body, lessonPlan: plan });
+            setTitle(next.title);
+            setBody(next.body);
+            setPlan(next.lessonPlan);
+            setApplied(true);
+            if (details.current) details.current.open = false;
+          }}
+        >
+          <Icon name="wand" size={18} />
+          {tr("Заполнить основу")}
+        </button>
+      )}
+      <details
+        ref={details}
+        className="draftAssistant"
+        open={initiallyOpen || undefined}
+      >
         <summary>
           <Icon name="wand" size={19} />
           <span>

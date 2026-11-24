@@ -60,7 +60,8 @@ export function TutorCard({
               src={source}
               alt=""
               width={400}
-              height={240}
+              height={400}
+              decoding="async"
               loading="lazy"
               onError={() => setFailed(true)}
             />

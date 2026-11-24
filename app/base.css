@@ -12,8 +12,8 @@
   --muted: 94 106 124;
   --accent: 49 83 237;
   --surface: 255 255 255;
-  --surface-subtle: 244 246 249;
-  --border: 225 229 235;
+  --surface-subtle: 236 241 248;
+  --border: 215 224 236;
   --border-strong: 182 193 208;
   --accent-border: 151 174 231;
   --danger-bg: 255 241 235;
@@ -29,8 +29,10 @@ html {
 }
 body {
   margin: 0;
+  display: flow-root;
+  min-height: 100svh;
   color: rgb(var(--ink));
-  background: #f7f8fc;
+  background: #edf1f7;
   font:
     16px/1.5 -apple-system,
     BlinkMacSystemFont,
@@ -982,72 +984,17 @@ label {
 }
 .loadingState {
   width: 100%;
-  min-height: 440px;
-  padding: 44px 0;
-}
-.loadingIdentity {
+  min-height: 180px;
   display: grid;
-  justify-items: center;
-  gap: 18px;
-  text-align: center;
-  margin-bottom: 36px;
-}
-.loadingIdentity p {
-  font-size: 0.9rem;
-  color: rgb(var(--muted));
-}
-.loadingTrack {
-  position: relative;
-  display: block;
-  width: 136px;
-  height: 3px;
-  overflow: hidden;
-  border-radius: 8px;
-  background: rgb(var(--surface-subtle));
-}
-.loadingTrack::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background: var(--brand-gradient);
-  transform-origin: left;
-  animation: jupBreathe 1.8s ease-in-out infinite alternate;
-}
-.loadingCards {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 20px;
-}
-.loadingCard {
-  min-height: 210px;
-  padding: 24px;
-  display: grid;
-  align-content: start;
-  gap: 18px;
-  border: 1px solid rgb(var(--border));
-  background: rgb(var(--surface));
-  border-radius: 20px;
-}
-.loadingCard span {
-  display: block;
-  height: 14px;
-  border-radius: 8px;
-  background: rgb(var(--surface-subtle));
-}
-.loadingCard span:first-child {
-  width: 56px;
-  height: 56px;
-  border-radius: 18px;
-}
-.loadingCard span:nth-child(2) {
-  width: 65%;
-}
-.loadingCard span:last-child {
-  width: 45%;
+  place-items: center;
+  padding: 32px 16px;
 }
 .routeLoading {
-  width: min(1180px, calc(100% - 40px));
-  margin: 76px auto 0;
+  min-height: 100svh;
+  display: grid;
+  place-items: center;
+  margin: 0;
+  padding: 24px;
 }
 .requestProgress {
   position: fixed;
@@ -1100,16 +1047,9 @@ button.primary .loadingOrbit {
     width: 105px;
     height: 38px;
   }
-  .loadingCards {
-    grid-template-columns: 1fr;
-  }
-  .loadingCard:not(:first-child) {
-    display: none;
-  }
 }
 @media (prefers-reduced-motion: reduce) {
   .loadingOrbit,
-  .loadingTrack::after,
   .requestProgress::after {
     animation: none;
     transform: none;
@@ -1401,17 +1341,6 @@ button.primary .loadingOrbit {
 .formattedText li {
   margin: 4px 0;
 }
-.loadingState {
-  min-height: 300px;
-  padding: 34px 0;
-}
-.loadingCards {
-  gap: 14px;
-}
-.loadingCard {
-  min-height: 160px;
-  padding: 20px;
-}
 @media (max-width: 640px) {
   .draftAssistantBody {
     padding-inline: 14px;
@@ -1528,10 +1457,14 @@ button.primary .loadingOrbit {
 .primary,
 .secondary {
   gap: 8px;
-  border-radius: 11px;
-  min-height: 46px;
-  font-size: 0.875rem;
-  font-weight: 550;
+  border-radius: 12px;
+  min-height: 48px;
+  padding: 12px 18px;
+  line-height: 1.35;
+  font-size: 0.9rem;
+  font-weight: 600;
+  text-align: center;
+  text-decoration: none;
   transition:
     background 0.16s,
     box-shadow 0.16s,
@@ -1552,6 +1485,25 @@ button.primary .loadingOrbit {
 .secondary:hover:not(:disabled) {
   background: #f4f6ff;
   border-color: #c3cff4;
+}
+.primary:hover,
+.secondary:hover {
+  text-decoration: none;
+}
+.draftQuickFill {
+  justify-self: start;
+}
+.draftAssistant {
+  background: #edf2fc;
+}
+.languageSwitcher {
+  min-height: 44px;
+}
+@media (pointer: coarse) {
+  .textEditorToolbar button,
+  .topicChips button {
+    min-height: 44px;
+  }
 }
 input,
 textarea,
@@ -1752,4 +1704,54 @@ html[data-telegram] dialog {
   max-width: calc(
     100vw - var(--tg-safe-left, 0px) - var(--tg-safe-right, 0px) - 32px
   );
+}
+
+.notFoundPage {
+  min-height: 100svh;
+  padding: 20px 24px 64px;
+  width: min(1100px, 100%);
+  margin-inline: auto;
+}
+.notFoundPage > header {
+  min-height: 64px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.notFoundCard {
+  width: min(520px, 100%);
+  margin: clamp(40px, 10vh, 100px) auto 0;
+  padding: clamp(24px, 5vw, 48px);
+  border: 1px solid rgb(var(--border));
+  border-radius: 24px;
+  background: white;
+}
+.notFoundCode {
+  color: rgb(var(--accent));
+  font-size: 4.5rem;
+  font-weight: 650;
+  letter-spacing: -0.06em;
+  line-height: 1;
+  margin-bottom: 24px;
+}
+.notFoundCard h1 {
+  font-size: clamp(1.6rem, 5vw, 2rem);
+  letter-spacing: -0.04em;
+  line-height: 1.2;
+}
+.notFoundCard > p:last-of-type {
+  color: rgb(var(--muted));
+  line-height: 1.7;
+  margin-top: 14px;
+}
+.notFoundActions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-top: 28px;
+}
+@media (max-width: 480px) {
+  .notFoundActions > a {
+    flex: 1;
+  }
 }

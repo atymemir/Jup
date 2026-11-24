@@ -6,6 +6,7 @@ import { LoadingState } from "../ui/LoadingState";
 import { Brand } from "../ui/Brand";
 
 import Link from "next/link";
+import dynamic from "next/dynamic";
 import { Notifications } from "../notifications/Notifications";
 import { NotificationBell } from "../notifications/NotificationBell";
 import { useNotifications } from "../notifications/useNotifications";
@@ -27,16 +28,34 @@ import {
   type PlatformDashboard,
 } from "../lib/platform";
 import { TutorForm } from "../profiles/TutorProfile";
-import FindBuddy from "../FindBuddy";
 import { Icon, type IconName } from "../ui/Icon";
 import { StudentProfile } from "./StudentProfile";
-import { Offerings } from "./Offerings";
-import { OrganizationDesk } from "./Organization";
-import { Moderation } from "./Moderation";
-import { OrganizationChat } from "./OrganizationChat";
 import { usePlatformAction } from "./usePlatformAction";
 import st from "./platform.module.css";
 import { WorkspaceSearch } from "../ui/WorkspaceSearch";
+function SectionLoading() {
+  const { t } = useJupLocale();
+  return <LoadingState label={t("Открываем раздел…")} />;
+}
+const FindBuddy = dynamic(() => import("../FindBuddy"), {
+  loading: SectionLoading,
+});
+const Offerings = dynamic(
+  () => import("./Offerings").then((m) => m.Offerings),
+  { loading: SectionLoading },
+);
+const OrganizationDesk = dynamic(
+  () => import("./Organization").then((m) => m.OrganizationDesk),
+  { loading: SectionLoading },
+);
+const Moderation = dynamic(
+  () => import("./Moderation").then((m) => m.Moderation),
+  { loading: SectionLoading },
+);
+const OrganizationChat = dynamic(
+  () => import("./OrganizationChat").then((m) => m.OrganizationChat),
+  { loading: SectionLoading },
+);
 type Area = "public" | "student" | "teacher" | "business" | "admin";
 type Nav = [string, string, IconName, boolean];
 const navigation: Record<Exclude<Area, "public">, Nav[]> = {
@@ -109,11 +128,18 @@ export default function AppEntry({ area = "public" }: { area?: Area }) {
     return api<{ account: Account | null }>("viewer")
       .then(async (viewer) => {
         if (!live.current || version.current !== n) return;
-        setAccount(viewer.account);
+        setAccount((current) =>
+          current?.id === viewer.account?.id &&
+          current?.role === viewer.account?.role
+            ? current
+            : viewer.account,
+        );
         if (viewer.account) {
           const p = await api<PlatformDashboard>("platform");
           if (!live.current || version.current !== n) return;
-          setData(p);
+          setData((current) =>
+            JSON.stringify(current) === JSON.stringify(p) ? current : p,
+          );
         } else setData(null);
         setError("");
       })
@@ -134,7 +160,12 @@ export default function AppEntry({ area = "public" }: { area?: Area }) {
     let lastRefresh = Date.now();
     let pending = false;
     const update = async () => {
-      if (pending || document.hidden || Date.now() - lastRefresh < 10000)
+      if (
+        pending ||
+        document.hidden ||
+        document.activeElement?.closest("form") ||
+        Date.now() - lastRefresh < 10000
+      )
         return;
       lastRefresh = Date.now();
       pending = true;
@@ -147,7 +178,7 @@ export default function AppEntry({ area = "public" }: { area?: Area }) {
     window.addEventListener("focus", update);
     const timer = setInterval(() => {
       update();
-    }, 15000);
+    }, 30000);
     return () => {
       live.current = false;
       clearInterval(timer);
@@ -159,12 +190,7 @@ export default function AppEntry({ area = "public" }: { area?: Area }) {
     area === "admin"
       ? account?.role === "owner" || account?.role === "moderator"
       : account?.role === area;
-  if (loading)
-    return (
-      <main className={st.public}>
-        <LoadingState label={tr("Открываем ваш кабинет…")} />
-      </main>
-    );
+  if (loading) return <WorkspaceLoading area={area} panel={panel} />;
   if (!account || !expected)
     return (
       <main className={st.public}>
@@ -303,7 +329,9 @@ export default function AppEntry({ area = "public" }: { area?: Area }) {
   else if (area === "business")
     content = <OrganizationDesk data={data} panel={panel} refresh={refresh} />;
   else if (area === "admin")
-    content = <Moderation data={data} panel={panel} refresh={refresh} />;
+    content = (
+      <Moderation key={panel} data={data} panel={panel} refresh={refresh} />
+    );
   else if (area === "student" && panel === "profile")
     content = (
       <StudentProfile
@@ -481,6 +509,106 @@ export default function AppEntry({ area = "public" }: { area?: Area }) {
     </div>
   );
 }
+function WorkspaceLoading({
+  area,
+  panel,
+}: {
+  area: Exclude<Area, "public">;
+  panel: string;
+}) {
+  const { t } = useJupLocale();
+  const nav = navigation[area].filter(([id]) => id !== "staff");
+  const role = area === "admin" ? "Владелец" : roleLabels[area];
+  return (
+    <div className={st.root} aria-busy="true">
+      <aside className={st.sidebar}>
+        <div>
+          <Link className={st.brand} href="/">
+            <Brand />
+          </Link>
+          <p className={st.roleLabel}>{t(role)}</p>
+        </div>
+        <nav className={st.nav} aria-label={t("Ваш кабинет")}>
+          <span className={st.navCaption}>{t("Рабочее пространство")}</span>
+          <a href="#notifications">
+            <Icon name="bell" size={19} />
+            {t("События")}
+          </a>
+          {nav.map(([id, label, icon, mobile]) => (
+            <a
+              key={id}
+              href={"#" + id}
+              className={mobile ? undefined : st.desktopOnly}
+              aria-current={id === panel ? "page" : undefined}
+            >
+              <Icon name={icon} size={19} />
+              {t(label)}
+            </a>
+          ))}
+        </nav>
+        <div className={st.sidebarFoot}>
+          <Link href="/">
+            <Icon name="globe" size={18} />
+            {t("Публичный каталог")}
+            <Icon name="arrow" size={15} />
+          </Link>
+          <p>{t("Бесплатный пилот · комиссия 0%")}</p>
+        </div>
+      </aside>
+      <div className={st.body}>
+        <header className={st.topbar}>
+          <Link href="/" className={st.mobileBrand} aria-label="Jup edu">
+            <Brand />
+          </Link>
+          <div className={st.breadcrumb}>
+            <span>{t(role)}</span>
+            <Icon name="chevron" size={13} />
+            <strong>
+              {t(nav.find(([id]) => id === panel)?.[1] ?? "Мой кабинет")}
+            </strong>
+          </div>
+          <WorkspaceSearch
+            items={nav.map(([id, label, icon]) => ({
+              href: "#" + id,
+              label,
+              icon,
+            }))}
+          />
+          <LanguageSwitcher />
+          <button
+            className="notificationBell"
+            aria-label={t("Уведомления")}
+            disabled
+          >
+            <Icon name="bell" size={21} />
+          </button>
+          <button className={st.exitButton} aria-label={t("Выйти")} disabled>
+            <Icon name="logout" size={18} />
+          </button>
+        </header>
+        <main className={st.content}>
+          <LoadingState />
+        </main>
+        <nav className={st.mobileDock} aria-label={t("Основная навигация")}>
+          {nav
+            .filter(([, , , mobile]) => mobile)
+            .slice(0, 3)
+            .map(([id, label, icon]) => (
+              <a
+                key={id}
+                href={"#" + id}
+                aria-current={id === panel ? "page" : undefined}
+              >
+                <Icon name={icon} size={21} />
+                <span>{t(label)}</span>
+              </a>
+            ))}
+        </nav>
+      </div>
+    </div>
+  );
+}
+
 function TeacherProfile({
   data,
   refresh,
