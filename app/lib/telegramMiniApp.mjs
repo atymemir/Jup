@@ -27,6 +27,7 @@ export function screenFromSuffix(suffix = "") {
   if (suffix === "#account") return "lessons";
   if (suffix === "#messages") return "messages";
   if (suffix === "#requests") return "requests";
+  if (suffix === "#profile") return "profile";
   for (const [prefix, screen] of [
     ["#account/lesson/", "lesson"],
     ["#account/chat/", "chat"],

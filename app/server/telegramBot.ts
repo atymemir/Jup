@@ -1,3 +1,5 @@
+import { telegramHelpText, telegramShortcuts } from "../lib/telegramCommands.mjs";
+
 // The command handler is transport-independent so it can run with a local test bot.
 type Button =
   | { text: string; url: string }
@@ -70,7 +72,8 @@ export async function handleTelegram(update: Update, bot: BotServices) {
     typeof update.message?.text === "string"
       ? update.message.text.trim().split(/\s+/)
       : [];
-  const command = callback?.data ?? input.split("@")[0];
+  const parsed = callback?.data ?? input.split("@")[0].toLowerCase();
+  const command = parsed === "/messages" ? "/chats" : parsed;
   const chatId = id;
   const linkTo = (text: string, suffix = ""): Button => ({
     text,
@@ -86,25 +89,34 @@ export async function handleTelegram(update: Update, bot: BotServices) {
       commandButton("Мои занятия", "/lessons"),
       commandButton("Сообщения", "/chats"),
     ],
-    [linkTo("Заявки", "#requests"), commandButton("Уведомления", "/settings")],
-    [linkTo("Каталог")],
+    [linkTo("Расписание", "#account/calendar"), linkTo("Заявки", "#requests")],
+    [linkTo("Моя анкета", "#profile"), linkTo("Каталог")],
+    [commandButton("Уведомления", "/settings")],
   ];
-  async function welcome(message?: string) {
+  async function welcome(message?: string, suffix = "/telegram") {
     await bot.send(
       chatId,
       message ??
-        "Откройте Jup edu, войдите в аккаунт и нажмите «Подключить Telegram» в «Моих занятиях». Затем вернитесь сюда по личной ссылке и нажмите Start.",
+        "Откройте Jup, войдите в аккаунт и нажмите «Связать с Telegram». После подключения здесь появятся ваши занятия и сообщения.",
       [
-        [linkTo("Открыть Jup", "/telegram")],
-        [linkTo("Открыть мои занятия", "#account")],
+        [linkTo("Открыть Jup", suffix)],
         [linkTo("Найти преподавателя")],
       ],
     );
   }
-  if (command === "/app") {
-    await bot.send(id, "Jup в Telegram · занятия, расписание и сообщения.", [
-      [linkTo("Открыть Jup", "/telegram")],
+  const shortcut = telegramShortcuts.get(command);
+  if (shortcut) {
+    await bot.send(id, shortcut.text, [
+      [linkTo(shortcut.button, shortcut.suffix)],
     ]);
+    return;
+  }
+  if (command === "/help" || command === "/menu") {
+    await bot.send(
+      id,
+      command === "/help" ? telegramHelpText() : "Что откроем?",
+      menu,
+    );
     return;
   }
   if (command === "/start" && args.length) {
@@ -144,7 +156,14 @@ export async function handleTelegram(update: Update, bot: BotServices) {
     return;
   }
   if (!ctx.linked) {
-    await welcome();
+    await welcome(
+      undefined,
+      command === "/lessons"
+        ? "#account"
+        : command === "/chats"
+          ? "#messages"
+          : "/telegram",
+    );
     return;
   }
   if (command === "/lessons") {
@@ -250,9 +269,9 @@ export async function handleTelegram(update: Update, bot: BotServices) {
   } else {
     await bot.send(
       id,
-      command === "/help"
-        ? "Используйте кнопки или команды /lessons, /chats и /settings."
-        : "Jup edu · выберите действие",
+      command.startsWith("/") && command !== "/start"
+        ? "Такой команды нет. Выберите действие или откройте /help."
+        : "Что откроем?",
       menu,
     );
   }
