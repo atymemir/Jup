@@ -34,7 +34,12 @@ export function useInbox(userId: string | null, open: boolean) {
     try {
       const list = await inboxApi<InboxList>("list");
       if (request.current !== version || owner.current !== userId) return;
-      setState({ user: userId, list });
+      setState((current) =>
+        current?.user === userId &&
+        JSON.stringify(current.list) === JSON.stringify(list)
+          ? current
+          : { user: userId, list },
+      );
       setFailure(null);
     } catch (e) {
       if (request.current !== version || owner.current !== userId) return;

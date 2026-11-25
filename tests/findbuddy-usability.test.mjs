@@ -1,48 +1,30 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { portraitBounds } from "../app/lib/portrait.mjs";
+import { portraitDimensions } from "../app/lib/portrait.mjs";
 import { sharedRequest } from "../app/lib/requestPool.mjs";
 import { filterModeration } from "../app/lib/moderation.mjs";
 
-test("square, portrait and landscape uploads keep every edge inside the thumbnail", () => {
-  assert.deepEqual(portraitBounds(400, 400), {
-    x: 0,
-    y: 0,
-    width: 384,
-    height: 384,
-  });
-  assert.deepEqual(portraitBounds(400, 800), {
-    x: 96,
-    y: 0,
-    width: 192,
-    height: 384,
-  });
-  assert.deepEqual(portraitBounds(800, 400), {
-    x: 0,
-    y: 96,
-    width: 384,
-    height: 192,
-  });
+test("portrait normalization keeps the complete aspect ratio and never enlarges a small original", () => {
   for (const [width, height] of [
     [450, 1200],
     [1600, 900],
     [40, 60],
-    [61, 500],
+    [300, 150],
   ]) {
-    const bounds = portraitBounds(width, height);
-    assert.ok(bounds.x >= 0 && bounds.y >= 0);
-    assert.ok(
-      bounds.x + bounds.width <= 384 && bounds.y + bounds.height <= 384,
-    );
-    assert.ok(Math.abs(bounds.width / bounds.height - width / height) < 1e-10);
+    const size = portraitDimensions(width, height);
+    assert.ok(size.width <= width && size.height <= height);
+    assert.ok(Math.max(size.width, size.height) <= 1536);
+    assert.ok(Math.abs(size.width / size.height - width / height) < 0.01);
   }
-  for (const dimensions of [
+  assert.deepEqual(portraitDimensions(300, 150), { width: 300, height: 150 });
+  assert.equal(portraitDimensions(3000, 4500).height, 1536);
+  for (const [width, height] of [
     [0, 20],
     [20, -1],
     [NaN, 2],
     [Infinity, 5],
   ])
-    assert.throws(() => portraitBounds(...dimensions));
+    assert.throws(() => portraitDimensions(width, height));
 });
 
 test("concurrent reads share work, remain isolated by identity and are never cached after completion", async () => {

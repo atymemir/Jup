@@ -5,6 +5,7 @@ import { DraftFields } from "../authoring/DraftFields";
 import { FormattedText } from "../ui/FormattedText";
 import {
   cloneElement,
+  useEffect,
   useId,
   useRef,
   useState,
@@ -27,7 +28,7 @@ import st from "./profile.module.css";
 import { Qualifications } from "../platform/Qualifications";
 import { ReportProfile } from "../platform/ReportProfile";
 import { SetupProgress } from "../ui/SetupControls";
-import { portraitBounds } from "../lib/portrait.mjs";
+import { normalizePhoto } from "../lib/normalizePortrait";
 
 function photoUrl(tutor?: Tutor) {
   return tutor?.photo_version
@@ -46,7 +47,7 @@ export function TutorPhoto({
   return (
     <span className={st.avatar} aria-hidden="true">
       {url && url !== failed ? (
-        // The app normalizes uploads to small JPEGs and already serves cached thumbnail bytes.
+        // Uploads retain their aspect ratio; the frame fits the full portrait.
         // eslint-disable-next-line @next/next/no-img-element
         <img src={url} alt="" onError={() => setFailed(url)} />
       ) : (
@@ -55,36 +56,99 @@ export function TutorPhoto({
     </span>
   );
 }
-async function normalizePhoto(file: File) {
-  if (
-    !["image/jpeg", "image/png", "image/webp"].includes(file.type) ||
-    file.size > 12 * 1024 * 1024
-  )
-    throw Error("Выберите JPG, PNG или WebP размером до 12 МБ.");
-  const url = URL.createObjectURL(file);
-  try {
-    const img = new Image();
-    img.src = url;
-    await img.decode();
-    if (!img.naturalWidth || !img.naturalHeight) throw Error();
-    const bounds = portraitBounds(img.naturalWidth, img.naturalHeight);
-    const canvas = document.createElement("canvas");
-    canvas.width = canvas.height = 384;
-    const context = canvas.getContext("2d");
-    if (!context) throw Error();
-    context.fillStyle = "#edf1f7";
-    context.fillRect(0, 0, 384, 384);
-    context.drawImage(img, bounds.x, bounds.y, bounds.width, bounds.height);
-    const output = canvas.toDataURL("image/jpeg", 0.82);
-    if (!output.startsWith("data:image/jpeg;base64,") || output.length > 213350)
-      throw Error();
-    return output;
-  } catch {
-    throw Error("Фото не удалось открыть. Попробуйте другой файл.");
-  } finally {
-    URL.revokeObjectURL(url);
-  }
+export function TutorPortrait({
+  tutor,
+  source,
+  name,
+}: {
+  tutor?: Tutor;
+  source?: string;
+  name?: string;
+}) {
+  const { t } = useJupLocale();
+  const url = source ?? photoUrl(tutor);
+  const [open, setOpen] = useState(false);
+  const [failed, setFailed] = useState(false);
+  const dialog = useRef<HTMLDialogElement>(null);
+  const title = useId();
+  useEffect(() => {
+    if (open && !dialog.current?.open) dialog.current?.showModal();
+    if (!open) dialog.current?.close();
+  }, [open]);
+  if (!url) return <TutorPhoto tutor={tutor} source={source} />;
+  return (
+    <>
+      <button
+        type="button"
+        className={st.portraitPreview}
+        aria-label={t("Открыть фото преподавателя")}
+        onClick={() => {
+          setFailed(false);
+          setOpen(true);
+        }}
+      >
+        <TutorPhoto tutor={tutor} source={source} />
+        <span className={st.portraitExpand} aria-hidden="true">
+          <Icon name="search" size={14} />
+        </span>
+      </button>
+      <dialog
+        ref={dialog}
+        className={st.photoViewer}
+        aria-labelledby={title}
+        onCancel={() => setOpen(false)}
+        onClick={(event) => {
+          if (event.target !== event.currentTarget) return;
+          const bounds = event.currentTarget.getBoundingClientRect();
+          if (
+            event.clientX < bounds.left ||
+            event.clientX > bounds.right ||
+            event.clientY < bounds.top ||
+            event.clientY > bounds.bottom
+          )
+            setOpen(false);
+        }}
+      >
+        <header>
+          <strong id={title}>
+            {name ?? tutor?.display_name ?? t("Фото преподавателя")}
+          </strong>
+          <button
+            type="button"
+            aria-label={t("Закрыть")}
+            onClick={() => setOpen(false)}
+          >
+            <Icon name="close" size={20} />
+          </button>
+        </header>
+        {open && failed ? (
+          <div className={st.photoError} role="alert">
+            <p>{t("Фото временно недоступно.")}</p>
+            <button
+              type="button"
+              className="secondary"
+              onClick={() => setFailed(false)}
+            >
+              {t("Повторить")}
+            </button>
+          </div>
+        ) : (
+          open && (
+            // Same verified or authorized photo as the preview; no extra public endpoint.
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
+              src={url}
+              alt={name ?? tutor?.display_name ?? t("Фото преподавателя")}
+              decoding="async"
+              onError={() => setFailed(true)}
+            />
+          )
+        )}
+      </dialog>
+    </>
+  );
 }
+
 function Field({
   label,
   children,
@@ -227,7 +291,9 @@ export function TutorForm({
           <TutorPhoto tutor={tutor} source={source} />
           <div>
             <strong>{tr("Ваше фото")}</strong>
-            <p className={st.photoHint}>{tr("Квадратное фото без обрезки.")}</p>
+            <p className={st.photoHint}>
+              {tr("Фото целиком, без обрезки и растягивания.")}
+            </p>
             <label
               className={st.photoButton + " secondary"}
               htmlFor={photoInput}
@@ -547,7 +613,7 @@ export function ProfilePage({
       <div className={st.layout}>
         <div className={st.bioColumn}>
           <header className={st.identity}>
-            <TutorPhoto tutor={tutor} source={photo} />
+            <TutorPortrait tutor={tutor} source={photo} />
             <div>
               <p className={st.muted}>
                 {tr(tutor.subject)} · {tr(tutor.exam)}

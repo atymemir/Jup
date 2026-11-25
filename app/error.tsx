@@ -5,10 +5,10 @@ import { Brand } from "./ui/Brand";
 
 import Link from "next/link";
 export default function ErrorPage({
-  unstable_retry,
+  retry,
 }: {
-  error: Error & { digest?: string };
-  unstable_retry: () => void;
+  error: unknown;
+  retry: () => void;
 }) {
   const { t: tr } = useJupLocale();
 
@@ -23,7 +23,7 @@ export default function ErrorPage({
           "Попробуйте ещё раз. Перед повторной записью проверьте «Мои занятия» — действие могло сохраниться.",
         )}
       </p>
-      <button className="primary" onClick={() => unstable_retry()}>
+      <button className="primary" onClick={() => retry()}>
         {tr("Повторить загрузку")}
       </button>
       <div className="authFoot">
