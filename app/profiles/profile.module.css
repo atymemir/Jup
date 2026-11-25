@@ -5,7 +5,7 @@
   height: 56px;
   flex-shrink: 0;
   overflow: hidden;
-  border-radius: 50%;
+  border-radius: 12px;
   background: rgb(var(--surface-subtle));
   color: rgb(var(--accent));
   font-size: 1.55rem;
@@ -14,7 +14,7 @@
   display: block;
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  object-fit: contain;
 }
 .form {
   display: grid;
@@ -467,4 +467,73 @@
   .form > :global(.primary) {
     width: 100%;
   }
+}
+
+.portraitPreview {
+  position: relative;
+  flex-shrink: 0;
+  padding: 0;
+  border-radius: 12px;
+}
+.portraitExpand {
+  position: absolute;
+  right: -4px;
+  bottom: -4px;
+  width: 26px;
+  height: 26px;
+  display: grid;
+  place-items: center;
+  border: 2px solid white;
+  border-radius: 8px;
+  background: rgb(var(--accent));
+  color: white;
+}
+.photoViewer {
+  width: fit-content;
+  max-width: min(960px, calc(100vw - 32px));
+  max-height: calc(100dvh - 32px);
+  padding: 0;
+  border: 1px solid rgb(var(--border));
+  border-radius: 18px;
+  background: #edf1f7;
+  color: rgb(var(--ink));
+}
+.photoViewer::backdrop {
+  background: #101b32b3;
+}
+.photoViewer > header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  padding: 12px 14px 12px 20px;
+  background: white;
+}
+.photoViewer > header strong {
+  overflow-wrap: anywhere;
+}
+.photoViewer > header button {
+  width: 44px;
+  height: 44px;
+  display: grid;
+  place-items: center;
+  border-radius: 10px;
+  flex-shrink: 0;
+}
+.photoViewer > header button:hover {
+  background: rgb(var(--surface-subtle));
+}
+.photoViewer > img {
+  display: block;
+  width: auto;
+  height: auto;
+  max-width: 100%;
+  max-height: calc(100dvh - 104px);
+  object-fit: contain;
+  margin: auto;
+}
+.photoError {
+  display: grid;
+  gap: 12px;
+  padding: 24px;
 }

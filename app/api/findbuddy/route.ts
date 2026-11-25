@@ -6,11 +6,18 @@ import {
 } from "../../server/offerNotice";
 import { localOrigin, previewAllowed, previewData } from "../../server/preview";
 import { createClient } from "@supabase/supabase-js";
-import { NextResponse } from "next/server";
+import { after, NextResponse } from "next/server";
+import { scheduleNotification } from "../../server/notificationDelivery.mjs";
 import { getUserFromAccessToken } from "@/app/lib/serverTokenAuth";
-import { mutationBodyLimit } from "../../lib/mutationLimits";
+import { mutationBodyLimit, MAX_MUTATION_BODY } from "../../lib/mutationLimits";
 
+export const maxDuration = 30;
 const headers = { "Cache-Control": "private, no-store" };
+function queueNotice(notify: () => Promise<unknown>) {
+  scheduleNotification(after, notify, () =>
+    console.warn("Jup Telegram notification delivery failed."),
+  );
+}
 function client(token?: string) {
   return createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -32,7 +39,10 @@ function failure(error: { code?: string; message: string }, area = "catalog") {
   if (["PGRST202", "42P01", "42883"].includes(error.code ?? ""))
     return NextResponse.json(
       {
-        error: area === "notifications" ? "Уведомления пока недоступны. Попробуйте позже." : "Каталог готовится к открытию. Попробуйте позже.",
+        error:
+          area === "notifications"
+            ? "Уведомления пока недоступны. Попробуйте позже."
+            : "Каталог готовится к открытию. Попробуйте позже.",
         setup_required: true,
       },
       { status: 503, headers },
@@ -68,7 +78,8 @@ async function previewResponse(req: Request) {
       return NextResponse.json(await previewData(req, view), { headers });
     if (!localOrigin(req)) return new Response(null, { status: 403 });
     const raw = await req.text();
-    if (raw.length > 225000) return new Response(null, { status: 413 });
+    if (raw.length > MAX_MUTATION_BODY)
+      return new Response(null, { status: 413 });
     const { action, data } = JSON.parse(raw);
     if (raw.length > mutationBodyLimit(action, data))
       return new Response(null, { status: 413 });
@@ -123,15 +134,19 @@ export async function GET(req: Request) {
         view === "notifications"
           ? "fb_notifications"
           : view === "viewer"
-          ? "fb_viewer"
-          : view === "platform"
-            ? "fb_platform_dashboard"
-            : view.startsWith("student/")
-              ? "fb_student_context"
-              : "fb_pilot_dashboard",
+            ? "fb_viewer"
+            : view === "platform"
+              ? "fb_platform_dashboard"
+              : view.startsWith("student/")
+                ? "fb_student_context"
+                : "fb_pilot_dashboard",
         view.startsWith("student/") ? { p_user: view.slice(8) } : {},
       );
-      if (error) return failure(error, view === "notifications" ? "notifications" : "catalog");
+      if (error)
+        return failure(
+          error,
+          view === "notifications" ? "notifications" : "catalog",
+        );
       return NextResponse.json(data, { headers });
     }
     const { data, error } = view.startsWith("reviews/")
@@ -154,7 +169,7 @@ export async function POST(req: Request) {
       { status: 503, headers },
     );
   try {
-    if (Number(req.headers.get("content-length") ?? 0) > 225000)
+    if (Number(req.headers.get("content-length") ?? 0) > MAX_MUTATION_BODY)
       return NextResponse.json(
         { error: "Слишком большой запрос." },
         { status: 413, headers },
@@ -168,7 +183,7 @@ export async function POST(req: Request) {
         { status: 401, headers },
       );
     const raw = await req.text();
-    if (raw.length > 225000)
+    if (raw.length > MAX_MUTATION_BODY)
       return NextResponse.json(
         { error: "Слишком большой запрос." },
         { status: 413, headers },
@@ -219,8 +234,13 @@ export async function POST(req: Request) {
     if (raw.length > mutationBodyLimit(body.action, body.data))
       return new Response(null, { status: 413 });
     if (body.action === "notifications") {
-      const { data, error } = await client(token).rpc("fb_notifications", { p_action: body.data.action ?? "list", p_data: body.data });
-      return error ? failure(error, "notifications") : NextResponse.json(data, { headers });
+      const { data, error } = await client(token).rpc("fb_notifications", {
+        p_action: body.data.action ?? "list",
+        p_data: body.data,
+      });
+      return error
+        ? failure(error, "notifications")
+        : NextResponse.json(data, { headers });
     }
     if (body.action === "platform") {
       const { data, error } = await client(token).rpc("fb_platform_action", {
@@ -249,7 +269,7 @@ export async function POST(req: Request) {
       });
       if (error) return failure(error);
       if (body.data.action === "send" && data.new_message)
-        await notifyDirect(data.id, user.id).catch(() => {});
+        queueNotice(() => notifyDirect(data.id, user.id));
       return NextResponse.json(data, { headers });
     }
     if (body.action === "initial_name") {
@@ -287,7 +307,7 @@ export async function POST(req: Request) {
         p_data: body.data,
       });
       if (error) return failure(error);
-      await notifyLesson(body.action, body.data.id, user.id).catch(() => {});
+      queueNotice(() => notifyLesson(body.action, body.data.id, user.id));
       return NextResponse.json(
         body.action === "video_access" ? await videoTicket(data) : data,
         { headers },
@@ -315,13 +335,11 @@ export async function POST(req: Request) {
     });
     if (error) return failure(error);
     if (["join", "accept", "cancel"].includes(body.action) && data?.id)
-      await notifyLesson(body.action, data.id, user.id).catch(() => {});
+      queueNotice(() => notifyLesson(body.action, data.id, user.id));
     if (body.action === "message" && data?.id)
-      await notifyLesson("message", body.data.booking_id, user.id).catch(
-        () => {},
-      );
+      queueNotice(() => notifyLesson("message", body.data.booking_id, user.id));
     if (body.action === "offer" && data?.id)
-      await notifyOffer(data.id, user.id).catch(() => {});
+      queueNotice(() => notifyOffer(data.id, user.id));
     return NextResponse.json(
       body.action === "telegram_link"
         ? { url: `https://t.me/${botName}?start=${data.token}` }

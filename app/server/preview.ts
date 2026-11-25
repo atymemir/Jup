@@ -179,12 +179,38 @@ export function database() {
         // Local passwords do not verify ownership of an email address.
         await db.exec("update auth.users set email_confirmed_at=null");
         await db.exec(
-          await readFile("supabase/sql/111_findbuddy_account_setup.sql", "utf8"),
+          await readFile(
+            "supabase/sql/111_findbuddy_account_setup.sql",
+            "utf8",
+          ),
         );
       }
-      await db.exec(await readFile("supabase/sql/20261123175841_findbuddy_access_grants.sql", "utf8"));
-      const notifications = await db.query<{ ready: string | null }>("select to_regprocedure('public.fb_notifications(text,jsonb)') as ready");
-      if (!notifications.rows[0].ready) await db.exec(await readFile("supabase/sql/20261124000000_findbuddy_notifications.sql", "utf8"));
+      await db.exec(
+        await readFile(
+          "supabase/sql/20261123175841_findbuddy_access_grants.sql",
+          "utf8",
+        ),
+      );
+      const notifications = await db.query<{ ready: string | null }>(
+        "select to_regprocedure('public.fb_notifications(text,jsonb)') as ready",
+      );
+      if (!notifications.rows[0].ready)
+        await db.exec(
+          await readFile(
+            "supabase/sql/20261124000000_findbuddy_notifications.sql",
+            "utf8",
+          ),
+        );
+      const owners = await db.query<{ ready: string | null }>(
+        "select to_regclass('public.fb_owner_access') as ready",
+      );
+      if (!owners.rows[0].ready)
+        await db.exec(
+          await readFile(
+            "supabase/sql/20261125000000_findbuddy_owner_access.sql",
+            "utf8",
+          ),
+        );
       return db;
     })
     .catch((error) => {
@@ -262,7 +288,11 @@ export async function previewAccount(
           [
             user,
             email,
-            JSON.stringify({ account_type: accountType, display_name: name, birth_date: body.birth_date || null }),
+            JSON.stringify({
+              account_type: accountType,
+              display_name: name,
+              birth_date: body.birth_date || null,
+            }),
           ],
         );
         await tx.query("insert into preview_accounts values($1,$2,$3,$4)", [
@@ -271,10 +301,10 @@ export async function previewAccount(
           salt,
           digest.toString("hex"),
         ]);
-        await tx.query("insert into fb_student_names values($1,$2) on conflict(id) do update set name=excluded.name", [
-          user,
-          name,
-        ]);
+        await tx.query(
+          "insert into fb_student_names values($1,$2) on conflict(id) do update set name=excluded.name",
+          [user, name],
+        );
       });
     } catch (e) {
       if (e && typeof e === "object" && "code" in e && e.code === "23505")
@@ -336,7 +366,13 @@ export async function previewData(
   const db = await database();
   const user = await identity(req);
   if (view === "session") return { user, preview: true };
-  if (!user && (action || view === "dashboard" || view === "platform" || view === "notifications"))
+  if (
+    !user &&
+    (action ||
+      view === "dashboard" ||
+      view === "platform" ||
+      view === "notifications")
+  )
     throw Error("Войдите в аккаунт.");
   return db.transaction(async (tx) => {
     if (action === "test_pay" || action === "test_withdraw") {
@@ -381,7 +417,12 @@ export async function previewData(
       user ?? "",
     ]);
     if (view === "notifications" || action === "notifications")
-      return (await tx.query<{ v: object }>("select fb_notifications($1,$2::jsonb) v", [action ? data.action ?? "list" : "list", JSON.stringify(data)])).rows[0].v;
+      return (
+        await tx.query<{ v: object }>(
+          "select fb_notifications($1,$2::jsonb) v",
+          [action ? (data.action ?? "list") : "list", JSON.stringify(data)],
+        )
+      ).rows[0].v;
     if (!action && view === "viewer")
       return (await tx.query<{ v: object }>("select fb_viewer() v")).rows[0].v;
     if (!action && view === "platform")

@@ -4,21 +4,47 @@ import { useLocale as useJupLocale } from "../i18n/LocaleProvider";
 import { useEffect, useState } from "react";
 import { api } from "../lib/api";
 import { stageLabels, type StudentProfile } from "../lib/platform";
+import { LoadingState } from "../ui/LoadingState";
 export function StudentContext({ id }: { id: string }) {
   const { t: tr } = useJupLocale();
 
-  const [profile, setProfile] = useState<StudentProfile | null>(null);
+  const [state, setState] = useState<{
+    id: string;
+    profile: StudentProfile | null;
+    error?: boolean;
+  } | null>(null);
+  const [attempt, setAttempt] = useState(0);
   useEffect(() => {
     let live = true;
     void api<StudentProfile | null>("student/" + id)
       .then((p) => {
-        if (live) setProfile(p);
+        if (live) setState({ id, profile: p });
       })
-      .catch(() => {});
+      .catch(() => {
+        if (live) setState({ id, profile: null, error: true });
+      });
     return () => {
       live = false;
     };
-  }, [id]);
+  }, [id, attempt]);
+  if (state?.id !== id) return <LoadingState compact />;
+  if (state.error)
+    return (
+      <div role="alert">
+        <p>{tr("Не удалось загрузить цель ученика.")}</p>
+        <button
+          type="button"
+          className="secondary"
+          onClick={() => {
+            setState(null);
+            setAttempt((value) => value + 1);
+          }}
+        >
+          {tr("Повторить")}
+        </button>
+      </div>
+    );
+  const profile = state.profile;
   return profile ? (
     <details>
       <summary>{tr("Учебная цель ученика")}</summary>

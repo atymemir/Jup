@@ -3,7 +3,7 @@ import { useLocale as useJupLocale } from "../i18n/LocaleProvider";
 
 import { useEffect, useState } from "react";
 import { api } from "../lib/api";
-import { TutorPhoto } from "../profiles/TutorProfile";
+import { TutorPortrait } from "../profiles/TutorProfile";
 import { lessonDate, type Tutor } from "../lib/findbuddy";
 import {
   statusLabels,
@@ -444,7 +444,9 @@ function ReviewPhoto({ id }: { id: string }) {
       </p>
     );
   return photo ? (
-    <TutorPhoto source={"data:image/jpeg;base64," + photo.replace(/\s/g, "")} />
+    <TutorPortrait
+      source={"data:image/jpeg;base64," + photo.replace(/\s/g, "")}
+    />
   ) : (
     <p>{tr("Фото не добавлено")}</p>
   );
@@ -465,7 +467,7 @@ function StaffPanel({
         <h1>{tr("Доступ к модерации")}</h1>
         <p>
           {tr(
-            "Административный доступ закреплён за подтверждённым аккаунтом владельца.",
+            "Административный доступ закреплён за подтверждёнными аккаунтами владельцев.",
           )}
         </p>
       </header>
